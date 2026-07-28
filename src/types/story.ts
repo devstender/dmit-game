@@ -52,7 +52,13 @@ export type SceneSound =
   | "beer-open"
   | "matvey-music"
   | "skill-success"
-  | "skill-fail";
+  | "skill-fail"
+  | "school-door-buzz"
+  | "school-entry-creak"
+  | "guard-alert"
+  | "black-phone-vibration"
+  | "igor-mystery-sting"
+  | "bike-chain-rattle";
 export type PhoneMessage = {
   contact: Character | string;
   direction: "incoming" | "outgoing";
@@ -140,15 +146,6 @@ export type RoachGame = {
   failEffects?: SceneEffect;
 };
 
-export type StealthGame = {
-  title: string;
-  description: string;
-  successNext: number;
-  failNext: number;
-  successEffects?: SceneEffect;
-  failEffects?: SceneEffect;
-};
-
 export type Scene = {
   speaker: Character;
   text: string;
@@ -161,12 +158,11 @@ export type Scene = {
   quiz?: Quiz;
   cheatGame?: CheatGame;
   roachGame?: RoachGame;
-  stealthGame?: StealthGame;
   tone?: "default" | "danger";
-  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika";
+  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-second-floor-night" | "computer-class-night";
   cinematic?: "door-reveal";
   sound?: SceneSound;
-  music?: "matvey";
+  music?: "matvey" | "chase" | "school-chase";
   transition?: "checkpoint-fade";
   phoneMessage?: PhoneMessage;
   effects?: SceneEffect;

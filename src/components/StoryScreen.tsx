@@ -14,6 +14,12 @@ import dmitRoomBackground from '../assets/dmit_room.png'
 import dmitRoomCleanBackground from '../assets/dmit_room_clean.png'
 import minkaBackground from '../assets/minka.png'
 import schoolDarkVazBackground from '../assets/school_dark_vaz.png'
+import schoolYardNightBackground from '../assets/small-school/school_back.png'
+import schoolMainEntranceNightBackground from '../assets/small-school/school_entrance.png'
+import schoolBackyardNightBackground from '../assets/small-school/school_back.png'
+import schoolCorridorNightBackground from '../assets/small-school/school_inside_flashlight.png'
+import schoolSecondFloorNightBackground from '../assets/small-school/school_green_light_cabinet.png'
+import computerClassNightBackground from '../assets/small-school/school_inside_cabinet.png'
 import type { Ability, Chapter, Character, CheatGameQuestion, QuizQuestion, RelationCharacter, SceneEffect, StoryChoice } from '../types/story'
 import { GameSidebar } from './GameSidebar'
 import { PerkSelection } from './PerkSelection'
@@ -140,6 +146,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const previousSceneIndex = useRef(sceneIndex)
   const ambientAudio = useRef<HTMLAudioElement | null>(null)
   const musicAudio = useRef<HTMLAudioElement | null>(null)
+  const musicTrack = useRef<'matvey' | 'chase' | 'school-chase' | null>(null)
   const musicFadeInterval = useRef<number | null>(null)
   const checkpointTransitionTimeout = useRef<number | null>(null)
   const [checkpointFading, setCheckpointFading] = useState(false)
@@ -156,13 +163,46 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         ? `linear-gradient(180deg, rgba(31, 22, 39, .08), rgba(29, 13, 29, .42)), url(${dmitRoomImage})`
         : activeBackground === 'minika'
           ? `linear-gradient(180deg, rgba(14, 15, 27, .18), rgba(12, 9, 18, .58)), url(${minkaBackground})`
+          : activeBackground === 'school-yard-night'
+            ? `linear-gradient(180deg, rgba(7, 12, 20, .16), rgba(4, 7, 13, .62)), url(${schoolYardNightBackground})`
+            : activeBackground === 'school-main-entrance-night'
+              ? `linear-gradient(180deg, rgba(8, 11, 20, .14), rgba(3, 5, 10, .62)), url(${schoolMainEntranceNightBackground})`
+              : activeBackground === 'school-backyard-night'
+                ? `linear-gradient(180deg, rgba(7, 12, 20, .16), rgba(4, 7, 13, .62)), url(${schoolBackyardNightBackground})`
+                : activeBackground === 'school-corridor-night'
+                  ? `linear-gradient(180deg, rgba(6, 10, 17, .08), rgba(4, 6, 12, .52)), url(${schoolCorridorNightBackground})`
+                  : activeBackground === 'school-second-floor-night'
+                    ? `linear-gradient(180deg, rgba(5, 17, 18, .10), rgba(4, 8, 12, .52)), url(${schoolSecondFloorNightBackground})`
+                    : activeBackground === 'computer-class-night'
+                      ? `linear-gradient(180deg, rgba(8, 12, 17, .14), rgba(3, 5, 9, .64)), url(${computerClassNightBackground})`
           : activeBackground === 'school-dark-vaz'
             ? `linear-gradient(180deg, rgba(8, 12, 22, .08), rgba(7, 9, 18, .52)), url(${schoolDarkVazBackground})`
             : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
   const activeQuizQuestion = scene.quiz?.questions[quizQuestion]
   const typingText = activeQuizQuestion?.question ?? scene.text
   const cinematicActive = Boolean(scene.cinematic && !playedCinematics.includes(sceneIndex))
-  const phoneMode = Boolean(scene.phoneMessage)
+  const blackPhoneStartIndex = chapter.scenes
+    .slice(0, sceneIndex + 1)
+    .reduce((latestIndex, currentScene, index) => (
+      currentScene.text === 'В этот момент на учительском столе начинает вибрировать чужой телефон.'
+        || currentScene.text === 'Чёрный телефон снова вибрирует.'
+        ? index
+        : latestIndex
+    ), -1)
+  const blackPhoneFinishIndex = chapter.scenes
+    .slice(blackPhoneStartIndex + 1, sceneIndex + 1)
+    .reduce((latestIndex, currentScene, index) => (
+      currentScene.effects?.flags?.includes('SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE')
+        ? blackPhoneStartIndex + index + 1
+        : latestIndex
+    ), -1)
+  const blackPhoneMode = blackPhoneStartIndex >= 0 && blackPhoneFinishIndex < blackPhoneStartIndex
+  const activePhoneMessage = scene.phoneMessage ?? (blackPhoneMode ? {
+    contact: 'Неизвестный номер',
+    direction: scene.speaker === 'Дмит' ? 'outgoing' as const : 'incoming' as const,
+    time: '22:43',
+  } : undefined)
+  const phoneMode = Boolean(activePhoneMessage)
   const complete = visibleText.length === typingText.length
   const activeCheatQuestion = scene.cheatGame?.questions[testQuestion]
   const teacherPositionLabel = teacherPosition === 'board' ? 'у доски' : teacherPosition === 'rows' ? 'между рядами' : 'за спиной'
@@ -172,19 +212,27 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const dialogueText = activeDialogue?.text ?? visibleText
   const dialogueComplete = Boolean(activeDialogue) || complete
   const choiceTimerVisible = Boolean(scene.choiceTimer && scene.choices && dialogueComplete && !activeDialogue && choiceTimerLeft !== null)
+  const activeChoiceTimerDuration = scene.choiceTimer
+    ? Math.max(1, scene.choiceTimer.durationSeconds - ((scene.music === 'chase' || scene.music === 'school-chase') && (player.flags.includes('CHAPTER_1_ALCOHOL_BEER') || player.flags.includes('CHAPTER_1_ALCOHOL_HEAVY')) ? 1 : 0))
+    : 0
   const choiceTimerProgress = scene.choiceTimer && choiceTimerLeft !== null
-    ? Math.max(0, Math.min(100, (choiceTimerLeft / scene.choiceTimer.durationSeconds) * 100))
+    ? Math.max(0, Math.min(100, (choiceTimerLeft / activeChoiceTimerDuration) * 100))
     : 0
   const mobileSpeaker = (dialogueSpeaker !== 'Рассказчик' ? dialogueSpeaker : undefined) as Character | undefined
   const mobileSpeakerPosition = mobileSpeaker === 'Дмит' ? 'left' : 'right'
   const speakerNameSide = dialogueSpeaker === 'Рассказчик' ? 'narrator' : mobileSpeakerPosition
   const mobileSpeakerEmotion = mobileSpeaker === scene.left ? scene.leftEmotion : mobileSpeaker === scene.right ? scene.rightEmotion : undefined
-  const phoneMessages: PhoneThreadMessage[] = scene.phoneMessage ? [
+  const phoneMessages: PhoneThreadMessage[] = activePhoneMessage ? [
     ...chapter.scenes
       .slice(0, sceneIndex)
       .reverse()
       .reduce<PhoneHistoryAccumulator>((history, historyScene) => {
-        if (history.stop || !historyScene.phoneMessage || historyScene.phoneMessage.contact !== scene.phoneMessage?.contact) {
+        const historyIsBlackPhone = blackPhoneMode && chapter.scenes.indexOf(historyScene) >= blackPhoneStartIndex
+        const historyPhoneMessage = historyScene.phoneMessage ?? (historyIsBlackPhone ? {
+          contact: 'Неизвестный номер',
+          direction: historyScene.speaker === 'Дмит' ? 'outgoing' as const : 'incoming' as const,
+        } : undefined)
+        if (history.stop || !historyPhoneMessage || historyPhoneMessage.contact !== activePhoneMessage.contact) {
           return { stop: true, messages: history.messages }
         }
         return {
@@ -192,14 +240,14 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
           messages: [{
             speaker: historyScene.speaker,
             text: historyScene.text,
-            direction: historyScene.phoneMessage.direction,
+            direction: historyPhoneMessage.direction,
           }, ...history.messages],
         }
       }, { stop: false, messages: [] }).messages,
     {
       speaker: dialogueSpeaker,
       text: dialogueText,
-      direction: dialogueSpeaker === 'Дмит' ? 'outgoing' : scene.phoneMessage.direction,
+      direction: dialogueSpeaker === 'Дмит' ? 'outgoing' : activePhoneMessage.direction,
     },
   ] : []
   const seenRelationCharacters = (Object.keys(player.relations) as RelationCharacter[]).filter((character) => (
@@ -254,11 +302,18 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (scene.sound === 'guard-run') playSound(gameSounds.guardRun, .72, 3)
     if (scene.sound === 'guard-shout') playSound(gameSounds.guardShout, .78)
     if (scene.sound === 'phone-vibrate') playSound(gameSounds.phoneVibrate, .62)
+    if (scene.sound === 'school-door-buzz') playSound(gameSounds.schoolDoorBuzz, .7)
+    if (scene.sound === 'school-entry-creak') playSound(gameSounds.schoolEntryCreak, .72)
+    if (scene.sound === 'guard-alert') playSound(gameSounds.guardAlert, .82)
+    if (scene.sound === 'black-phone-vibration' || scene.text === 'В этот момент на учительском столе начинает вибрировать чужой телефон.' || scene.text === 'Чёрный телефон снова вибрирует.') playSound(gameSounds.blackPhoneVibration, .66)
+    if (scene.sound === 'igor-mystery-sting' || scene.text === 'Деньги у Игоря.' || scene.text === '«Строитель»?' || scene.text === 'Человек Игоря.') playSound(gameSounds.igorMysterySting, .7)
+    if (scene.sound === 'bike-chain-rattle') playSound(gameSounds.bikeChainRattle, .6)
+    if (activePhoneMessage?.direction === 'incoming') playSound(gameSounds.phoneMessageReceived, .48)
     if (scene.sound === 'quest-complete') playSound(gameSounds.questComplete, .62)
     if (scene.sound === 'beer-open') playSound(gameSounds.beerOpen, .72)
     if (scene.sound === 'skill-success') playSound(gameSounds.skillSuccess, .58)
     if (scene.sound === 'skill-fail') playSound(gameSounds.skillFail, .46)
-  }, [sceneIndex, scene.sound])
+  }, [sceneIndex, scene.sound, scene.text, activePhoneMessage?.direction])
 
   useEffect(() => {
     ambientAudio.current?.pause()
@@ -281,8 +336,8 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   }, [activeBackground])
 
   useEffect(() => {
-    if (scene.music === 'matvey') {
-      startMatveyMusic()
+    if (scene.music === 'matvey' || scene.music === 'chase' || scene.music === 'school-chase') {
+      startMusic(scene.music)
       return
     }
     stopMusic(700)
@@ -356,6 +411,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       currentMusic.pause()
       currentMusic.currentTime = 0
       musicAudio.current = null
+      musicTrack.current = null
       return
     }
     const startVolume = currentMusic.volume
@@ -369,20 +425,25 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       currentMusic.pause()
       currentMusic.currentTime = 0
       if (musicAudio.current === currentMusic) musicAudio.current = null
+      if (musicAudio.current === null) musicTrack.current = null
     }, 50)
   }
 
-  const startMatveyMusic = (restart = false) => {
+  const startMusic = (track: 'matvey' | 'chase' | 'school-chase', restart = false) => {
     if (musicFadeInterval.current !== null) {
       window.clearInterval(musicFadeInterval.current)
       musicFadeInterval.current = null
     }
-    if (restart) stopMusic()
-    if (musicAudio.current) {
+    if (restart || (musicAudio.current && musicTrack.current !== track)) stopMusic()
+    if (musicAudio.current && musicTrack.current === track) {
       musicAudio.current.volume = .5
       return
     }
-    musicAudio.current = playLoop(gameSounds.matveyMusic, .5)
+    musicTrack.current = track
+    musicAudio.current = playLoop(
+      track === 'matvey' ? gameSounds.matveyMusic : track === 'school-chase' ? gameSounds.schoolChase : gameSounds.chaseMusic,
+      .5,
+    )
   }
 
   const advance = (next?: number) => {
@@ -406,7 +467,8 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
           setPendingChoiceResolution(null)
           resetTest()
           setCheckpointFading(false)
-          if (chapter.scenes[resolvedNext]?.music === 'matvey') startMatveyMusic(true)
+          const nextMusic = chapter.scenes[resolvedNext]?.music
+          if (nextMusic === 'matvey' || nextMusic === 'chase' || nextMusic === 'school-chase') startMusic(nextMusic, true)
         }, 1050)
         return
       }
@@ -430,7 +492,8 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       const rawChance = difference >= 0 ? 70 + difference * 10 : 70 + difference * 27.5
       return Math.round(Math.max(5, Math.min(95, rawChance)) / 5) * 5
     })
-    return Math.min(...chances)
+    const injuryPenalty = (scene.music === 'chase' || scene.music === 'school-chase') && choice.requires?.agility && (player.flags.includes('DMIT_DAMAGED') || player.flags.includes('CHAPTER_1_DMIT_DAMAGED')) ? 15 : 0
+    return Math.max(5, Math.min(...chances) - injuryPenalty)
   }
 
   const cleanChoiceText = (text: string) => text
@@ -546,11 +609,11 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     }
 
     let expired = false
-    setChoiceTimerLeft(timer.durationSeconds)
+    setChoiceTimerLeft(activeChoiceTimerDuration)
     const startedAt = Date.now()
     const interval = window.setInterval(() => {
       const elapsed = Math.floor((Date.now() - startedAt) / 1000)
-      const left = Math.max(0, timer.durationSeconds - elapsed)
+      const left = Math.max(0, activeChoiceTimerDuration - elapsed)
       setChoiceTimerLeft(left)
 
       if (left > 0 || expired) return
@@ -574,7 +637,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       expired = true
       window.clearInterval(interval)
     }
-  }, [sceneIndex, complete, activeDialogue])
+  }, [sceneIndex, complete, activeDialogue, activeChoiceTimerDuration])
 
   const formatQuizAnswerLine = (answer: QuizAnswer) => {
     const templates = [
@@ -923,7 +986,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         {!cinematicActive && !phoneMode && <section className="portraits mobile-portraits" aria-label="Персонажи сцены на телефоне">
           <Portrait character={mobileSpeaker} position={mobileSpeakerPosition} active={Boolean(mobileSpeaker)} emotion={mobileSpeakerEmotion} layoutMode="mobile" visible={Boolean(mobileSpeaker)} transitionKey={`mobile-${dialogueSpeaker}-${sceneIndex}`} />
         </section>}
-        {!cinematicActive && phoneMode && scene.phoneMessage && <PhoneMessenger contact={scene.phoneMessage.contact} messages={phoneMessages} complete={dialogueComplete} choices={phoneChoiceOptions} time={scene.phoneMessage.time} onTap={handleDialoguePanelTap} />}
+        {!cinematicActive && phoneMode && activePhoneMessage && <PhoneMessenger contact={activePhoneMessage.contact} messages={phoneMessages} complete={dialogueComplete} choices={phoneChoiceOptions} time={activePhoneMessage.time} onTap={handleDialoguePanelTap} />}
         {!cinematicActive && !phoneMode && <div className="dialogue-shell" onClick={(event) => { event.stopPropagation(); handleDialoguePanelTap(event) }}>
           <div className={`speaker-name ${speakerNameSide === 'narrator' ? 'narrator' : `speaker-${speakerNameSide}`}`}>{dialogueSpeaker}</div>
           <section className="dialogue-panel"><p className="dialogue-text">{dialogueText}<span className={!dialogueComplete ? 'caret' : 'caret hidden'}>в–Ќ</span></p>

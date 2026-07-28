@@ -25,10 +25,12 @@ export function SettingsPanel({
         <i className={textAnimationEnabled ? 'on' : ''}><b /></i>
       </button>
       {debugAvailable && (
-        <button className="setting-toggle debug-toggle" onClick={onToggleDebugMode} role="switch" aria-checked={debugModeEnabled}>
-          <span><strong>Режим отладки</strong><small>{debugModeEnabled ? 'DEV: все квесты доступны на карте.' : 'DEV: открыть все квесты и тестовые развилки.'}</small></span>
-          <i className={debugModeEnabled ? 'on' : ''}><b /></i>
-        </button>
+        <>
+          <button className="setting-toggle debug-toggle" onClick={onToggleDebugMode} role="switch" aria-checked={debugModeEnabled}>
+            <span><strong>Режим отладки</strong><small>{debugModeEnabled ? 'DEV: все квесты доступны на карте.' : 'DEV: открыть все квесты и тестовые развилки.'}</small></span>
+            <i className={debugModeEnabled ? 'on' : ''}><b /></i>
+          </button>
+        </>
       )}
     </aside>
   )

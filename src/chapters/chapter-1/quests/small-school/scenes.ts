@@ -1,4 +1,5 @@
 import type { Scene, StoryChoice } from '../../../../types/story'
+import miniGameSource from './mini-game.md?raw'
 import {
   interestingPlaceQuestScenes,
   interestingPlaceQuestStartScene,
@@ -19,6 +20,8 @@ type DraftScene = Omit<Scene, 'next' | 'nextByFlag' | 'fallbackNext' | 'choices'
   fallbackNext?: string
   choices?: DraftChoice[]
 }
+
+type DialogueEntry = readonly [Scene['speaker'], string]
 
 const buildScenes = (startIndex: number, drafts: DraftScene[]): Scene[] => {
   const labels = new Map<string, number>()
@@ -41,6 +44,17 @@ const buildScenes = (startIndex: number, drafts: DraftScene[]): Scene[] => {
   }))
 }
 
+const schoolBackgroundForScene = (id?: string): Scene['background'] => {
+  if (!id) return 'school-yard-night'
+  if (id.startsWith('start-')) return 'school-dark-vaz'
+  if (id.startsWith('guard-') || id.startsWith('bribe-')) return 'school-main-entrance-night'
+  if (id.startsWith('entry-') || id.startsWith('window-') || id.startsWith('grate-') || id.startsWith('lights-')) return 'school-backyard-night'
+  if (id.startsWith('chase-')) return 'school-corridor-night'
+  if (id.startsWith('computer-room') || id.startsWith('computer-phone') || id.startsWith('phone-') || id.startsWith('next-step-room') || id.startsWith('next-step-phone')) return 'computer-class-night'
+  if (id.startsWith('computer-') || id.startsWith('next-step-')) return 'school-second-floor-night'
+  return 'school-yard-night'
+}
+
 const line = (
   speaker: Scene['speaker'],
   text: string,
@@ -53,10 +67,83 @@ const line = (
   text,
   left,
   right,
-  background: 'school-dark-vaz',
+  background: extra.background ?? schoolBackgroundForScene(extra.id),
   next,
   ...extra,
 })
+
+const chaseLine = (
+  speaker: Scene['speaker'],
+  text: string,
+  next: string,
+  left: Scene['left'] = 'Дмит',
+  right?: Scene['right'],
+  extra: Partial<DraftScene> = {},
+) => line(speaker, text, next, left, right, { tone: 'danger', music: 'school-chase', ...extra })
+
+const chaseChoice = (
+  id: string,
+  text: string,
+  choices: DraftChoice[],
+  _durationSeconds: number,
+  defaultChoiceIndex: number,
+): DraftScene => ({
+  id,
+  speaker: 'Рассказчик',
+  text,
+  left: 'Дмит',
+  right: 'Вадим',
+  background: 'school-corridor-night',
+  tone: 'danger',
+  music: 'school-chase',
+  choices,
+  choiceTimer: { durationSeconds: 10, defaultChoiceIndex },
+})
+
+/** Создаёт последовательность реплик без склеивания реплик разных персонажей. */
+const sequence = (
+  id: string,
+  entries: readonly DialogueEntry[],
+  next: string,
+  left: Scene['left'] = 'Дмит',
+  right: Scene['right'] = 'Вадим',
+  extra: Partial<DraftScene> = {},
+): DraftScene[] => {
+  const { phoneMessage, ...tailExtra } = extra
+  return entries.map(([speaker, text], index) => line(
+    speaker,
+    text,
+    index === entries.length - 1 ? next : `${id}-${index + 1}`,
+    left,
+    right,
+    {
+      id: `${id}-${index}`,
+      ...(phoneMessage ? { phoneMessage } : {}),
+      ...(index === entries.length - 1 ? tailExtra : {}),
+    },
+  ))
+}
+
+const miniGameLines = miniGameSource.split(/\r?\n/)
+const miniGameSpeaker = (raw: string): Scene['speaker'] => {
+  const name = raw.trim()
+  if (name.includes('Дмит')) return 'Дмит'
+  if (name.includes('Вадим')) return 'Вадим'
+  if (name.includes('Охранник')) return 'Охранник'
+  if (name.includes('Мишган')) return 'Мишган'
+  if (name.includes('Данз')) return 'Данз'
+  if (name.includes('Кед')) return 'Кед'
+  return 'Рассказчик'
+}
+const miniGameRange = (from: number, to: number): DialogueEntry[] => miniGameLines
+  .slice(from - 1, to)
+  .flatMap((raw) => {
+    const match = raw.match(/^([^:]+): "(.*)"$/)
+    return match ? [[miniGameSpeaker(match[1]), match[2]] as DialogueEntry] : []
+  })
+const miniGameSequence = (id: string, from: number, to: number, next: string, extra: Partial<DraftScene> = {}) => (
+  sequence(id, miniGameRange(from, to), next, 'Дмит', 'Вадим', { background: 'school-corridor-night', tone: 'danger', music: 'school-chase', ...extra })
+)
 
 export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStartScene, [
   line('Рассказчик', 'После Миньки компания идёт по вечернему Арбекову. Впереди шагают Кед и Данз, позади хромает Мишган, а Дмит время от времени оглядывается, проверяя, не появились ли снова люди Матвея.', 'start-2', 'Дмит', 'Кед', { id: 'start-1' }),
@@ -79,7 +166,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
   line('Данз', 'Вот именно.', 'school-6', 'Данз', 'Мишган', { id: 'school-5' }),
   line('Кед', 'Вы два дебила.', 'school-7', 'Кед', 'Данз', { id: 'school-6' }),
   line('Дмит', 'Тихо.', 'vadim-1', 'Дмит', 'Кед', { id: 'school-7' }),
-  line('Рассказчик', 'Возле школьного забора кто-то сидит на корточках рядом с велосипедом. На земле лежит снятая цепь, а экран телефона освещает знакомое лицо.', 'vadim-2', 'Дмит', undefined, { id: 'vadim-1' }),
+  line('Рассказчик', 'Возле школьного забора кто-то сидит на корточках рядом с велосипедом. На земле лежит снятая цепь, а экран телефона освещает знакомое лицо.', 'vadim-2', 'Дмит', undefined, { id: 'vadim-1', sound: 'bike-chain-rattle' }),
   line('Дмит', 'Вадим?', 'vadim-3', 'Дмит', 'Вадим', { id: 'vadim-2' }),
   line('Рассказчик', 'Парень поднимает голову. Это Вадим — ученик из младших классов, которого Дмит несколько раз видел в коридорах школы.', 'vadim-4', 'Дмит', 'Вадим', { id: 'vadim-3' }),
   line('Вадим', 'Здравствуйте.', 'vadim-5', 'Дмит', 'Вадим', { id: 'vadim-4' }),
@@ -235,7 +322,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     ],
   },
 
-  line('Рассказчик', 'Дмит присаживается возле велосипеда и внимательно смотрит на цепь.', 'inspect-success-2', 'Дмит', 'Вадим', { id: 'inspect-success-1' }),
+  line('Рассказчик', 'Дмит присаживается возле велосипеда и внимательно смотрит на цепь.', 'inspect-success-2', 'Дмит', 'Вадим', { id: 'inspect-success-1', sound: 'bike-chain-rattle' }),
   line('Дмит', 'Она не порвалась.', 'inspect-success-3', 'Дмит', 'Вадим', { id: 'inspect-success-2' }),
   line('Вадим', 'Нет. Просто сильно застряла.', 'inspect-success-4', 'Дмит', 'Вадим', { id: 'inspect-success-3' }),
   line('Дмит', 'А это чё?', 'inspect-success-5', 'Дмит', 'Вадим', { id: 'inspect-success-4' }),
@@ -610,7 +697,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
 
   line('Дмит', 'Сначала разберёмся, кто трогал твой велосипед.', 'bike-sabotage-sidequest-2', 'Дмит', 'Вадим', { id: 'bike-sabotage-sidequest-1' }),
   line('Вадим', 'Ты думаешь, это важно?', 'bike-sabotage-sidequest-3', 'Дмит', 'Вадим', { id: 'bike-sabotage-sidequest-2' }),
-  line('Дмит', 'Если кто-то сорвал цепь специально, он мог ждать, что ты вернёшься к школе.', 'bike-sabotage-sidequest-4', 'Кед', 'Вадим', { id: 'bike-sabotage-sidequest-3' }),
+  line('Дмит', 'Если кто-то сорвал цепь специально, он мог ждать, что ты вернёшься к школе.', 'bike-sabotage-sidequest-4', 'Кед', 'Вадим', { id: 'bike-sabotage-sidequest-3', sound: 'bike-chain-rattle' }),
   line('Кед', 'И вот это уже пахнет не велосипедом, а засадой.', 'stage-end-sabotage', 'Кед', 'Вадим', { id: 'bike-sabotage-sidequest-4' }),
 
   line('Рассказчик', 'Компания подходит ближе к школе. Теперь это уже не разговор у забора, а почти план — просто пока без той части, где кто-нибудь понимает, что делает.', 'infiltration-1', 'Дмит', 'Вадим', {
@@ -929,7 +1016,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
   line('Дмит', 'Я видел.', 'guard-talk-16', 'Дмит', 'Вадим', { id: 'guard-talk-15' }),
   line('Вадим', 'Ты смотрел налево.', 'guard-talk-17', 'Дмит', 'Вадим', { id: 'guard-talk-16' }),
   line('Дмит', 'Не начинай.', 'guard-talk-18', 'Дмит', 'Охранник', { id: 'guard-talk-17' }),
-  line('Рассказчик', 'Дмит несколько раз нажимает кнопку звонка. В глубине школы появляется охранник — медленно, как финальный босс в тапках.', 'guard-talk-19', 'Дмит', 'Охранник', { id: 'guard-talk-18' }),
+  line('Рассказчик', 'Дмит несколько раз нажимает кнопку звонка. В глубине школы появляется охранник — медленно, как финальный босс в тапках.', 'guard-talk-19', 'Дмит', 'Охранник', { id: 'guard-talk-18', sound: 'school-door-buzz' }),
   line('Охранник', 'Кого там ещё принесло?', 'guard-talk-20', 'Дмит', 'Охранник', { id: 'guard-talk-19' }),
   line('Дмит', 'Здравствуйте.', 'guard-talk-21', 'Дмит', 'Охранник', { id: 'guard-talk-20' }),
   line('Охранник', 'Школа закрыта.', 'guard-talk-22', 'Дмит', 'Охранник', { id: 'guard-talk-21' }),
@@ -1111,7 +1198,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
   line('Вадим', 'Правильно.', 'bribe-result-6', 'Дмит', 'Вадим', { id: 'bribe-result-5' }),
   line('Дмит', 'Ты на чьей стороне?', 'bribe-result-7', 'Дмит', 'Вадим', { id: 'bribe-result-6' }),
   line('Вадим', 'На стороне фактов.', 'bribe-result-8', 'Дмит', 'Охранник', { id: 'bribe-result-7' }),
-  line('Рассказчик', 'Охранник забирает деньги, открывает боковую дверь и снова возвращается к своему телевизору.', 'bribe-result-9', 'Дмит', 'Вадим', { id: 'bribe-result-8' }),
+  line('Рассказчик', 'Охранник забирает деньги, открывает боковую дверь и снова возвращается к своему телевизору.', 'bribe-result-9', 'Дмит', 'Вадим', { id: 'bribe-result-8', sound: 'school-entry-creak' }),
   line('Вадим', 'Это всё равно была взятка.', 'bribe-result-10', 'Дмит', 'Вадим', { id: 'bribe-result-9' }),
   line('Дмит', 'Зато мы внутри.', 'bribe-result-11', 'Дмит', 'Вадим', { id: 'bribe-result-10' }),
   line('Вадим', 'Я запомню оба факта.', 'entry-route-end', 'Дмит', 'Вадим', {
@@ -1288,7 +1375,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     id: 'entry-safe-window-1',
     effects: { flags: ['SMALL_SCHOOL_AVOIDED_MAIN_AMBUSH'] },
   }),
-  line('Рассказчик', 'Способ выбран. Теперь начинается самое неприятное: действительно зайти внутрь школы ночью и не превратить это в легенду для педсовета.', '', 'Дмит', 'Вадим', {
+  line('Рассказчик', 'Способ выбран. Теперь начинается самое неприятное: действительно зайти внутрь школы ночью и не превратить это в легенду для педсовета.', 'full-chase-start-0', 'Дмит', 'Вадим', {
     id: 'entry-route-end',
     sound: 'quest-complete',
     effects: {
@@ -1296,6 +1383,513 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
       flags: ['CHAPTER_1_SMALL_SCHOOL_MET_VADIM', 'CHAPTER_1_SMALL_SCHOOL_INFILTRATION_ROUTE_SELECTED'],
     },
   }),
+  ...miniGameSequence('full-chase-start', 36, 84, 'full-chase-first-choice'),
+  { id: 'full-chase-first-choice', speaker: 'Рассказчик', text: 'Первое отвлечение: охранник почти рядом.', left: 'Дмит', right: 'Охранник', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 3 }, choices: [
+    { label: '[Ловкость 5] Пнуть коробку с мячами под ноги охраннику.', next: 'full-balls-success-0', failNext: 'full-balls-fail-0', requires: { agility: 5 } },
+    { label: '[Интеллект 5] Включить звонок в кабинете музыки.', next: 'full-music-success-0', failNext: 'full-music-fail-0', requires: { intelligence: 5 } },
+    { label: 'Они побежали в спортзал!', next: 'full-lie-0' }, { label: 'Просто бежать вперёд.', next: 'full-run-0' },
+  ] },
+  ...miniGameSequence('full-balls-success', 102, 112, 'full-route-intro-0', { effects: { flags: ['GUARD_LOST_ADVANTAGE_1'] } }),
+  ...miniGameSequence('full-balls-fail', 118, 126, 'full-route-intro-0', { effects: { flags: ['CHASE_ERROR_1'] } }),
+  ...miniGameSequence('full-music-success', 133, 155, 'full-route-intro-0', { effects: { flags: ['GUARD_LOST_ADVANTAGE_1'] } }),
+  ...miniGameSequence('full-music-fail', 161, 167, 'full-route-intro-0', { effects: { flags: ['CHASE_ERROR_1'] } }),
+  ...miniGameSequence('full-lie', 173, 183, 'full-route-intro-0'),
+  ...miniGameSequence('full-run', 189, 199, 'full-route-intro-0'),
+  ...miniGameSequence('full-route-intro', 205, 217, 'full-route-choice'),
+  { id: 'full-route-choice', speaker: 'Рассказчик', text: 'Маршрут на лестницу.', left: 'Дмит', right: 'Вадим', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 1 }, choices: [
+    { label: '[Внимательность 5] Заметить служебную дверь.', next: 'full-service-success-0', failNext: 'full-service-fail-0', requires: { perception: 5 } },
+    { label: 'Побежать через освещённый холл.', next: 'full-hall-0' }, { label: 'Повернуть в тёмный коридор.', next: 'full-dark-intro-0' }, { label: 'Вадим, сам решай!', next: 'full-vadim-route-0' },
+  ] },
+  ...miniGameSequence('full-service-success', 232, 252, 'full-trap-intro-0', { effects: { flags: ['GUARD_LOST_ADVANTAGE_2'] } }),
+  ...miniGameSequence('full-service-fail', 258, 262, 'full-hall-0', { effects: { flags: ['CHASE_ERROR_2'] } }),
+  ...miniGameSequence('full-hall', 268, 278, 'full-trap-intro-0', { effects: { flags: ['CHASE_ERROR_2'] } }),
+  ...miniGameSequence('full-dark-intro', 284, 294, 'full-dark-choice', { effects: { flags: ['CHASE_ERROR_2'] } }),
+  { id: 'full-dark-choice', speaker: 'Рассказчик', text: 'Запертая дверь. Выбор нужно сделать быстро.', left: 'Дмит', right: 'Вадим', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 2 }, choices: [
+    { label: '[Сила 5] Выбить дверь плечом.', next: 'full-dark-strength-0', failNext: 'full-dark-fail-0', requires: { strength: 5 } }, { label: '[Ловкость 5] Перепрыгнуть через подоконник.', next: 'full-dark-agility-0', failNext: 'full-dark-fail-0', requires: { agility: 5 } }, { label: 'Развернуться и бежать обратно.', next: 'full-dark-fail-0' },
+  ] },
+  ...miniGameSequence('full-dark-strength', 306, 312, 'full-trap-intro-0', { effects: { flags: ['SCHOOL_DOOR_BROKEN'] } }),
+  ...miniGameSequence('full-dark-agility', 318, 326, 'full-trap-intro-0'),
+  ...miniGameSequence('full-dark-fail', 330, 334, 'full-critical-intro-0', { effects: { flags: ['CHASE_CRITICAL_ERROR'] } }),
+  ...miniGameSequence('full-vadim-route', 342, 354, 'full-hall-0'),
+  ...miniGameSequence('full-trap-intro', 360, 366, 'full-trap-choice'),
+  { id: 'full-trap-choice', speaker: 'Рассказчик', text: 'Тележка уборщицы у лестницы.', left: 'Дмит', right: 'Охранник', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 3 }, choices: [
+    { label: '[Сила 5] Опрокинуть тележку.', next: 'full-cart-success-0', failNext: 'full-cart-fail-0', requires: { strength: 5 } }, { label: '[Интеллект 5] Разлить воду и поставить табличку.', next: 'full-wet-success-0', failNext: 'full-wet-fail-0', requires: { intelligence: 5 } }, { label: 'Бросить швабру.', next: 'full-mop-check' }, { label: 'Спрятаться за тележкой.', next: 'full-hide-0' },
+  ] },
+  ...miniGameSequence('full-cart-success', 381, 397, 'full-final-intro-0', { effects: { flags: ['JANITOR_CART_TRAP_USED'] } }),
+  ...miniGameSequence('full-cart-fail', 405, 413, 'full-critical-intro-0', { effects: { flags: ['CHASE_CRITICAL_ERROR'] } }),
+  ...miniGameSequence('full-wet-success', 420, 436, 'full-final-intro-0', { effects: { flags: ['WET_FLOOR_TRAP_USED'] } }),
+  ...miniGameSequence('full-wet-fail', 444, 452, 'full-critical-intro-0', { effects: { flags: ['CHASE_CRITICAL_ERROR'] } }),
+  { id: 'full-mop-check', speaker: 'Рассказчик', text: 'Дмит хватает швабру и бросает её поперёк коридора.', left: 'Дмит', right: 'Вадим', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', nextByFlag: [{ flag: 'CHAPTER_1_ALCOHOL_SOBER', next: 'full-mop-sober-0' }], fallbackNext: 'full-mop-drunk-0' },
+  ...miniGameSequence('full-mop-sober', 458, 470, 'full-final-intro-0'),
+  ...miniGameSequence('full-mop-drunk', 458, 482, 'full-critical-intro-0', { effects: { flags: ['CHASE_CRITICAL_ERROR'] } }),
+  ...miniGameSequence('full-hide', 488, 496, 'full-critical-intro-0', { effects: { flags: ['CHASE_CRITICAL_ERROR'] } }),
+  ...miniGameSequence('full-critical-intro', 506, 522, 'full-critical-choice'),
+  { id: 'full-critical-choice', speaker: 'Рассказчик', text: 'Охранник держит Вадима. Последний опасный выбор.', left: 'Дмит', right: 'Охранник', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 3 }, choices: [
+    { label: '[Сила 6] Выдернуть Вадима.', next: 'full-save-strength-0', failNext: 'full-caught-0', requires: { strength: 6 } }, { label: '[Харизма 6] Отвлечь охранника.', next: 'full-save-charisma-0', failNext: 'full-caught-0', requires: { charisma: 6 } }, { label: '[Ловкость 6] Расстегнуть куртку Вадима.', next: 'full-save-agility-0', failNext: 'full-caught-0', requires: { agility: 6 } }, { label: 'Убежать одному.', next: 'full-abandon-0' },
+  ] },
+  ...miniGameSequence('full-save-strength', 536, 548, 'full-final-intro-0', { effects: { flags: ['DMIT_DAMAGED'] } }),
+  ...miniGameSequence('full-save-charisma', 554, 568, 'full-final-intro-0'),
+  ...miniGameSequence('full-save-agility', 572, 586, 'full-final-intro-0'),
+  ...miniGameSequence('full-caught', 590, 596, 'computer-branch', { effects: { flags: ['SCHOOL_BREAK_IN_FAILED'] } }),
+  ...miniGameSequence('full-abandon', 606, 620, 'computer-branch', { effects: { flags: ['DMIT_ABANDONED_VADIM', 'SCHOOL_FIRST_FLOOR_PASSED'] } }),
+  ...miniGameSequence('full-final-intro', 632, 640, 'full-final-choice'),
+  { id: 'full-final-choice', speaker: 'Рассказчик', text: 'Последняя ловушка на лестнице.', left: 'Дмит', right: 'Охранник', background: 'school-corridor-night', tone: 'danger', music: 'school-chase', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 3 }, choices: [
+    { label: '[Интеллект 6] Закрыть противопожарную дверь.', next: 'full-door-success-0', failNext: 'full-door-fail-0', requires: { intelligence: 6 } }, { label: '[Сила 6] Сбросить спортивные маты.', next: 'full-mats-success-0', failNext: 'full-mats-fail-0', requires: { strength: 6 } }, { label: '[Ловкость 6] Натянуть верёвку.', next: 'full-rope-success-0', failNext: 'full-rope-fail-0', requires: { agility: 6 } }, { label: 'Перевернуть стенд отличников.', next: 'full-board-0' },
+  ] },
+  ...miniGameSequence('full-door-success', 655, 673, 'full-finish-0', { effects: { flags: ['GUARD_BLOCKED_BY_FIRE_DOOR'] } }),
+  ...miniGameSequence('full-door-fail', 681, 685, 'full-caught-0'),
+  ...miniGameSequence('full-mats-success', 692, 702, 'full-finish-0', { effects: { flags: ['GYM_MATS_TRAP_USED'] } }),
+  ...miniGameSequence('full-mats-fail', 710, 716, 'full-caught-0'),
+  ...miniGameSequence('full-rope-success', 723, 737, 'full-finish-0'),
+  ...miniGameSequence('full-rope-fail', 743, 749, 'full-caught-0'),
+  ...miniGameSequence('full-board', 755, 767, 'full-finish-0', { effects: { flags: ['HONOUR_BOARD_DESTROYED', 'VADIM_TRUST_REDUCED'] } }),
+  ...miniGameSequence('full-finish', 777, 811, 'computer-branch', { effects: { experience: 18, flags: ['SCHOOL_FIRST_FLOOR_PASSED', 'DMIT_AND_VADIM_REACHED_SECOND_FLOOR', 'GUARD_SEARCHING_SECOND_FLOOR'] } }),
+  chaseLine('Рассказчик', 'Внутри школы тихо. Издалека слышны телевизор охранника и мерное тиканье настенных часов.', 'chase-start-2', 'Дмит', 'Вадим', { id: 'chase-start-1', sound: 'school-entry-creak' }),
+  chaseLine('Вадим', 'До лестницы нужно пройти два коридора.', 'chase-start-3', 'Дмит', 'Вадим', { id: 'chase-start-2' }),
+  chaseLine('Дмит', 'Веди.', 'chase-start-4', 'Дмит', 'Вадим', { id: 'chase-start-3' }),
+  chaseLine('Вадим', 'Ты сказал, что пойдёшь первым.', 'chase-start-5', 'Дмит', 'Вадим', { id: 'chase-start-4' }),
+  chaseLine('Дмит', 'Тогда показывай сзади.', 'chase-start-6', 'Дмит', 'Вадим', { id: 'chase-start-5' }),
+  chaseLine('Вадим', 'Это неудобно.', 'chase-start-7', 'Дмит', 'Вадим', { id: 'chase-start-6' }),
+  chaseLine('Дмит', 'Зато безопасно.', 'chase-start-8', 'Дмит', 'Вадим', { id: 'chase-start-7' }),
+  chaseLine('Рассказчик', 'Дмит выходит из раздевалки. Вадим держится в нескольких шагах позади.', 'chase-start-9', 'Дмит', 'Вадим', { id: 'chase-start-8' }),
+  chaseLine('Вадим', 'Направо.', 'chase-start-10', 'Дмит', 'Вадим', { id: 'chase-start-9' }),
+  chaseLine('Дмит', 'Я знаю.', 'chase-start-11', 'Дмит', 'Вадим', { id: 'chase-start-10' }),
+  chaseLine('Вадим', 'Ты пошёл налево.', 'chase-start-12', 'Дмит', 'Вадим', { id: 'chase-start-11' }),
+  chaseLine('Дмит', 'Я проверял.', 'chase-start-13', 'Дмит', 'Вадим', { id: 'chase-start-12' }),
+  chaseLine('Вадим', 'Кого?', 'chase-start-14', 'Дмит', 'Вадим', { id: 'chase-start-13' }),
+  chaseLine('Дмит', 'Тебя.', 'chase-start-15', 'Дмит', 'Вадим', { id: 'chase-start-14' }),
+  chaseLine('Рассказчик', 'Из-за угла появляется охранник с фонариком.', 'chase-start-16', 'Дмит', 'Охранник', { id: 'chase-start-15' }),
+  chaseLine('Охранник', 'А НУ СТОЯТЬ!', 'chase-start-17', 'Дмит', 'Охранник', { id: 'chase-start-16', sound: 'guard-alert' }),
+  chaseLine('Дмит', 'Бля. Бежим!', 'chase-first-choice', 'Дмит', 'Вадим', { id: 'chase-start-17', sound: 'dmit-run' }),
+  chaseChoice('chase-first-choice', 'Слева дверь спортивного зала, справа кабинет музыки, у стены стоит коробка с мячами.', [
+    { label: '[Ловкость 5] Пнуть коробку с мячами под ноги охраннику.', next: 'chase-balls-good', failNext: 'chase-first-fail', requires: { agility: 5 }, failureEffects: { flags: ['CHASE_ERROR_1'] }, failureText: 'Дмит попадает носком в стену и теряет несколько секунд.' },
+    { label: '[Интеллект 5] Включить шум в кабинете музыки.', next: 'chase-music-good', failNext: 'chase-first-fail', requires: { intelligence: 5 }, failureEffects: { flags: ['CHASE_ERROR_1'] }, failureText: 'Дверь кабинета музыки оказывается заперта.' },
+    { label: 'Крикнуть: Они побежали в спортзал!', next: 'chase-lie' },
+    { label: 'Просто бежать вперёд.', next: 'chase-run' },
+  ], 4, 3),
+  chaseLine('Рассказчик', 'Дмит бьёт по коробке. Мячи раскатываются, охранник едва удерживается на ногах.', 'chase-route-choice', 'Дмит', 'Охранник', { id: 'chase-balls-good', effects: { flags: ['GUARD_LOST_ADVANTAGE_1'] } }),
+  chaseLine('Рассказчик', 'Дмит ударяет по клавишам старого синтезатора. БА-А-АМ! Охранник сворачивает в кабинет.', 'chase-route-choice', 'Дмит', 'Охранник', { id: 'chase-music-good', effects: { flags: ['GUARD_LOST_ADVANTAGE_1'] } }),
+  chaseLine('Вадим', 'Не останавливайся!', 'chase-route-choice', 'Дмит', 'Вадим', { id: 'chase-first-fail' }),
+  chaseLine('Дмит', 'Они в спортзал побежали!', 'chase-lie-2', 'Дмит', 'Охранник', { id: 'chase-lie' }),
+  chaseLine('Охранник', 'Кто — они?! Я вас вижу!', 'chase-route-choice', 'Дмит', 'Охранник', { id: 'chase-lie-2' }),
+  chaseLine('Вадим', 'Он очень громко кричит!', 'chase-route-choice', 'Дмит', 'Вадим', { id: 'chase-run' }),
+  chaseChoice('chase-route-choice', 'В конце коридора путь разделяется: освещённый холл, тёмный тупик и узкая служебная дверь между шкафами.', [
+    { label: '[Внимательность 5] Заметить служебную дверь.', next: 'chase-service-good', failNext: 'chase-hall', requires: { perception: 5 }, failureEffects: { flags: ['CHASE_ERROR_2'] }, failureText: 'Дмит замечает дверь слишком поздно и пролетает мимо неё.' },
+    { label: 'Побежать через освещённый холл.', next: 'chase-hall', effects: { flags: ['CHASE_ERROR_2'] } },
+    { label: 'Повернуть в тёмный коридор.', next: 'chase-dark-choice', effects: { flags: ['CHASE_ERROR_2'] } },
+    { label: 'Вадим, сам решай!', next: 'chase-hall' },
+  ], 3, 1),
+  chaseLine('Дмит', 'Сюда!', 'chase-service-good-2', 'Дмит', 'Вадим', { id: 'chase-service-good' }),
+  chaseLine('Вадим', 'Это кладовая уборщицы.', 'chase-service-good-3', 'Дмит', 'Вадим', { id: 'chase-service-good-2' }),
+  chaseLine('Рассказчик', 'Через кладовую ребята выскакивают в соседний коридор. Охранник теряет их из виду.', 'chase-cart-choice', 'Дмит', 'Вадим', { id: 'chase-service-good-3', effects: { flags: ['GUARD_LOST_ADVANTAGE_2'] } }),
+  chaseLine('Охранник', 'Вижу вас!', 'chase-hall-2', 'Дмит', 'Охранник', { id: 'chase-hall' }),
+  chaseLine('Дмит', 'А мы тебя!', 'chase-hall-3', 'Дмит', 'Вадим', { id: 'chase-hall-2' }),
+  chaseLine('Вадим', 'Зачем ты ему ответил?', 'chase-cart-choice', 'Дмит', 'Вадим', { id: 'chase-hall-3' }),
+  chaseChoice('chase-dark-choice', 'Тёмный коридор заканчивается запертой металлической дверью. Охранник почти догнал.', [
+    { label: '[Сила 5] Выбить дверь плечом.', next: 'chase-dark-strength', failNext: 'chase-critical-1', requires: { strength: 5 }, effects: { flags: ['SCHOOL_DOOR_BROKEN'] }, failureEffects: { flags: ['CHASE_CRITICAL_ERROR'] }, failureText: 'Дмит теряет время возле двери. Охранник хватает Вадима за рюкзак.' },
+    { label: '[Ловкость 5] Перепрыгнуть через подоконник.', next: 'chase-dark-agility', failNext: 'chase-critical-1', requires: { agility: 5 }, failureEffects: { flags: ['CHASE_CRITICAL_ERROR'] }, failureText: 'Дмит цепляется за подоконник и теряет время.' },
+    { label: 'Развернуться и бежать обратно.', next: 'chase-critical-1', effects: { flags: ['CHASE_CRITICAL_ERROR'] } },
+  ], 3, 2),
+  chaseLine('Рассказчик', 'Дмит выбивает дверь плечом. Замок вылетает из крепления.', 'chase-cart-choice', 'Дмит', 'Вадим', { id: 'chase-dark-strength' }),
+  chaseLine('Рассказчик', 'Дмит перебирается через подоконник и протягивает Вадиму руку.', 'chase-cart-choice', 'Дмит', 'Вадим', { id: 'chase-dark-agility' }),
+  chaseChoice('chase-cart-choice', 'Возле лестницы тележка уборщицы: ведро, швабра и бутылки. Охранник догоняет.', [
+    { label: '[Сила 5] Опрокинуть тележку поперёк коридора.', next: 'chase-cart-strength', failNext: 'chase-critical-1', requires: { strength: 5 }, effects: { flags: ['JANITOR_CART_TRAP_USED'] }, failureEffects: { flags: ['CHASE_CRITICAL_ERROR'] }, failureText: 'Колесо застревает. Охранник уже рядом.' },
+    { label: '[Интеллект 5] Разлить воду и поставить знак Мокрый пол.', next: 'chase-cart-intelligence', failNext: 'chase-critical-1', requires: { intelligence: 5 }, effects: { flags: ['WET_FLOOR_TRAP_USED'] }, failureEffects: { flags: ['CHASE_CRITICAL_ERROR'] }, failureText: 'Крышка ведра не поддаётся.' },
+    { label: 'Бросить швабру под ноги охраннику.', next: 'chase-mop-route' },
+    { label: 'Спрятаться за тележкой.', next: 'chase-critical-1', effects: { flags: ['CHASE_CRITICAL_ERROR'] } },
+  ], 4, 3),
+  chaseLine('Рассказчик', 'Дмит переворачивает тележку. Охранник задевает ведро и падает на колени.', 'chase-last-choice', 'Дмит', 'Охранник', { id: 'chase-cart-strength' }),
+  chaseLine('Дмит', 'Табличку!', 'chase-cart-intelligence-2', 'Дмит', 'Вадим', { id: 'chase-cart-intelligence' }),
+  chaseLine('Рассказчик', 'Охранник пытается обойти табличку, наступает в воду и скользит.', 'chase-last-choice', 'Дмит', 'Охранник', { id: 'chase-cart-intelligence-2' }),
+  {
+    id: 'chase-mop-route',
+    speaker: 'Рассказчик',
+    text: 'Дмит бросает швабру. От того, пил ли он, зависит, куда она полетит.',
+    left: 'Дмит',
+    right: 'Вадим',
+    background: 'school-dark-vaz',
+    tone: 'danger',
+    music: 'school-chase',
+    nextByFlag: [{ flag: 'CHAPTER_1_ALCOHOL_SOBER', next: 'chase-mop-sober' }],
+    fallbackNext: 'chase-mop-drunk',
+  },
+  chaseLine('Рассказчик', 'Швабра падает под ноги охраннику. Он вынужден остановиться.', 'chase-last-choice', 'Дмит', 'Вадим', { id: 'chase-mop-sober' }),
+  chaseLine('Рассказчик', 'Швабра ударяется о стену и падает в стороне.', 'chase-critical-1', 'Дмит', 'Вадим', { id: 'chase-mop-drunk', effects: { flags: ['CHASE_CRITICAL_ERROR'] } }),
+  chaseLine('Рассказчик', 'Охранник догоняет ребят у лестницы и хватает Вадима за воротник.', 'chase-critical-2', 'Дмит', 'Охранник', { id: 'chase-critical-1' }),
+  chaseLine('Вадим', 'Дмит!', 'chase-critical-3', 'Дмит', 'Охранник', { id: 'chase-critical-2' }),
+  chaseLine('Дмит', 'Отпусти его!', 'chase-critical-choice', 'Дмит', 'Охранник', { id: 'chase-critical-3' }),
+  chaseChoice('chase-critical-choice', 'Один выбор решает: продолжится погоня или закончится на вахте.', [
+    { label: '[Сила 6] Выдернуть Вадима из рук охранника.', next: 'chase-save-strength', failNext: 'chase-caught-1', requires: { strength: 6 }, failureEffects: { flags: ['SCHOOL_BREAK_IN_FAILED'] }, failureText: 'Охранник отталкивает Дмита на пол.' },
+    { label: '[Харизма 6] Сзади ещё трое! Они дверь ломают!', next: 'chase-save-charisma', failNext: 'chase-caught-1', requires: { charisma: 6 }, failureEffects: { flags: ['SCHOOL_BREAK_IN_FAILED'] }, failureText: 'Охранник не верит и не оборачивается.' },
+    { label: '[Ловкость 6] Расстегнуть куртку Вадима.', next: 'chase-save-agility', failNext: 'chase-caught-1', requires: { agility: 6 }, failureEffects: { flags: ['SCHOOL_BREAK_IN_FAILED'] }, failureText: 'Дмит не успевает дотянуться до молнии.' },
+    { label: 'Убежать одному.', next: 'chase-abandon-1', effects: { flags: ['DMIT_ABANDONED_VADIM'] } },
+  ], 3, 3),
+  chaseLine('Рассказчик', 'Дмит выдёргивает Вадима, но получает локтем в лицо.', 'chase-last-choice', 'Дмит', 'Вадим', { id: 'chase-save-strength', effects: { flags: ['DMIT_DAMAGED'] } }),
+  chaseLine('Дмит', 'Сзади ещё трое! Они дверь подсобки ломают!', 'chase-save-charisma-2', 'Дмит', 'Охранник', { id: 'chase-save-charisma' }),
+  chaseLine('Рассказчик', 'Охранник оборачивается, и Вадим вырывается.', 'chase-last-choice', 'Дмит', 'Вадим', { id: 'chase-save-charisma-2' }),
+  chaseLine('Рассказчик', 'Вадим выскальзывает из расстёгнутой куртки. Охранник остаётся держать одежду.', 'chase-last-choice', 'Дмит', 'Вадим', { id: 'chase-save-agility' }),
+  chaseChoice('chase-last-choice', 'У лестницы — противопожарные двери, стенд, верёвка и спортивные маты. Охранник снова в конце коридора.', [
+    { label: '[Интеллект 6] Закрыть дверь и заблокировать стойкой.', next: 'chase-end-1', failNext: 'chase-caught-1', requires: { intelligence: 6 }, effects: { flags: ['GUARD_BLOCKED_BY_FIRE_DOOR'] }, failureEffects: { flags: ['SCHOOL_BREAK_IN_FAILED'] }, failureText: 'Стойка выскальзывает. Охранник продолжает преследование.' },
+    { label: '[Сила 6] Сбросить спортивные маты на лестницу.', next: 'chase-end-1', failNext: 'chase-caught-1', requires: { strength: 6 }, effects: { flags: ['GYM_MATS_TRAP_USED'] }, failureEffects: { flags: ['SCHOOL_BREAK_IN_FAILED'] }, failureText: 'Маты оказываются тяжелее, чем выглядят.' },
+    { label: '[Ловкость 6] Натянуть верёвку поперёк прохода.', next: 'chase-end-1', failNext: 'chase-caught-1', requires: { agility: 6 }, effects: { flags: ['SCHOOL_BREAK_IN_FAILED'] }, failureText: 'Верёвка падает на пол раньше, чем Дмит успевает её закрепить.' },
+    { label: 'Перевернуть стенд с отличниками.', next: 'chase-end-1', effects: { flags: ['HONOUR_BOARD_DESTROYED'] } },
+  ], 4, 3),
+  line('Рассказчик', 'Дмит и Вадим поднимаются на второй этаж и захлопывают за собой дверь. Снизу слышны удары охранника и отборная ругань.', 'chase-end-2', 'Дмит', 'Вадим', { id: 'chase-end-1', tone: 'danger' }),
+  line('Охранник', 'Я ВАС ВСЁ РАВНО НАЙДУ!', 'chase-end-3', 'Дмит', 'Охранник', { id: 'chase-end-2', tone: 'danger' }),
+  line('Дмит', 'Пусть сначала поднимется.', 'chase-end-4', 'Дмит', 'Вадим', { id: 'chase-end-3', tone: 'danger' }),
+  line('Вадим', 'Он поднимется.', 'chase-end-5', 'Дмит', 'Вадим', { id: 'chase-end-4', tone: 'danger' }),
+  line('Дмит', 'Ты всегда такой успокаивающий?', 'chase-end-6', 'Дмит', 'Вадим', { id: 'chase-end-5', tone: 'danger' }),
+  line('Вадим', 'Я стараюсь оценивать ситуацию честно.', 'chase-end-7', 'Дмит', 'Вадим', { id: 'chase-end-6', tone: 'danger' }),
+  line('Рассказчик', 'Второй этаж погружён в темноту. В конце длинного коридора находится кабинет информатики.', 'chase-end-8', 'Дмит', 'Вадим', { id: 'chase-end-7', tone: 'danger' }),
+  line('Вадим', 'Рюкзак там.', 'chase-end-9', 'Дмит', 'Вадим', { id: 'chase-end-8', tone: 'danger' }),
+  line('Дмит', 'Тогда быстро забираем и валим.', 'chase-end-10', 'Дмит', 'Вадим', { id: 'chase-end-9', tone: 'danger' }),
+  line('Вадим', 'Охранник перекрыл путь назад.', 'chase-end-11', 'Дмит', 'Вадим', { id: 'chase-end-10', tone: 'danger' }),
+  line('Дмит', 'Значит, найдём другой.', 'chase-end-12', 'Дмит', 'Вадим', { id: 'chase-end-11', tone: 'danger' }),
+  line('Вадим', 'Ты знаешь другой выход?', 'chase-end-13', 'Дмит', 'Вадим', { id: 'chase-end-12', tone: 'danger' }),
+  line('Дмит', 'Нет.', 'chase-end-14', 'Дмит', 'Вадим', { id: 'chase-end-13', tone: 'danger' }),
+  line('Вадим', 'Отлично.', 'chase-end-15', 'Дмит', 'Вадим', { id: 'chase-end-14', tone: 'danger' }),
+  line('Дмит', 'Не привыкай.', 'computer-branch', 'Дмит', 'Вадим', { id: 'chase-end-15', tone: 'danger', sound: 'quest-complete', effects: { experience: 18, flags: ['SCHOOL_FIRST_FLOOR_PASSED', 'DMIT_AND_VADIM_REACHED_SECOND_FLOOR', 'GUARD_SEARCHING_SECOND_FLOOR'] } }),
+  line('Рассказчик', 'Охранник удерживает Вадима, а Дмит падает на пол. Ночной поход заканчивается на вахте.', 'computer-branch', 'Дмит', 'Охранник', { id: 'chase-caught-1', tone: 'danger', sound: 'guard-shout', effects: { flags: ['SCHOOL_BREAK_IN_FAILED'] } }),
+  line('Дмит', 'Вадим… извини.', 'chase-abandon-2', 'Дмит', 'Вадим', { id: 'chase-abandon-1', tone: 'danger' }),
+  line('Рассказчик', 'Дмит бежит на второй этаж один. Охранник остаётся с Вадимом, а его голос ещё долго слышно снизу.', 'computer-branch', 'Дмит', 'Вадим', { id: 'chase-abandon-2', tone: 'danger', sound: 'dmit-run', effects: { flags: ['DMIT_ABANDONED_VADIM', 'SCHOOL_FIRST_FLOOR_PASSED'] } }),
+
+  line('Рассказчик', 'У каждого маршрута есть цена. Школа всё ещё тёмная, охранник всё ещё злой, а рюкзак всё ещё в кабинете информатики.', 'computer-together-1', 'Дмит', 'Вадим', {
+    id: 'computer-branch',
+    nextByFlag: [
+      { flag: 'SCHOOL_BREAK_IN_FAILED', next: 'next-step-caught-0' },
+      { flag: 'DMIT_ABANDONED_VADIM', next: 'next-step-alone-0' },
+    ],
+    fallbackNext: 'next-step-together-0',
+  }),
+
+  line('Рассказчик', 'Дмит и Вадим оказываются на втором этаже. Снизу слышны удары охранника по заблокированной двери и громкая ругань.', 'computer-together-2', 'Дмит', 'Вадим', { id: 'computer-together-1' }),
+  line('Охранник', 'Я ВАС ВСЁ РАВНО НАЙДУ!', 'computer-together-3', 'Дмит', 'Охранник', { id: 'computer-together-2', sound: 'guard-shout' }),
+  line('Дмит', 'Пусть сначала поднимется.', 'computer-together-4', 'Дмит', 'Вадим', { id: 'computer-together-3' }),
+  line('Вадим', 'Он поднимется.', 'computer-together-5', 'Дмит', 'Вадим', { id: 'computer-together-4' }),
+  line('Дмит', 'Ты всегда такой успокаивающий?', 'computer-together-6', 'Дмит', 'Вадим', { id: 'computer-together-5' }),
+  line('Вадим', 'Я стараюсь оценивать ситуацию честно.', 'computer-together-7', 'Дмит', 'Вадим', { id: 'computer-together-6' }),
+  line('Дмит', 'Лучше иногда ври.', 'computer-together-8', 'Дмит', 'Вадим', { id: 'computer-together-7' }),
+  line('Вадим', 'За эту часть уже отвечаешь ты.', 'computer-damage-board-check', 'Дмит', 'Вадим', { id: 'computer-together-8' }),
+  {
+    id: 'computer-damage-board-check', speaker: 'Рассказчик', text: 'Зелёные лампы аварийных выходов освещают двери кабинетов.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'HONOUR_BOARD_DESTROYED', next: 'computer-board-1' }], fallbackNext: 'computer-damage-door-check',
+  },
+  line('Вадим', 'Ты сломал стенд с отличниками.', 'computer-board-2', 'Дмит', 'Вадим', { id: 'computer-board-1' }),
+  line('Дмит', 'Он охранника задержал.', 'computer-board-3', 'Дмит', 'Вадим', { id: 'computer-board-2' }),
+  line('Вадим', 'Там была моя фотография.', 'computer-board-4', 'Дмит', 'Вадим', { id: 'computer-board-3' }),
+  line('Дмит', 'Новую сделают.', 'computer-damage-door-check', 'Дмит', 'Вадим', { id: 'computer-board-4' }),
+  {
+    id: 'computer-damage-door-check', speaker: 'Рассказчик', text: 'Коридор тянется к кабинету информатики.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'SCHOOL_DOOR_BROKEN', next: 'computer-door-damage-1' }], fallbackNext: 'computer-damage-check',
+  },
+  line('Вадим', 'Ещё ты сломал дверь.', 'computer-door-damage-2', 'Дмит', 'Вадим', { id: 'computer-door-damage-1' }),
+  line('Дмит', 'Она сама старая была.', 'computer-door-damage-3', 'Дмит', 'Вадим', { id: 'computer-door-damage-2' }),
+  line('Вадим', 'До твоего удара она работала.', 'computer-damage-check', 'Дмит', 'Вадим', { id: 'computer-door-damage-3' }),
+  {
+    id: 'computer-damage-check', speaker: 'Рассказчик', text: 'Дмит делает несколько шагов и прислоняет ладонь к виску.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'DMIT_DAMAGED', next: 'computer-injury-1' }], fallbackNext: 'computer-help-choice',
+  },
+  line('Вадим', 'Опять кружится голова?', 'computer-injury-2', 'Дмит', 'Вадим', { id: 'computer-injury-1' }),
+  line('Дмит', 'Не кружится.', 'computer-injury-3', 'Дмит', 'Вадим', { id: 'computer-injury-2' }),
+  line('Вадим', 'Ты остановился и держишься за стену.', 'computer-injury-4', 'Дмит', 'Вадим', { id: 'computer-injury-3' }),
+  line('Дмит', 'Стена удобная.', 'computer-injury-5', 'Дмит', 'Вадим', { id: 'computer-injury-4' }),
+  line('Вадим', 'Нужно идти медленнее.', 'computer-help-choice', 'Дмит', 'Вадим', { id: 'computer-injury-5', effects: { flags: ['VADIM_WORRIED_ABOUT_DMIT'] } }),
+  {
+    id: 'computer-help-choice', speaker: 'Вадим', text: 'Зачем ты вообще полез за мной в школу?', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    choices: [
+      { label: 'Пообещал помочь — значит, помогу.', next: 'computer-help-promise-1' },
+      { label: 'Чтобы ты один здесь не сдох.', next: 'computer-help-death-1' },
+      { label: 'Мне самому стало интересно.', next: 'computer-help-interest-1' },
+      { label: 'Не задавай вопросы, пока нас ищут.', next: 'computer-help-stop-1' },
+    ],
+  },
+  line('Дмит', 'Пообещал помочь — значит, помогу.', 'computer-help-promise-2', 'Дмит', 'Вадим', { id: 'computer-help-promise-1' }),
+  line('Вадим', 'Ты не производишь впечатление человека, который всегда выполняет обещания.', 'computer-class-door-1', 'Дмит', 'Вадим', { id: 'computer-help-promise-2' }),
+  line('Дмит', 'Чтобы ты один здесь не сдох.', 'computer-help-death-2', 'Дмит', 'Вадим', { id: 'computer-help-death-1' }),
+  line('Вадим', 'В школе довольно сложно умереть. Но с географичкой я бы не спорил.', 'computer-class-door-1', 'Дмит', 'Вадим', { id: 'computer-help-death-2' }),
+  line('Дмит', 'Мне самому стало интересно.', 'computer-help-interest-2', 'Дмит', 'Вадим', { id: 'computer-help-interest-1' }),
+  line('Вадим', 'Рюкзак тебя не интересует?', 'computer-help-interest-3', 'Дмит', 'Вадим', { id: 'computer-help-interest-2' }),
+  line('Дмит', 'Теперь уже интересует.', 'computer-class-door-1', 'Дмит', 'Вадим', { id: 'computer-help-interest-3' }),
+  line('Дмит', 'Не задавай вопросы, пока нас ищут.', 'computer-help-stop-2', 'Дмит', 'Вадим', { id: 'computer-help-stop-1' }),
+  line('Вадим', 'Хорошо. Но позже я спрошу снова.', 'computer-class-door-1', 'Дмит', 'Вадим', { id: 'computer-help-stop-2' }),
+  line('Рассказчик', 'Ребята доходят до кабинета информатики. Дмит дёргает ручку.', 'computer-class-door-2', 'Дмит', 'Вадим', { id: 'computer-class-door-1' }),
+  line('Дмит', 'Закрыто.', 'computer-class-door-3', 'Дмит', 'Вадим', { id: 'computer-class-door-2' }),
+  line('Вадим', 'Я предполагал.', 'computer-class-door-4', 'Дмит', 'Вадим', { id: 'computer-class-door-3' }),
+  line('Дмит', 'Ты строил весь план на том, что учитель затупит?', 'computer-class-door-5', 'Дмит', 'Вадим', { id: 'computer-class-door-4' }),
+  line('Вадим', 'Небольшую часть плана.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-class-door-5' }),
+  {
+    id: 'computer-open-choice', speaker: 'Рассказчик', text: 'Снизу раздаётся металлический удар. Охранник почти на втором этаже — дверь нужно открыть быстро.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: '[Интеллект 5] Попросить Вадима найти запасной ключ.', next: 'computer-key-good-1', failNext: 'computer-key-fail-1', requires: { intelligence: 5 }, failureText: 'Вадим быстро перебирает связки, но нужного ключа среди них нет.' },
+      { label: '[Внимательность 5] Осмотреть верх двери и шкаф пожарной безопасности.', next: 'computer-hidden-good-1', failNext: 'computer-hidden-fail-1', requires: { perception: 5 }, failureText: 'Дмит проверяет верх двери и шкаф рядом. Ничего.' },
+      { label: '[Ловкость 6] Перелезть через внутреннее окно.', next: 'computer-window-check', failNext: 'computer-window-fail-1', requires: { agility: 6 }, failureText: 'Дмит цепляется за шкаф и громко соскальзывает вниз.' },
+      { label: '[Сила 6] Выбить дверь.', next: 'computer-force-good-1', failNext: 'computer-force-fail-1', requires: { strength: 6 }, failureText: 'Дмит врезается в дверь. Она не открывается.' },
+      { label: 'Вадим, ты это начал — ты и открывай.', next: 'computer-neutral-open-1' },
+      { label: 'Постучать: Открывайте, свои.', next: 'computer-knock-1' },
+    ],
+  },
+  line('Вадим', 'Запасные ключи иногда лежат в шкафу с документами возле учительской.', 'computer-key-good-2', 'Дмит', 'Вадим', { id: 'computer-key-good-1' }),
+  line('Рассказчик', 'Вадим перебирает связки: кабинет двадцать четыре, двадцать пять, двадцать шесть.', 'computer-key-good-3', 'Дмит', 'Вадим', { id: 'computer-key-good-2' }),
+  line('Вадим', 'Да. Нашёл.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-key-good-3', effects: { flags: ['COMPUTER_ROOM_OPENED_QUIETLY'] } }),
+  line('Дмит', 'Тогда этот путь отпадает.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-key-fail-1' }),
+  line('Рассказчик', 'Дмит замечает царапины на дверной коробке и находит маленький ключ, обмотанный изолентой.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-hidden-good-1', effects: { flags: ['COMPUTER_ROOM_HIDDEN_KEY_FOUND'] } }),
+  line('Вадим', 'Учитель прячет ключ над дверью?', 'computer-hidden-good-2', 'Дмит', 'Вадим', { id: 'computer-hidden-good-1' }),
+  line('Дмит', 'Все умные люди иногда делают тупую херню.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-hidden-good-2', effects: { flags: ['COMPUTER_ROOM_HIDDEN_KEY_FOUND'] } }),
+  line('Вадим', 'Один раз оставят — и ты окажешься прав.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-hidden-fail-1' }),
+  {
+    id: 'computer-window-check', speaker: 'Рассказчик', text: 'Дмит открывает соседний кабинет. Между помещениями — небольшое внутреннее окно.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'DMIT_DAMAGED', next: 'computer-window-injury-1' }], fallbackNext: 'computer-window-good-1',
+  },
+  line('Рассказчик', 'На середине подъёма у Дмита темнеет в глазах. Он падает со шкафа и ударяется плечом о парту.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-window-injury-1', effects: { flags: ['DMIT_DAMAGED_SEVERE'] } }),
+  line('Рассказчик', 'Дмит протискивается через окно и падает на учительский стол. Через секунду он отпирает кабинет изнутри.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-window-good-1', effects: { flags: ['COMPUTER_ROOM_ENTERED_THROUGH_WINDOW'] } }),
+  line('Вадим', 'Это был громкий звук.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-window-fail-1', effects: { flags: ['DMIT_DAMAGED'] } }),
+  line('Дмит', 'Отойди.', 'computer-force-good-2', 'Дмит', 'Вадим', { id: 'computer-force-good-1' }),
+  line('Рассказчик', 'Дмит бьёт дверь плечом. Замок с треском вылетает из дерева.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-force-good-2', sound: 'mishgan-fall', effects: { flags: ['COMPUTER_ROOM_DOOR_BROKEN'] } }),
+  line('Вадим', 'Дверь открывается наружу.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-force-fail-1', effects: { flags: ['DMIT_DAMAGED'] } }),
+  line('Дмит', 'Вадим, ты это начал — ты и открывай.', 'computer-neutral-open-2', 'Дмит', 'Вадим', { id: 'computer-neutral-open-1' }),
+  line('Вадим', 'Я не умею вскрывать двери. Ты просто считаешь отличников подозрительными.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-neutral-open-2' }),
+  line('Дмит', 'Открывайте, свои.', 'computer-knock-2', 'Дмит', 'Вадим', { id: 'computer-knock-1' }),
+  line('Охранник', 'Я СЛЫШУ ВАС!', 'computer-open-choice', 'Дмит', 'Охранник', { id: 'computer-knock-2', sound: 'guard-shout', effects: { flags: ['GUARD_KNOWS_COMPUTER_ROOM'] } }),
+
+  line('Рассказчик', 'Дверь открывается. В темноте видны ряды старых компьютеров и массивный учительский стол.', 'computer-room-choice', 'Дмит', 'Вадим', { id: 'computer-enter-room-1' }),
+  {
+    id: 'computer-room-choice', speaker: 'Вадим', text: 'Рюкзак должен быть возле третьего компьютера.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    choices: [
+      { label: 'Только ничего больше не забудь.', next: 'computer-room-talk-1' },
+      { label: 'Быстро бери рюкзак и валим.', next: 'computer-room-talk-2' },
+      { label: 'Три месяца работы в одной флешке — это тупо.', next: 'computer-room-talk-3' },
+      { label: 'Может, тут САМП установлен?', next: 'computer-room-talk-4' },
+    ],
+  },
+  line('Вадим', 'Я один раз забыл рюкзак. Этого хватило, чтобы мы ночью ломали школу.', 'computer-find-bag-1', 'Дмит', 'Вадим', { id: 'computer-room-talk-1' }),
+  line('Вадим', 'Я тоже хочу уйти. Мне так спокойнее комментировать.', 'computer-find-bag-1', 'Дмит', 'Вадим', { id: 'computer-room-talk-2' }),
+  line('Вадим', 'У меня есть резервная копия. Но документы только в рюкзаке.', 'computer-find-bag-1', 'Дмит', 'Вадим', { id: 'computer-room-talk-3' }),
+  line('Вадим', 'На школьных компьютерах четыре гигабайта памяти.', 'computer-find-bag-1', 'Дмит', 'Вадим', { id: 'computer-room-talk-4' }),
+  line('Рассказчик', 'Под столом третьего ряда лежит тёмный рюкзак. Вадим проверяет документы, флешку и проект — всё на месте.', 'computer-phone-1', 'Дмит', 'Вадим', { id: 'computer-find-bag-1' }),
+  line('Рассказчик', 'На учительском столе начинает вибрировать чужой чёрный телефон.', 'computer-phone-2', 'Дмит', 'Вадим', { id: 'computer-phone-1', sound: 'phone-vibrate' }),
+  line('Вадим', 'Его не было здесь днём.', 'computer-phone-3', 'Дмит', 'Вадим', { id: 'computer-phone-2' }),
+  line('Рассказчик', 'На экране: Машина будет у школы в 23:40. Деньги у Игоря. Младший ничего не должен увидеть.', 'computer-phone-choice', 'Дмит', 'Вадим', { id: 'computer-phone-3' }),
+  {
+    id: 'computer-phone-choice', speaker: 'Вадим', text: 'Нужно отнести его директору или в милицию.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: 'Взять телефон себе.', next: 'phone-take-1', effects: { flags: ['DMIT_HAS_BLACK_PHONE'] } },
+      { label: 'Отдать телефон Вадиму.', next: 'phone-vadim-1', effects: { flags: ['VADIM_HAS_BLACK_PHONE'] } },
+      { label: '[Интеллект 6] Быстро прочитать сообщения.', next: 'phone-read-good-1', failNext: 'phone-read-fail-1', requires: { intelligence: 6 }, failureText: 'Дмит нажимает не на ту кнопку. Телефон требует код доступа.' },
+      { label: 'Оставить телефон на месте.', next: 'phone-leave-1', effects: { flags: ['BLACK_PHONE_LEFT_AT_SCHOOL'] } },
+      { label: 'Разбить телефон.', next: 'phone-break-1', effects: { flags: ['BLACK_PHONE_DESTROYED'] } },
+      { label: 'Позвонить по последнему номеру.', next: 'phone-call-1', effects: { flags: ['MAFIA_CONTACT_ALERTED'] } },
+    ],
+  },
+  line('Дмит', 'Я заберу. Разберусь дома.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-take-1' }),
+  line('Дмит', 'Держи. Ты умный — разбирайся.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-vadim-1' }),
+  line('Рассказчик', 'В переписке: Игорь подтвердил передачу. Строитель готов принять груз. Не использовать основной вход.', 'phone-read-good-2', 'Дмит', 'Вадим', { id: 'phone-read-good-1', effects: { flags: ['BLACK_PHONE_MESSAGES_READ', 'BUILDER_CAMP_CONNECTION_NOTICED'] } }),
+  line('Дмит', 'Строитель? Так называется наш лагерь.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-read-good-2' }),
+  line('Вадим', 'Ты заблокировал экран.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-read-fail-1' }),
+  line('Дмит', 'Не наше. Пусть лежит.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-leave-1' }),
+  line('Рассказчик', 'Дмит бросает телефон на пол и наступает на экран. ХРУСТ.', 'phone-break-2', 'Дмит', 'Вадим', { id: 'phone-break-1', sound: 'mishgan-fall' }),
+  line('Вадим', 'Это было очень глупо.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-break-2' }),
+  line('Рассказчик', 'После второго гудка кто-то отвечает: Да.', 'phone-call-choice', 'Дмит', 'Вадим', { id: 'phone-call-1', sound: 'phone-vibrate' }),
+  {
+    id: 'phone-call-choice', speaker: 'Рассказчик', text: 'Неизвестный голос спрашивает: Как тебя зовут?', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: 'Назвать настоящее имя.', next: 'phone-name-1', effects: { flags: ['MAFIA_KNOWS_DMIT_NAME'] } },
+      { label: 'Назваться Матвеем.', next: 'phone-matvey-1', effects: { flags: ['MAFIA_SUSPECTS_MATVEY'] } },
+      { label: 'Промолчать и сбросить.', next: 'computer-stage-end' },
+      { label: '[Харизма 6] Представиться охранником школы.', next: 'phone-guard-good-1', failNext: 'computer-stage-end', requires: { charisma: 6 }, failureText: 'Незнакомец не верит и сбрасывает звонок.' },
+    ],
+    choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 2 },
+  },
+  line('Дмит', 'Алло. Это охрана школы, телефон найден при обходе.', 'phone-guard-good-2', 'Дмит', 'Вадим', { id: 'phone-guard-good-1' }),
+  line('Рассказчик', 'Незнакомец отвечает: Ничего не трогайте. За ним приедут. Человек Игоря.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-guard-good-2', effects: { flags: ['IGOR_CONNECTION_CONFIRMED', 'MAFIA_CONTACT_ALERTED'] } }),
+  line('Рассказчик', 'Звонок обрывается. Время вышло.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-name-1' }),
+  line('Рассказчик', 'На линии становится тихо: Матвей? Звонок обрывается.', 'computer-stage-end', 'Дмит', 'Вадим', { id: 'phone-matvey-1' }),
+  line('Рассказчик', 'В коридоре раздаётся удар. Охранник почти добрался до второго этажа. Рюкзак у Вадима, а чёрный телефон уже изменил этот вечер.', '', 'Дмит', 'Вадим', { id: 'computer-stage-end', sound: 'quest-complete', effects: { experience: 20, flags: ['SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
+
+  line('Рассказчик', 'Дмит остаётся на втором этаже один. Снизу Вадим кричит его имя, а охранник требует спускаться.', 'computer-alone-2', 'Дмит', 'Охранник', { id: 'computer-alone-1', tone: 'danger' }),
+  line('Дмит', 'Я иду…', 'computer-alone-choice', 'Дмит', 'Вадим', { id: 'computer-alone-2' }),
+  {
+    id: 'computer-alone-choice', speaker: 'Рассказчик', text: 'У Дмита есть несколько секунд: вернуться к Вадиму или добраться до рюкзака одному.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: 'Вернуться за Вадимом.', next: 'computer-caught-1', effects: { flags: ['DMIT_RETURNED_FOR_VADIM'] } },
+      { label: 'Продолжить одному.', next: 'computer-alone-room-1', effects: { flags: ['DMIT_DOUBLE_ABANDONMENT'] } },
+      { label: '[Интеллект 6] Включить сигнализацию снаружи.', next: 'computer-alone-alarm-good-1', failNext: 'computer-alone-room-1', requires: { intelligence: 6 }, failureText: 'Дмит тянет за щиток, но только включает мигающий свет. Охранник становится ещё злее.' },
+    ],
+    choiceTimer: { durationSeconds: 5, defaultChoiceIndex: 1 },
+  },
+  line('Рассказчик', 'Дмит дёргает рычаг пожарной сигнализации. Охранник ругается и на секунду отпускает Вадима.', 'computer-alone-alarm-good-2', 'Дмит', 'Охранник', { id: 'computer-alone-alarm-good-1' }),
+  line('Вадим', 'Ты вернулся?', 'computer-together-1', 'Дмит', 'Вадим', { id: 'computer-alone-alarm-good-2', effects: { flags: ['DMIT_RETURNED_FOR_VADIM'] } }),
+  line('Рассказчик', 'В кабинете информатики темно. Дмит находит рюкзак под третьим компьютером и слышит вибрацию чёрного телефона.', 'computer-alone-phone-choice', 'Дмит', undefined, { id: 'computer-alone-room-1', sound: 'phone-vibrate' }),
+  {
+    id: 'computer-alone-phone-choice', speaker: 'Рассказчик', text: 'На экране телефона: Машина будет у школы в 23:40. Деньги у Игоря.', left: 'Дмит', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: 'Забрать телефон и рюкзак.', next: 'computer-alone-end-1', effects: { flags: ['DMIT_HAS_BLACK_PHONE'] } },
+      { label: 'Оставить телефон и забрать рюкзак.', next: 'computer-alone-end-1', effects: { flags: ['BLACK_PHONE_LEFT_AT_SCHOOL'] } },
+      { label: 'Позвонить Вадиму.', next: 'computer-alone-call-vadim-1' },
+    ],
+  },
+  line('Дмит', 'Вадим, я рюкзак нашёл.', 'computer-alone-call-vadim-2', 'Дмит', undefined, { id: 'computer-alone-call-vadim-1', phoneMessage: { contact: 'Вадим', direction: 'outgoing', time: '22:17' } }),
+  line('Вадим', 'Я знаю. Иди обратно.', 'computer-alone-end-1', 'Дмит', undefined, { id: 'computer-alone-call-vadim-2', phoneMessage: { contact: 'Вадим', direction: 'incoming', time: '22:17' } }),
+  line('Рассказчик', 'Дмит надевает рюкзак на плечо. Внизу Вадим снова зовёт его, а путь назад теперь выглядит хуже, чем несколько минут назад.', '', 'Дмит', undefined, { id: 'computer-alone-end-1', tone: 'danger', sound: 'quest-complete', effects: { experience: 9, flags: ['SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
+
+  line('Рассказчик', 'Ночь на вахте. Охранник усаживает Дмита и Вадима на стулья так, будто оформляет их в школьную тюрьму.', 'computer-caught-2', 'Дмит', 'Охранник', { id: 'computer-caught-1', tone: 'danger' }),
+  line('Охранник', 'Ну что, герои? Кто вас сюда пустил?', 'computer-caught-choice', 'Дмит', 'Охранник', { id: 'computer-caught-2' }),
+  {
+    id: 'computer-caught-choice', speaker: 'Рассказчик', text: 'Вадим молчит. Охранник ждёт ответа Дмита.', left: 'Дмит', right: 'Охранник', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: 'Это я всё придумал. Вадим хотел забрать рюкзак.', next: 'computer-caught-blame-1', effects: { flags: ['DMIT_TOOK_BLAME_FOR_VADIM'] } },
+      { label: 'Это Вадим меня уговорил.', next: 'computer-caught-vadim-1', effects: { flags: ['DMIT_BLAMED_VADIM'] } },
+      { label: 'Мы просто заблудились.', next: 'computer-caught-neutral-1' },
+      { label: '[Харизма 6] Сначала дайте забрать рюкзак — там олимпиада.', next: 'computer-caught-bag-good-1', failNext: 'computer-caught-end-1', requires: { charisma: 6 }, failureText: 'Охранник устало смотрит на Дмита. Хватит мне зубы заговаривать.' },
+    ],
+  },
+  line('Дмит', 'Это я всё придумал. Вадим хотел забрать рюкзак.', 'computer-caught-blame-2', 'Дмит', 'Охранник', { id: 'computer-caught-blame-1' }),
+  line('Охранник', 'Ну хоть один умный нашёлся.', 'computer-caught-end-1', 'Дмит', 'Охранник', { id: 'computer-caught-blame-2' }),
+  line('Дмит', 'Это Вадим меня уговорил.', 'computer-caught-vadim-2', 'Дмит', 'Вадим', { id: 'computer-caught-vadim-1' }),
+  line('Вадим', 'Ты серьёзно?', 'computer-caught-end-1', 'Дмит', 'Вадим', { id: 'computer-caught-vadim-2' }),
+  line('Дмит', 'Мы просто заблудились.', 'computer-caught-neutral-2', 'Дмит', 'Охранник', { id: 'computer-caught-neutral-1' }),
+  line('Охранник', 'На втором этаже, ночью, через разбитую дверь?', 'computer-caught-end-1', 'Дмит', 'Охранник', { id: 'computer-caught-neutral-2' }),
+  line('Охранник', 'Ладно. Быстро заберём рюкзак и сразу вниз.', 'computer-caught-bag-good-2', 'Дмит', 'Охранник', { id: 'computer-caught-bag-good-1', effects: { flags: ['GUARD_ESCORT_TO_BACKPACK'] } }),
+  line('Рассказчик', 'В кабинете охранник первым замечает чёрный телефон и резко меняется в лице.', 'computer-caught-bag-good-3', 'Дмит', 'Охранник', { id: 'computer-caught-bag-good-2', sound: 'phone-vibrate' }),
+  line('Охранник', 'Это не ваше.', 'computer-caught-end-1', 'Дмит', 'Охранник', { id: 'computer-caught-bag-good-3', effects: { flags: ['GUARD_RECOGNIZED_BLACK_PHONE'] } }),
+  line('Рассказчик', 'Охранник быстро убирает телефон во внутренний карман. Впервые за весь вечер он выглядит не злым, а испуганным.', '', 'Дмит', 'Охранник', { id: 'computer-caught-end-1', tone: 'danger', sound: 'quest-complete', effects: { flags: ['SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
+  // Полный сценарий этапа «Кабинет информатики» из next_step.md.
+  line('Рассказчик', 'Дмит и Вадим оказываются на втором этаже. Снизу слышны удары охранника по заблокированной двери и громкая ругань.', 'next-step-floor-0', 'Дмит', 'Вадим', { id: 'next-step-together-0' }),
+  ...sequence('next-step-floor', [['Вадим', 'Информатика в конце правого коридора.'], ['Дмит', 'Знаю.'], ['Вадим', 'Тогда почему ты смотришь налево?'], ['Дмит', 'Проверяю, не обошёл ли нас охранник.'], ['Вадим', 'Лестница только одна.'], ['Дмит', 'Вот теперь точно знаю.']], 'next-step-board-check'),
+  {
+    id: 'next-step-board-check', speaker: 'Рассказчик', text: 'Коридор второго этажа погружён в темноту. Только зелёные лампы над аварийными выходами освещают двери кабинетов.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'HONOUR_BOARD_DESTROYED', next: 'next-step-board-0' }], fallbackNext: 'next-step-door-check',
+  },
+  ...sequence('next-step-board', [
+    ['Вадим', 'Ты сломал стенд с отличниками.'], ['Дмит', 'Он охранника задержал.'], ['Вадим', 'Там была моя фотография.'], ['Дмит', 'Новую сделают.'], ['Вадим', 'Она была единственной нормальной.'], ['Дмит', 'Ты в жизни так же выглядишь.'], ['Вадим', 'Это не комплимент.'], ['Дмит', 'Я пытался.'],
+  ], 'next-step-door-check', 'Дмит', 'Вадим', { effects: { flags: ['VADIM_TRUST_REDUCED'] } }),
+  {
+    id: 'next-step-door-check', speaker: 'Рассказчик', text: 'Коридор второго этажа погружён в темноту. Только зелёные лампы над аварийными выходами освещают двери кабинетов.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'SCHOOL_DOOR_BROKEN', next: 'next-step-door-damage-0' }], fallbackNext: 'next-step-injury-check',
+  },
+  ...sequence('next-step-door-damage', [
+    ['Вадим', 'Ещё ты сломал дверь.'], ['Дмит', 'Она сама старая была.'], ['Вадим', 'До твоего удара она работала.'], ['Дмит', 'Теперь не надо ключ искать.'], ['Вадим', 'Ты способен найти преимущество в любом повреждении имущества.'],
+  ], 'next-step-injury-check'),
+  {
+    id: 'next-step-injury-check', speaker: 'Рассказчик', text: 'Дмит делает несколько шагов и прижимает ладонь к виску.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'DMIT_DAMAGED', next: 'next-step-injury-0' }], fallbackNext: 'next-step-help-choice',
+  },
+  ...sequence('next-step-injury', [
+    ['Вадим', 'Опять кружится голова?'], ['Дмит', 'Не кружится.'], ['Вадим', 'Ты остановился и держишься за стену.'], ['Дмит', 'Стена удобная.'], ['Вадим', 'Нужно идти медленнее.'], ['Дмит', 'Охраннику это скажи.'], ['Вадим', 'Если продолжишь бежать, можешь потерять сознание.'], ['Дмит', 'Не потеряю.'], ['Вадим', 'Это не решение.'], ['Дмит', 'Зато коротко.'],
+  ], 'next-step-help-choice', 'Дмит', 'Вадим', { effects: { flags: ['VADIM_WORRIED_ABOUT_DMIT'] } }),
+  {
+    id: 'next-step-help-choice', speaker: 'Вадим', text: 'Зачем ты вообще полез за мной в школу?', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    choices: [
+      { label: 'Пообещал помочь — значит, помогу.', next: 'next-step-help-1-0' },
+      { label: 'Чтобы ты один здесь не сдох.', next: 'next-step-help-2-0' },
+      { label: 'Мне самому стало интересно.', next: 'next-step-help-3-0' },
+      { label: 'Не задавай вопросы, пока нас ищут.', next: 'next-step-help-4-0' },
+    ],
+  },
+  ...sequence('next-step-help-1', [['Дмит', 'Пообещал помочь — значит, помогу.'], ['Вадим', 'Ты не производишь впечатление человека, который всегда выполняет обещания.'], ['Дмит', 'А я не всегда обещаю.'], ['Вадим', 'Логично.']], 'next-step-class-door-0'),
+  ...sequence('next-step-help-2', [['Дмит', 'Чтобы ты один здесь не сдох.'], ['Вадим', 'В школе довольно сложно умереть.'], ['Дмит', 'Ты с нашей географичкой не спорил.'], ['Вадим', 'Справедливо.']], 'next-step-class-door-0'),
+  ...sequence('next-step-help-3', [['Дмит', 'Мне самому стало интересно.'], ['Вадим', 'Что именно?'], ['Дмит', 'Сможем залезть или нет.'], ['Вадим', 'Рюкзак тебя не интересует?'], ['Дмит', 'Теперь уже интересует.']], 'next-step-class-door-0'),
+  ...sequence('next-step-help-4', [['Дмит', 'Не задавай вопросы, пока нас ищут.'], ['Вадим', 'Хорошо.'], ['Дмит', 'Вот. Умеешь же.'], ['Вадим', 'Но позже я спрошу снова.'], ['Дмит', 'Бля.']], 'next-step-class-door-0'),
+  ...sequence('next-step-class-door', [
+    ['Рассказчик', 'Ребята доходят до кабинета информатики. Дмит дёргает ручку.'], ['Рассказчик', 'ЩЁЛК.'], ['Дмит', 'Закрыто.'], ['Вадим', 'Я предполагал.'], ['Дмит', 'А сказать заранее?'], ['Вадим', 'Я рассчитывал, что учитель мог забыть закрыть дверь.'], ['Дмит', 'Ты строил весь план на том, что учитель затупит?'], ['Вадим', 'Небольшую часть плана.'], ['Дмит', 'Хороший план.'], ['Вадим', 'У тебя был план сломать решётку.'], ['Дмит', 'И он сработал.'], ['Вадим', 'Сигнализация тоже сработала.'], ['Дмит', 'Значит, всё рабочее.'], ['Рассказчик', 'Снизу снова раздаётся металлический удар.'], ['Охранник', 'Я УЖЕ ИДУ!'], ['Вадим', 'Нужно открыть дверь быстро.'],
+  ], 'next-step-open-choice'),
+  {
+    id: 'next-step-open-choice', speaker: 'Рассказчик', text: 'Нужно решить, как открыть кабинет информатики.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: '[Интеллект 5] Попросить Вадима найти запасной ключ учителя.', next: 'next-step-key-success-0', failNext: 'next-step-key-fail-0', requires: { intelligence: 5 } },
+      { label: '[Внимательность 5] Осмотреть верх двери и шкаф пожарной безопасности.', next: 'next-step-hidden-success-0', failNext: 'next-step-hidden-fail-0', requires: { perception: 5 } },
+      { label: '[Ловкость 6] Перелезть через внутреннее окно из соседнего кабинета.', next: 'next-step-window-check', failNext: 'next-step-window-check', requires: { agility: 6 } },
+      { label: '[Сила 6] Выбить дверь.', next: 'next-step-force-success-0', failNext: 'next-step-force-fail-0', requires: { strength: 6 } },
+      { label: 'Вадим, ты это начал — ты и открывай.', next: 'next-step-neutral-open-0' },
+      { label: 'Открывайте, свои.', next: 'next-step-knock-0' },
+    ],
+  },
+  ...sequence('next-step-neutral-open', [['Дмит', 'Вадим, ты это начал — ты и открывай.'], ['Вадим', 'Я не умею вскрывать двери.'], ['Дмит', 'А выглядишь так, будто умеешь.'], ['Вадим', 'Как выглядит человек, который вскрывает двери?'], ['Дмит', 'Умно.'], ['Вадим', 'По твоей логике все отличники — преступники.'], ['Дмит', 'Подозрительные вы.']], 'next-step-open-choice'),
+  ...sequence('next-step-knock', [['Дмит', 'Открывайте, свои.'], ['Вадим', 'Там никого нет.'], ['Дмит', 'А вдруг компьютер откроет?'], ['Вадим', 'Нет.'], ['Охранник', 'Я СЛЫШУ ВАС!'], ['Дмит', 'Зато охранник ответил.'], ['Вадим', 'Теперь он знает, где мы.']], 'next-step-open-choice', 'Дмит', 'Вадим', { effects: { flags: ['GUARD_KNOWS_COMPUTER_ROOM'] } }),
+  ...sequence('next-step-key-success', [['Вадим', 'Учитель информатики часто оставляет ключ дежурному ученику.'], ['Дмит', 'И где этот ученик?'], ['Вадим', 'Дома.'], ['Дмит', 'Охуенно помог.'], ['Вадим', 'Но запасные ключи иногда лежат в кабинете завуча.'], ['Дмит', 'Он закрыт.'], ['Вадим', 'Есть ещё шкаф с документами возле учительской.'], ['Дмит', 'Тоже закрыт?'], ['Вадим', 'Нет. Учителя постоянно забывают его закрывать.'], ['Дмит', 'Вот на это и надо было строить план.'], ['Рассказчик', 'Вадим открывает узкий шкаф в конце коридора и быстро перебирает связки ключей.'], ['Вадим', 'Кабинет двадцать четыре… двадцать пять… двадцать шесть.'], ['Дмит', 'Нашёл?'], ['Вадим', 'Да.'], ['Дмит', 'Уф.'], ['Вадим', 'Это реплика Мишгана.'], ['Дмит', 'Теперь моя.'], ['Рассказчик', 'Ключ поворачивается в замке.']], 'next-step-room-intro-0', 'Дмит', 'Вадим', { effects: { flags: ['COMPUTER_ROOM_OPENED_QUIETLY'] } }),
+  ...sequence('next-step-key-fail', [['Вадим', 'Ключи должны быть здесь.'], ['Дмит', 'Но их нет.'], ['Вадим', 'Я вижу.'], ['Дмит', 'Просто уточняю.'], ['Вадим', 'Вероятно, охранник забрал их на вахту.'], ['Дмит', 'Тогда этот путь отпадает.']], 'next-step-open-choice'),
+  ...sequence('next-step-hidden-success', [['Рассказчик', 'Дмит замечает царапины на верхней части дверной коробки.'], ['Дмит', 'Подсади.'], ['Вадим', 'Зачем?'], ['Дмит', 'Там что-то лежит.'], ['Вадим', 'Я тебя не подниму.'], ['Дмит', 'Тогда стой ровно.'], ['Вадим', 'Нет.'], ['Рассказчик', 'Дмит встаёт на старый стул и проводит рукой по верхней части двери.'], ['Дмит', 'Есть.'], ['Рассказчик', 'На ладонь падает маленький ключ, обмотанный изолентой.'], ['Вадим', 'Учитель прячет ключ над дверью?'], ['Дмит', 'Все умные люди иногда делают тупую херню.'], ['Вадим', 'Я начинаю понимать, почему ты так уверен в себе.']], 'next-step-room-intro-0', 'Дмит', 'Вадим', { effects: { flags: ['COMPUTER_ROOM_HIDDEN_KEY_FOUND'] } }),
+  ...sequence('next-step-hidden-fail', [['Рассказчик', 'Дмит проверяет верх двери, подоконник и шкаф рядом.'], ['Дмит', 'Ничего.'], ['Вадим', 'Потому что учителя обычно не оставляют ключи возле закрытой двери.'], ['Дмит', 'Один раз оставят — и я окажусь прав.']], 'next-step-open-choice'),
+  {
+    id: 'next-step-window-check', speaker: 'Рассказчик', text: 'Дмит открывает соседний кабинет. Между помещениями находится небольшое внутреннее окно.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    nextByFlag: [{ flag: 'DMIT_DAMAGED', next: 'next-step-window-injury-0' }], fallbackNext: 'next-step-window-success-0',
+  },
+  ...sequence('next-step-window-success', [['Вадим', 'Оно слишком высоко.'], ['Дмит', 'Для тебя.'], ['Вадим', 'Для тебя тоже.'], ['Дмит', 'Сейчас увидишь.'], ['Рассказчик', 'Дмит забирается на шкаф, протискивается через окно и падает на учительский стол в кабинете информатики.'], ['Рассказчик', 'БУМ.'], ['Вадим', 'Ты цел?'], ['Дмит', 'Да.'], ['Вадим', 'Это был громкий звук.'], ['Дмит', 'Зато дверь сейчас открою.'], ['Рассказчик', 'Через несколько секунд Дмит отпирает кабинет изнутри.']], 'next-step-room-intro-0', 'Дмит', 'Вадим', { effects: { flags: ['COMPUTER_ROOM_ENTERED_THROUGH_WINDOW'] } }),
+  ...sequence('next-step-window-injury', [['Рассказчик', 'На середине подъёма у Дмита темнеет в глазах.'], ['Дмит', 'Бля…'], ['Вадим', 'Спускайся.'], ['Дмит', 'Уже почти.'], ['Вадим', 'Дмит, спускайся!'], ['Рассказчик', 'Руки Дмита соскальзывают. Он падает со шкафа и ударяется плечом об парту.'], ['Дмит', 'Сука!'], ['Вадим', 'Я предупреждал.']], 'next-step-open-choice', 'Дмит', 'Вадим', { effects: { flags: ['DMIT_DAMAGED_SEVERE', 'GUARD_KNOWS_COMPUTER_ROOM'] } }),
+  ...sequence('next-step-force-success', [['Дмит', 'Отойди.'], ['Вадим', 'Ты собираешься ломать ещё одну дверь?'], ['Дмит', 'Она первая на этом этаже.'], ['Рассказчик', 'Дмит разбегается и бьёт дверь плечом. Замок с треском вылетает из дерева.'], ['Рассказчик', 'ГРОХОТ!'], ['Вадим', 'Теперь охранник точно знает, где мы.'], ['Дмит', 'Зато мы тоже знаем, где дверь открыта.']], 'next-step-room-intro-0', 'Дмит', 'Вадим', { effects: { flags: ['COMPUTER_ROOM_DOOR_BROKEN', 'GUARD_KNOWS_COMPUTER_ROOM'] } }),
+  ...sequence('next-step-force-fail', [['Рассказчик', 'Дмит врезается в дверь. Она не открывается.'], ['Дмит', 'Бля!'], ['Вадим', 'Дверь открывается наружу.'], ['Дмит', 'Ты раньше сказать не мог?'], ['Вадим', 'Я не думал, что ты сразу побежишь.'], ['Дмит', 'Ты меня плохо знаешь.']], 'next-step-open-choice', 'Дмит', 'Вадим', { effects: { flags: ['DMIT_DAMAGED'] } }),
+  ...sequence('next-step-room-intro', [['Рассказчик', 'Дверь кабинета информатики открывается. В темноте видны ряды старых компьютеров и массивный учительский стол.'], ['Вадим', 'Рюкзак должен быть возле третьего компьютера.'], ['Дмит', 'Тогда ищи.'], ['Вадим', 'Нужно включить свет.'], ['Дмит', 'Не надо. Охранник увидит.'], ['Вадим', 'Я ничего не вижу.'], ['Дмит', 'Телефон включи.'], ['Вадим', 'У тебя есть телефон.'], ['Дмит', 'У тебя тоже.'], ['Вадим', 'У меня почти разряжен.'], ['Дмит', 'У меня Данз звонит.'], ['Вадим', 'Это не техническая проблема.']], 'next-step-room-choice'),
+  {
+    id: 'next-step-room-choice', speaker: 'Рассказчик', text: 'Вадим ищет рюкзак в темноте.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    choices: [
+      { label: 'Только ничего больше не забудь.', next: 'next-step-room-1-0' }, { label: 'Быстро бери рюкзак и валим.', next: 'next-step-room-2-0' }, { label: 'Три месяца работы в одной флешке — это тупо.', next: 'next-step-room-3-0' }, { label: 'Может, тут САМП установлен?', next: 'next-step-room-4-0' },
+    ],
+  },
+  ...sequence('next-step-room-1', [['Дмит', 'Только ничего больше не забудь.'], ['Вадим', 'Я один раз забыл рюкзак.'], ['Дмит', 'Этого хватило, чтобы мы ночью ломали школу.'], ['Вадим', 'Это была твоя трактовка решения.']], 'next-step-find-bag-0'),
+  ...sequence('next-step-room-2', [['Дмит', 'Быстро бери рюкзак и валим.'], ['Вадим', 'Я тоже хочу уйти.'], ['Дмит', 'Не похоже. Ты всё комментируешь.'], ['Вадим', 'Мне так спокойнее.']], 'next-step-find-bag-0'),
+  ...sequence('next-step-room-3', [['Дмит', 'Три месяца работы в одной флешке — это тупо.'], ['Вадим', 'У меня есть резервная копия.'], ['Дмит', 'Тогда нахуя мы здесь?'], ['Вадим', 'Документы только в рюкзаке.'], ['Дмит', 'Фух. А то я уже начал думать.']], 'next-step-find-bag-0'),
+  ...sequence('next-step-room-4', [['Дмит', 'Может, тут САМП установлен?'], ['Вадим', 'Нет.'], ['Дмит', 'Ты даже не проверил.'], ['Вадим', 'На школьных компьютерах четыре гигабайта памяти.'], ['Дмит', 'Данз бы всё равно попытался.']], 'next-step-find-bag-0'),
+  ...sequence('next-step-find-bag', [['Рассказчик', 'Вадим проходит вдоль компьютеров и останавливается возле третьего ряда.'], ['Вадим', 'Вот он.'], ['Рассказчик', 'Под столом лежит тёмный рюкзак.'], ['Дмит', 'Проверяй всё на месте.'], ['Вадим', 'Документы есть.'], ['Дмит', 'Флешка?'], ['Вадим', 'Есть.'], ['Дмит', 'Проект?'], ['Вадим', 'Есть.'], ['Дмит', 'Тогда валим.'], ['Рассказчик', 'В этот момент на учительском столе начинает вибрировать чужой телефон.'], ['Рассказчик', 'В-В-В.'], ['Дмит', 'Это чё?'], ['Вадим', 'Не мой.'], ['Рассказчик', 'На столе лежит старый чёрный телефон. Дорогой, тяжёлый, без чехла и имени владельца.'], ['Вадим', 'Его не было здесь днём.'], ['Дмит', 'Точно?'], ['Вадим', 'Я сидел за этим столом почти два часа.'], ['Рассказчик', 'Экран телефона загорается.'], ['Рассказчик', 'Машина будет у школы в 23:40.'], ['Рассказчик', 'Деньги у Игоря.'], ['Рассказчик', 'Младший ничего не должен увидеть.'], ['Дмит', 'Какой ещё Игорь?'], ['Вадим', 'Не знаю.'], ['Дмит', 'И кто младший?'], ['Вадим', 'Возможно, я.'], ['Дмит', 'С чего ты решил?'], ['Вадим', 'Я младше почти всех, кто находится здесь ночью.'], ['Дмит', 'Логично.'], ['Вадим', 'И поэтому мне не нравится это сообщение.']], 'next-step-phone-choice', 'Дмит', 'Вадим', { sound: 'phone-vibrate' }),
+  {
+    id: 'next-step-phone-choice', speaker: 'Рассказчик', text: 'Чёрный телефон снова вибрирует. Снизу снова раздаётся шум. Времени на решение мало.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
+    choices: [
+      { label: 'Взять телефон себе.', next: 'next-step-phone-take-0' }, { label: 'Отдать телефон Вадиму.', next: 'next-step-phone-vadim-0' }, { label: '[Интеллект 6] Быстро открыть сообщения и запомнить важные данные.', next: 'next-step-phone-read-success-0', failNext: 'next-step-phone-read-fail-0', requires: { intelligence: 6 } }, { label: 'Оставить телефон на месте.', next: 'next-step-phone-leave-0' }, { label: 'Разбить телефон.', next: 'next-step-phone-break-0' }, { label: 'Позвонить по последнему входящему номеру.', next: 'next-step-phone-call-0' },
+    ],
+  },
+  ...sequence('next-step-phone-take', [['Вадим', 'Нужно отнести его директору или в милицию.'], ['Дмит', 'Сначала понять бы, чей он.'], ['Вадим', 'Именно поэтому его должны проверять взрослые.'], ['Дмит', 'Охраннику отдадим?'], ['Вадим', 'Я сказал взрослые, а не обязательно охранник.'], ['Дмит', 'Жёстко.'], ['Вадим', 'Я просто оценил его работу.'], ['Дмит', 'Я заберу.'], ['Вадим', 'Зачем?'], ['Дмит', 'Разберусь дома.'], ['Вадим', 'Ты умеешь разбираться в чужих телефонах?'], ['Дмит', 'Нет.'], ['Вадим', 'Тогда твой план снова основан на уверенности.'], ['Дмит', 'Пока работает.'], ['Рассказчик', 'Дмит убирает телефон в карман.']], 'next-step-finish-together-0', 'Дмит', 'Вадим', { effects: { flags: ['DMIT_HAS_BLACK_PHONE'] } }),
+  ...sequence('next-step-phone-vadim', [['Дмит', 'Держи. Ты умный — разбирайся.'], ['Вадим', 'Я хотел передать его взрослым.'], ['Дмит', 'Вот и передашь.'], ['Вадим', 'А если сообщения связаны с преступлением?'], ['Дмит', 'Тогда не потеряй.'], ['Вадим', 'Очень полезный совет.'], ['Рассказчик', 'Вадим кладёт телефон в отдельный карман рюкзака.']], 'next-step-finish-together-0', 'Дмит', 'Вадим', { effects: { flags: ['VADIM_HAS_BLACK_PHONE'] } }),
+  ...sequence('next-step-phone-read-success', [['Рассказчик', 'Дмит открывает список сообщений.'], ['Вадим', 'Там может быть пароль.'], ['Дмит', 'Нет пароля.'], ['Вадим', 'Это странно.'], ['Рассказчик', 'В переписке несколько коротких сообщений.'], ['Рассказчик', 'Игорь подтвердил передачу.'], ['Рассказчик', 'Строитель готов принять груз.'], ['Рассказчик', 'Не использовать основной вход.'], ['Рассказчик', 'Младший остаётся в школе до двадцати трёх тридцати.'], ['Дмит', '«Строитель»?'], ['Вадим', 'Так называется твой лагерь?'], ['Дмит', 'Откуда ты знаешь?'], ['Вадим', 'Ты говорил об этом в школьной беседе.'], ['Дмит', 'Точно.'], ['Вадим', 'Совпадение выглядит неприятно.']], 'next-step-finish-together-0', 'Дмит', 'Вадим', { effects: { flags: ['BLACK_PHONE_MESSAGES_READ', 'BUILDER_CAMP_CONNECTION_NOTICED'] } }),
+  ...sequence('next-step-phone-read-fail', [['Рассказчик', 'Дмит нажимает не на ту кнопку. Телефон требует код доступа.'], ['Дмит', 'Закрылся.'], ['Вадим', 'Ты заблокировал экран.'], ['Дмит', 'Он сам.'], ['Вадим', 'Телефоны редко делают что-то сами.']], 'next-step-finish-together-0'),
+  ...sequence('next-step-phone-leave', [['Дмит', 'Не наше. Пусть лежит.'], ['Вадим', 'Это, возможно, самый разумный твой ответ за вечер.'], ['Дмит', 'Не привыкать.'], ['Рассказчик', 'Телефон остаётся на учительском столе.']], 'next-step-finish-together-0', 'Дмит', 'Вадим', { effects: { flags: ['BLACK_PHONE_LEFT_AT_SCHOOL'] } }),
+  ...sequence('next-step-phone-break', [['Дмит', 'Мутная херня.'], ['Вадим', 'Что ты собираешься делать?'], ['Рассказчик', 'Дмит поднимает телефон над столом.'], ['Вадим', 'Не надо.'], ['Дмит', 'Почему?'], ['Вадим', 'Потому что это чужая вещь и возможное доказательство.'], ['Дмит', 'Вот поэтому.'], ['Рассказчик', 'Дмит бросает телефон на пол и наступает на экран.'], ['Вадим', 'Это было очень глупо.'], ['Дмит', 'Зато никто не прочитает.'], ['Вадим', 'Кроме людей, которые отправляли сообщения и уже знают их содержание.'], ['Дмит', 'Бля.']], 'next-step-finish-together-0', 'Дмит', 'Вадим', { effects: { flags: ['BLACK_PHONE_DESTROYED', 'VADIM_TRUST_REDUCED'] } }),
+  ...sequence('next-step-phone-call', [['Дмит', 'Давай узнаем, кто там.'], ['Вадим', 'Не звони.'], ['Дмит', 'Почему?'], ['Вадим', 'Потому что человек поймёт, что телефон у нас.'], ['Дмит', 'Может, он просто потерял.'], ['Вадим', 'Сообщения не похожи на переписку обычного владельца.'], ['Дмит', 'Тем более интересно.'], ['Рассказчик', 'Дмит нажимает кнопку вызова.'], ['Рассказчик', 'После второго гудка кто-то отвечает.'], ['Рассказчик', 'Да.'], ['Дмит', 'Алло.'], ['Рассказчик', 'Кто это?'], ['Дмит', 'А вы кому звоните?'], ['Рассказчик', 'Телефон где?'], ['Дмит', 'В школе.'], ['Рассказчик', 'На линии становится тихо.'], ['Рассказчик', 'Как тебя зовут?']], 'next-step-phone-name-choice'),
+  {
+    id: 'next-step-phone-name-choice', speaker: 'Рассказчик', text: 'Незнакомец ждёт ответа.', left: 'Дмит', right: 'Вадим', background: 'school-second-floor-night', tone: 'danger', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 2 },
+    choices: [
+      { label: 'Назвать настоящее имя.', next: 'next-step-finish-together-0', effects: { flags: ['MAFIA_KNOWS_DMIT_NAME', 'MAFIA_CONTACT_ALERTED'] } }, { label: 'Назваться Матвеем.', next: 'next-step-finish-together-0', effects: { flags: ['MAFIA_SUSPECTS_MATVEY', 'MAFIA_CONTACT_ALERTED'] } }, { label: 'Промолчать и сбросить звонок.', next: 'next-step-finish-together-0', effects: { flags: ['MAFIA_CONTACT_ALERTED'] } }, { label: '[Харизма 6] Представиться охранником школы.', next: 'next-step-phone-guard-success-0', failNext: 'next-step-finish-together-0', requires: { charisma: 6 } },
+    ],
+  },
+  ...sequence('next-step-phone-guard-success', [['Дмит', 'Охрана школы. Телефон найден при обходе.'], ['Рассказчик', 'В каком кабинете?'], ['Дмит', 'Информатика.'], ['Рассказчик', 'Ничего не трогайте. За ним приедут.'], ['Дмит', 'Кто?'], ['Рассказчик', 'Человек Игоря.'], ['Рассказчик', 'Звонок обрывается.'], ['Вадим', 'Теперь они едут сюда.'], ['Дмит', 'Зато знаем, что Игорь настоящий.'], ['Вадим', 'Я не сомневался, что люди с таким именем существуют.']], 'next-step-finish-together-0', 'Дмит', 'Вадим', { effects: { flags: ['IGOR_CONNECTION_CONFIRMED', 'MAFIA_CONTACT_ALERTED'] } }),
+  ...sequence('next-step-finish-together', [['Рассказчик', 'В коридоре раздаётся удар. Охранник почти добрался до второго этажа.'], ['Охранник', 'Я ЗНАЮ, ЧТО ВЫ В ИНФОРМАТИКЕ!'], ['Дмит', 'Как он узнал?'], ['Вадим', 'Ты выбил дверь.'], ['Дмит', 'А. Точно.'], ['Вадим', 'Рюкзак у меня.'], ['Дмит', 'Телефон решили.'], ['Вадим', 'Осталось выйти.'], ['Дмит', 'Самая лёгкая часть.'], ['Вадим', 'После всего, что произошло, я тебе не верю.'], ['Дмит', 'Правильно.']], 'stage-end-home', 'Дмит', 'Вадим', { effects: { experience: 20, flags: ['SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
+
+  ...sequence('next-step-alone', [['Рассказчик', 'Дмит поднимается на второй этаж один. Снизу доносится голос Вадима.'], ['Вадим', 'Дмит!'], ['Охранник', 'Стой спокойно!'], ['Вадим', 'Ты обещал помочь!'], ['Рассказчик', 'Дмит не останавливается.'], ['Дмит', 'Бля…'], ['Рассказчик', 'Перед ним тянется пустой коридор. Кабинет информатики находится в самом конце.'], ['Рассказчик', 'Телефон Дмита вибрирует.'], ['Кед', 'Дмит, где Вадим?'], ['Дмит', 'Охранник его поймал.'], ['Кед', 'А ты?'], ['Дмит', 'Я наверху.'], ['Кед', 'Один?'], ['Дмит', 'Ну да.'], ['Кед', 'Ты опять человека бросил?'], ['Дмит', 'Он уже у охранника. Чё я сделаю?'], ['Мишган', 'Вернёшься.'], ['Дмит', 'Там охранник.'], ['Мишган', 'Я заметил.'], ['Данз', 'Можно сказать, что Вадим пожертвовал собой ради миссии.'], ['Кед', 'Закройся, Данз.'], ['Мишган', 'Дмит. Вернись.']], 'next-step-alone-choice', 'Дмит', 'Вадим'),
+  {
+    id: 'next-step-alone-choice', speaker: 'Рассказчик', text: 'У Дмита есть десять секунд на решение.', left: 'Дмит', right: 'Вадим', background: 'school-second-floor-night', tone: 'danger', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 1 },
+    choices: [
+      { label: 'Бля, ладно. Попробую его вытащить.', next: 'next-step-return-0' }, { label: 'Сначала заберу рюкзак. Не зря же мы сюда полезли.', next: 'next-step-alone-room-0' }, { label: '[Интеллект 6] Включите снаружи пожарную сигнализацию. Охранник отвлечётся.', next: 'next-step-alarm-success-0', failNext: 'next-step-alarm-fail-0', requires: { intelligence: 6 } }, { label: 'Это не моя проблема. Он сам полез.', next: 'next-step-double-betrayal-0' },
+    ],
+  },
+  ...sequence('next-step-return', [['Дмит', 'Бля, ладно. Попробую его вытащить.'], ['Мишган', 'Вот теперь нормально.'], ['Дмит', 'Не начинай.'], ['Кед', 'Мы отвлечём охранника снаружи.'], ['Данз', 'Я могу кинуть камень в окно.'], ['Рассказчик', 'Все: Нет!'], ['Дмит', 'Просто шумите у главного входа.'], ['Мишган', 'Уф-уф. Работаем.'], ['Рассказчик', 'Снаружи раздаётся грохот.'], ['Мишган', 'ЭЙ, ОХРАННИК! У ТЕБЯ СТОЙКА КРИВАЯ!'], ['Охранник', 'ЧЕГО?!'], ['Данз', 'И телевизор говно!'], ['Охранник', 'Я СЕЙЧАС ВЫЙДУ!'], ['Рассказчик', 'Охранник оставляет Вадима возле вахты и направляется к главному входу.'], ['Дмит', 'Вадим!'], ['Вадим', 'Ты вернулся.'], ['Дмит', 'Потом порадуешься. Беги наверх.'], ['Вадим', 'Я не радуюсь.'], ['Дмит', 'Вижу.'], ['Рассказчик', 'Вадим поднимается к Дмиту.']], 'next-step-return-talk-choice', 'Дмит', 'Вадим', { effects: { flags: ['DMIT_RETURNED_FOR_VADIM'] } }),
+  {
+    id: 'next-step-return-talk-choice', speaker: 'Вадим', text: 'Почему ты сначала убежал?', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz',
+    choices: [{ label: 'Испугался.', next: 'next-step-return-talk-1-0' }, { label: 'Думал, что так будет проще.', next: 'next-step-return-talk-2-0' }, { label: 'Затупил. Бывает.', next: 'next-step-return-talk-3-0' }, { label: 'Не сейчас, Вадим.', next: 'next-step-return-talk-4-0' }],
+  },
+  ...sequence('next-step-return-talk-1', [['Дмит', 'Испугался.'], ['Вадим', 'Это хотя бы честно.'], ['Дмит', 'Никому не говори.'], ['Вадим', 'Не обещаю.']], 'next-step-class-door-0'),
+  ...sequence('next-step-return-talk-2', [['Дмит', 'Думал, что так будет проще.'], ['Вадим', 'Для кого?'], ['Дмит', 'Для меня.'], ['Вадим', 'Это я понял.']], 'next-step-class-door-0'),
+  ...sequence('next-step-return-talk-3', [['Дмит', 'Затупил. Бывает.'], ['Вадим', 'У тебя это происходит довольно часто.'], ['Дмит', 'Но я вернулся.'], ['Вадим', 'Да.']], 'next-step-class-door-0'),
+  ...sequence('next-step-return-talk-4', [['Дмит', 'Не сейчас, Вадим.'], ['Вадим', 'Хорошо. Но разговор не закончился.'], ['Дмит', 'Да понял.']], 'next-step-class-door-0'),
+  ...sequence('next-step-alarm-success', [['Дмит', 'Кед, возле спортивного входа есть красная кнопка. Нажми её и бегите.'], ['Кед', 'Пожарная?'], ['Дмит', 'Ага.'], ['Вадим', 'Это незаконно.'], ['Дмит', 'Ты сейчас не в положении спорить.'], ['Рассказчик', 'Через несколько секунд по школе разносится вой сигнализации.'], ['Рассказчик', 'У-У-У-У!'], ['Охранник', 'Да что сегодня происходит?!'], ['Рассказчик', 'Охранник отпускает Вадима и бежит к пожарному щиту.'], ['Дмит', 'Вадим, наверх!'], ['Рассказчик', 'Вадим вырывается и поднимается по лестнице.'], ['Вадим', 'Ты устроил ложную пожарную тревогу.'], ['Дмит', 'Зато ты свободен.'], ['Вадим', 'Это не отменяет первое.']], 'next-step-class-door-0', 'Дмит', 'Вадим', { effects: { flags: ['FALSE_FIRE_ALARM_TRIGGERED', 'DMIT_RETURNED_FOR_VADIM'] } }),
+  ...sequence('next-step-alarm-fail', [['Дмит', 'Кед, нажми красную кнопку возле спортивного входа.'], ['Кед', 'Тут две.'], ['Дмит', 'Любую.'], ['Вадим', 'Нельзя нажимать любую!'], ['Данз', 'Нажал обе.'], ['Рассказчик', 'Сигнализация не включается. Вместо этого автоматически блокируются боковые двери.'], ['Охранник', 'Ага. Теперь вообще никто не выйдет.'], ['Дмит', 'Данз, ты долбоёб.'], ['Данз', 'Я действовал решительно.']], 'next-step-alone-room-0', 'Дмит', 'Охранник', { effects: { flags: ['SCHOOL_EXITS_LOCKED', 'VADIM_LEFT_WITH_GUARD'] } }),
+  ...sequence('next-step-double-betrayal', [['Дмит', 'Это не моя проблема. Он сам полез.'], ['Мишган', 'Нет.'], ['Дмит', 'Чё нет?'], ['Мишган', 'Ты его повёл.'], ['Дмит', 'Он сам хотел.'], ['Мишган', 'А ты согласился быть старшим.'], ['Дмит', 'Да пошёл ты.'], ['Мишган', 'Уже иду. Только не с тобой.'], ['Рассказчик', 'Мишган отключается.']], 'next-step-alone-room-0', 'Дмит', 'Мишган', { effects: { flags: ['DMIT_DOUBLE_ABANDONMENT', 'VADIM_TRUST_DESTROYED'] } }),
+  ...sequence('next-step-alone-room', [['Дмит', 'Сначала заберу рюкзак. Не зря же мы сюда полезли.'], ['Мишган', 'Он важнее рюкзака.'], ['Дмит', 'Я потом вернусь.'], ['Мишган', 'Ты это уже говорил?'], ['Дмит', 'Не говорил.'], ['Мишган', 'Но подумал.'], ['Кед', 'Дмит, это херовая тема.'], ['Дмит', 'Пять минут.'], ['Рассказчик', 'Дмит сбрасывает звонок и идёт к кабинету информатики.'], ['Рассказчик', 'Дмит доходит до закрытой двери кабинета.'], ['Дмит', 'Ну конечно.'], ['Рассказчик', 'Дмит включает фонарик на телефоне и проходит между компьютерами.'], ['Дмит', 'Третий компьютер… Какой третий?'], ['Рассказчик', 'В кабинете четыре ряда, и Дмит не помнит, откуда Вадим начинал считать.'], ['Рассказчик', 'Дмит вытаскивает из-под стола рюкзак Вадима.'], ['Дмит', 'Нашёл.'], ['Рассказчик', 'В этот момент на учительском столе начинает вибрировать чёрный телефон.'], ['Рассказчик', 'Машина будет у школы в 23:40.'], ['Рассказчик', 'Деньги у Игоря.'], ['Рассказчик', 'Младший ничего не должен увидеть.'], ['Дмит', 'Какой ещё Игорь?'], ['Рассказчик', 'Снизу слышен голос Вадима.'], ['Вадим', 'Дмит!'], ['Рассказчик', 'Теперь у Дмита в руках рюкзак, а перед ним лежит неизвестный телефон.']], 'next-step-alone-call-0', 'Дмит', undefined, { effects: { flags: ['VADIM_LEFT_WITH_GUARD'] } }),
+  ...sequence('next-step-alone-call', [['Дмит', 'Вадим, где твой рюкзак?'], ['Вадим', 'Ты серьёзно?'], ['Дмит', 'Да.'], ['Вадим', 'Ты оставил меня с охранником и теперь спрашиваешь, где рюкзак?'], ['Дмит', 'Я за ним и пришёл.'], ['Вадим', 'Третий ряд, второй стол от окна.'], ['Дмит', 'Спасибо.'], ['Вадим', 'Я не для тебя сказал. В рюкзаке моя работа.']], 'next-step-alone-end-choice', 'Дмит', 'Вадим'),
+  {
+    id: 'next-step-alone-end-choice', speaker: 'Рассказчик', text: 'Десять секунд на окончательное решение.', left: 'Дмит', background: 'school-second-floor-night', tone: 'danger', choiceTimer: { durationSeconds: 10, defaultChoiceIndex: 0 },
+    choices: [{ label: 'Забрать рюкзак и вернуться за Вадимом.', next: 'next-step-alone-finish-0', effects: { flags: ['DMIT_RETURNED_WITH_BACKPACK'] } }, { label: 'Забрать рюкзак и чёрный телефон, но оставить Вадима охраннику.', next: 'next-step-alone-finish-0', effects: { flags: ['DMIT_DOUBLE_ABANDONMENT', 'DMIT_HAS_BLACK_PHONE'] } }, { label: 'Оставить рюкзак и телефон, сразу вернуться за Вадимом.', next: 'next-step-alone-finish-0', effects: { flags: ['DMIT_RETURNED_FOR_VADIM'] } }, { label: 'Забрать только чёрный телефон и искать другой выход.', next: 'next-step-alone-finish-0', effects: { flags: ['DMIT_DOUBLE_ABANDONMENT', 'DMIT_HAS_BLACK_PHONE'] } }],
+  },
+  ...sequence('next-step-alone-finish', [['Рассказчик', 'Дмит надевает рюкзак Вадима на плечо.'], ['Рассказчик', 'Телефон снова вибрирует.'], ['Вадим', 'Дмит!'], ['Дмит', 'Иду…'], ['Рассказчик', 'Но сначала ему нужно решить, куда идти: обратно к Вадиму или искать выход одному.']], 'stage-end-home', 'Дмит', undefined, { effects: { experience: 9, flags: ['SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
+  ...sequence('next-step-caught', [['Рассказчик', 'Охранник усаживает Дмита и Вадима на стулья возле вахты. Дверь наружу заперта, а телефон уже лежит у него в руке.'], ['Охранник', 'Сейчас родителям позвоним.'], ['Дмит', 'Может, не надо?'], ['Охранник', 'Надо.'], ['Вадим', 'Мне действительно нужно забрать рюкзак.'], ['Охранник', 'Утром заберёшь.'], ['Вадим', 'Утром я не попаду на олимпиаду.'], ['Охранник', 'Надо было раньше думать.'], ['Дмит', 'Он из-за меня полез.'], ['Вадим', 'Это неправда.'], ['Дмит', 'Тихо.'], ['Охранник', 'Ну? Кто всё придумал?']], 'next-step-caught-choice', 'Дмит', 'Охранник'),
+  {
+    id: 'next-step-caught-choice', speaker: 'Рассказчик', text: 'Охранник ждёт ответа.', left: 'Дмит', right: 'Охранник', background: 'school-dark-vaz', tone: 'danger',
+    choices: [{ label: 'Я придумал. Вадим вообще не виноват.', next: 'next-step-caught-blame-0' }, { label: 'Вадим сам попросил. Я только помогал.', next: 'next-step-caught-shift-0' }, { label: 'Никто не придумал. Мы просто хотели забрать вещи.', next: 'next-step-caught-neutral-0' }, { label: '[Харизма 6] Сначала дайте забрать рюкзак, потом звоните кому хотите.', next: 'next-step-caught-charisma-success-0', failNext: 'next-step-caught-charisma-fail-0', requires: { charisma: 6 } }, { label: '[Удача 6] Потянуть время до появления директора или учителя информатики.', next: 'next-step-caught-luck-success-0', failNext: 'next-step-caught-luck-fail-0', requires: { luck: 6 } }],
+  },
+  ...sequence('next-step-caught-blame', [['Дмит', 'Я придумал. Вадим вообще не виноват.'], ['Вадим', 'Дмит.'], ['Дмит', 'Чё?'], ['Вадим', 'Это тоже неправда.'], ['Дмит', 'Зато тебе утром ехать.'], ['Охранник', 'Герой, что ли?'], ['Дмит', 'Нет.'], ['Охранник', 'Родителям всё равно позвоню.'], ['Дмит', 'Моим звоните. Его отпустите.'], ['Охранник', 'Сам решу.']], 'next-step-caught-finish-0', 'Дмит', 'Охранник', { effects: { flags: ['DMIT_TOOK_BLAME_FOR_VADIM', 'VADIM_TRUST_IMPROVED'] } }),
+  ...sequence('next-step-caught-shift', [['Дмит', 'Вадим сам попросил. Я только помогал.'], ['Вадим', 'Ты сам сказал, что знаешь, что делать.'], ['Дмит', 'Ну ты же рюкзак забыл.'], ['Вадим', 'А ты предложил способы проникновения.'], ['Охранник', 'Понятно. Два идиота.'], ['Вадим', 'Один из нас хотя бы признаёт свою часть.'], ['Рассказчик', 'Вадим отворачивается.']], 'next-step-caught-finish-0', 'Дмит', 'Вадим', { effects: { flags: ['DMIT_BLAMED_VADIM', 'VADIM_TRUST_REDUCED'] } }),
+  ...sequence('next-step-caught-neutral', [['Дмит', 'Никто не придумал. Мы просто хотели забрать вещи.'], ['Охранник', 'Через окно?'], ['Дмит', 'Дверь была закрыта.'], ['Охранник', 'И это вас не остановило?'], ['Вадим', 'Остановило. Ненадолго.'], ['Дмит', 'Вадим.'], ['Вадим', 'Я просто ответил.']], 'next-step-caught-finish-0'),
+  ...sequence('next-step-caught-charisma-success', [['Дмит', 'Позвоните кому хотите. Но сначала дайте ему забрать документы. Он из-за них сюда полез. Если он пропустит олимпиаду, вам потом учитель будет объяснять, почему вы не дали пройти двадцать метров.'], ['Охранник', 'Мне никто ничего не будет объяснять.'], ['Вадим', 'Учитель действительно может подтвердить.'], ['Дмит', 'Пойдёмте вместе. Мы уже никуда не убежим.'], ['Охранник', 'Ты особенно.'], ['Дмит', 'Ну вот.'], ['Охранник', 'Ладно. Быстро.'], ['Охранник', 'Забрали рюкзак — и сразу вниз.'], ['Дмит', 'А телефон?'], ['Охранник', 'Какой телефон?'], ['Рассказчик', 'Охранник ведёт их к кабинету информатики.'], ['Рассказчик', 'Охранник замечает чёрный аппарат на столе и резко меняется в лице.'], ['Охранник', 'Это не ваше.'], ['Дмит', 'А чьё?'], ['Охранник', 'Я сказал — не ваше.'], ['Рассказчик', 'Охранник быстро убирает телефон во внутренний карман.'], ['Вадим', 'Вы знаете владельца?'], ['Охранник', 'Молчи.'], ['Рассказчик', 'Впервые за весь вечер охранник выглядит не злым, а испуганным.']], 'stage-end-home', 'Дмит', 'Охранник', { effects: { flags: ['GUARD_ESCORT_TO_BACKPACK', 'GUARD_RECOGNIZED_BLACK_PHONE', 'SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
+  ...sequence('next-step-caught-charisma-fail', [['Охранник', 'Хватит мне зубы заговаривать.'], ['Дмит', 'Я нормально объясняю.'], ['Охранник', 'Сейчас отцу своему объяснять будешь.']], 'next-step-caught-finish-0', 'Дмит', 'Охранник', { effects: { flags: ['GUARD_CALLED_PARENTS'] } }),
+  ...sequence('next-step-caught-luck-success', [['Рассказчик', 'Главная дверь неожиданно открывается. В школу входит учитель информатики с папкой под мышкой.'], ['Рассказчик', 'Учитель информатики: Что здесь происходит?'], ['Вадим', 'Сергей Павлович!'], ['Охранник', 'Эти двое в школу залезли.'], ['Вадим', 'Я забыл рюкзак с документами.'], ['Рассказчик', 'Учитель информатики: Я как раз вернулся за ведомостью.'], ['Дмит', 'Во. Всё нормально.'], ['Охранник', 'Ничего не нормально.'], ['Рассказчик', 'Учитель информатики: Сначала заберём документы. Потом будем разбираться.'], ['Рассказчик', 'Учитель ведёт их на второй этаж.']], 'next-step-caught-finish-0', 'Дмит', 'Охранник', { effects: { flags: ['TEACHER_SAVED_OLYMPIAD'] } }),
+  ...sequence('next-step-caught-luck-fail', [['Рассказчик', 'Проходит несколько минут. Никто не появляется.'], ['Охранник', 'Всё. Хватит ждать.'], ['Дмит', 'Мы вообще ничего не ждём.'], ['Вадим', 'Ты предложил ждать.'], ['Дмит', 'Тихо.']], 'next-step-caught-finish-0', 'Дмит', 'Охранник', { effects: { flags: ['GUARD_CALLED_PARENTS'] } }),
+  ...sequence('next-step-caught-finish', [['Рассказчик', 'Этап «Кабинет информатики» завершён. Следующий этап: побег из школы или разговор с охранником.']], 'stage-end-home', 'Дмит', 'Охранник', { effects: { flags: ['SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE'] } }),
   line('Рассказчик', 'Этап заканчивается безопасным решением: компания помогает Вадиму с велосипедом и ведёт его домой. Школа остаётся закрытой, но живой и без ночного цирка.', '', 'Дмит', 'Вадим', {
     id: 'stage-end-home',
     sound: 'quest-complete',

@@ -16,7 +16,16 @@ import matveyMusic from '../assets/audio/музыка_матвей.mp3'
 import beerOpen from '../assets/audio/звук_открывания_пива.mp3'
 import dmitRoomAmbient from '../assets/audio/звук_комнаты_дмита.mp3'
 import roachMusic from '../assets/audio/тараканы.mp3'
+import chaseMusic from '../assets/audio/погоня.mp3'
 import questComplete from '../assets/audio/sfx/quest-complete.wav'
+import phoneMessageReceived from '../assets/audio/пришло_сообщение.mp3'
+import blackPhoneVibration from '../assets/audio/small-school/вибрация_телефона.mp3'
+import igorMysterySting from '../assets/audio/small-school/звук_мистики.mp3'
+import schoolEntryCreak from '../assets/audio/small-school/звук_открытия_двери_окна.mp3'
+import schoolChase from '../assets/audio/small-school/интерактив.mp3'
+import schoolDoorBuzz from '../assets/audio/small-school/тревожная_кнопка.mp3'
+import guardAlert from '../assets/audio/small-school/тревожный_звук.mp3'
+import bikeChainRattle from '../assets/audio/звук_починки.mp3'
 
 export const gameSounds = {
   classDoor,
@@ -30,6 +39,15 @@ export const gameSounds = {
   minikaAmbient,
   dmitRoomAmbient,
   roachMusic,
+  chaseMusic,
+  schoolChase,
+  schoolDoorBuzz,
+  schoolEntryCreak,
+  guardAlert,
+  blackPhoneVibration,
+  igorMysterySting,
+  phoneMessageReceived,
+  bikeChainRattle,
   mishganFall: fallSound,
   phoneVibrate: phoneNotification,
   questComplete,
