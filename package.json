@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test:quest-dsl": "node src/story/questDsl.test.ts && node scripts/verify-small-school.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },

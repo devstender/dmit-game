@@ -84,6 +84,7 @@ export type StoryChoice = {
   requiresMoney?: number;
   requires?: Partial<AbilityScores>;
   requiresFlags?: string[];
+  requiresAnyFlags?: string[];
   requiresPerks?: string[];
   requiresRelations?: Partial<Record<RelationCharacter, number>>;
   effects?: SceneEffect;

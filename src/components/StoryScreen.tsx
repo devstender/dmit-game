@@ -307,7 +307,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (scene.sound === 'guard-alert') playSound(gameSounds.guardAlert, .82)
     if (scene.sound === 'black-phone-vibration' || scene.text === 'В этот момент на учительском столе начинает вибрировать чужой телефон.' || scene.text === 'Чёрный телефон снова вибрирует.') playSound(gameSounds.blackPhoneVibration, .66)
     if (scene.sound === 'igor-mystery-sting' || scene.text === 'Деньги у Игоря.' || scene.text === '«Строитель»?' || scene.text === 'Человек Игоря.') playSound(gameSounds.igorMysterySting, .7)
-    if (scene.sound === 'bike-chain-rattle') playSound(gameSounds.bikeChainRattle, .6)
+    if (scene.sound === 'bike-chain-rattle') playSound(gameSounds.bikeChainRattle, .6, 4)
     if (activePhoneMessage?.direction === 'incoming') playSound(gameSounds.phoneMessageReceived, .48)
     if (scene.sound === 'quest-complete') playSound(gameSounds.questComplete, .62)
     if (scene.sound === 'beer-open') playSound(gameSounds.beerOpen, .72)
@@ -317,6 +317,10 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
 
   useEffect(() => {
     ambientAudio.current?.pause()
+    if (scene.music === 'school-chase') {
+      ambientAudio.current = null
+      return
+    }
     ambientAudio.current = playLoop(
       activeBackground === 'classroom'
         ? gameSounds.classroomAmbient
@@ -326,14 +330,14 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
             ? gameSounds.nightAmbient
           : activeBackground === 'home' || activeBackground === 'dmit-room'
             ? gameSounds.dmitRoomAmbient
-            : gameSounds.schoolyardAmbient,
-      activeBackground === 'classroom' ? .18 : activeBackground === 'minika' ? .24 : activeBackground === 'school-dark-vaz' ? .22 : activeBackground === 'home' || activeBackground === 'dmit-room' ? .2 : .2,
+          : gameSounds.nightAmbient,
+      activeBackground === 'classroom' ? .18 : activeBackground === 'minika' ? .24 : activeBackground === 'school-dark-vaz' ? .22 : activeBackground === 'home' || activeBackground === 'dmit-room' ? .2 : .22,
     )
     return () => {
       ambientAudio.current?.pause()
       ambientAudio.current = null
     }
-  }, [activeBackground])
+  }, [activeBackground, scene.music])
 
   useEffect(() => {
     if (scene.music === 'matvey' || scene.music === 'chase' || scene.music === 'school-chase') {
@@ -575,6 +579,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const canChoose = (choice: StoryChoice) => (
     (choice.requiresMoney === undefined || player.money >= choice.requiresMoney)
     && (choice.requiresFlags ?? []).every((flag) => player.flags.includes(flag))
+    && (!(choice.requiresAnyFlags?.length) || choice.requiresAnyFlags.some((flag) => player.flags.includes(flag)))
     && (choice.requiresPerks ?? []).every((perk) => player.perks.includes(perk))
     && Object.entries(choice.requiresRelations ?? {}).every(([character, minimum]) => player.relations[character as keyof typeof player.relations] >= minimum)
   )

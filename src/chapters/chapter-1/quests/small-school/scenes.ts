@@ -1,6 +1,12 @@
 import type { Scene, StoryChoice } from '../../../../types/story'
 import miniGameSource from './mini-game.md?raw'
 import {
+  compileQuest,
+  defineQuest,
+  dialogue,
+  timedChoice,
+} from '../../../../story/questDsl'
+import {
   interestingPlaceQuestScenes,
   interestingPlaceQuestStartScene,
 } from '../interesting-place/scenes'
@@ -23,37 +29,61 @@ type DraftScene = Omit<Scene, 'next' | 'nextByFlag' | 'fallbackNext' | 'choices'
 
 type DialogueEntry = readonly [Scene['speaker'], string]
 
-const buildScenes = (startIndex: number, drafts: DraftScene[]): Scene[] => {
-  const labels = new Map<string, number>()
-  drafts.forEach((draft, index) => {
-    if (draft.id) labels.set(draft.id, startIndex + index)
+// Presentation is declared on quest/default/node context. IDs only describe graph links.
+const createSmallSchoolQuestDefinition = (drafts: DraftScene[]) => {
+  const nodes = drafts.map((draft, index) => {
+    const id = draft.id ?? `legacy-${index}`
+    const { id: _id, next, nextByFlag, fallbackNext, choices, choiceTimer, left, right, speaker, text, ...context } = draft
+    const cast = right ? [left!, right] as const : left ? [left] as const : undefined
+    if (choices) {
+      return timedChoice({
+        id,
+        speaker,
+        prompt: text,
+        ...(cast ? { cast } : {}),
+        ...context,
+        options: choices.map((item) => ({
+          text: item.label,
+          ...(item.shortLabel ? { shortText: item.shortLabel } : {}),
+          ...(item.say ? { say: item.say } : {}),
+          ...(item.narration ? { narration: item.narration } : {}),
+          next: item.next,
+          ...(item.failNext ? { failNext: item.failNext } : {}),
+          ...(item.requires ? { runtimeRequires: item.requires } : {}),
+          ...(item.requiresMoney !== undefined ? { runtimeRequiresMoney: item.requiresMoney } : {}),
+          ...(item.requiresFlags ? { runtimeRequiresFlags: item.requiresFlags } : {}),
+          ...(item.effects ? { sceneEffects: item.effects } : {}),
+          ...(item.failureEffects ? { failureSceneEffects: item.failureEffects } : {}),
+          ...(item.failureText ? { failureText: item.failureText } : {}),
+        })),
+        durationSeconds: choiceTimer?.durationSeconds ?? 10,
+        ...(choiceTimer?.defaultChoiceIndex !== undefined ? { defaultOptionIndex: choiceTimer.defaultChoiceIndex } : {}),
+      })
+    }
+    return dialogue({
+      id,
+      ...(cast ? { cast } : {}),
+      ...context,
+      lines: [[speaker, text]],
+      ...(next && !nextByFlag?.length ? { next } : {}),
+      ...(nextByFlag ? { routes: nextByFlag } : {}),
+      ...(fallbackNext ? { fallback: fallbackNext } : {}),
+      ...(!next && !nextByFlag?.length && !fallbackNext ? { end: true } : {}),
+    })
   })
-
-  const resolve = (label?: string) => label === undefined ? undefined : labels.get(label)
-
-  return drafts.map(({ id: _id, next, nextByFlag, fallbackNext, choices, ...scene }) => ({
-    ...scene,
-    next: resolve(next),
-    nextByFlag: nextByFlag?.map((route) => ({ flag: route.flag, next: resolve(route.next) ?? startIndex })),
-    fallbackNext: resolve(fallbackNext),
-    choices: choices?.map((choice) => ({
-      ...choice,
-      next: resolve(choice.next) ?? startIndex,
-      failNext: resolve(choice.failNext),
-    })),
-  }))
+  return defineQuest({
+    id: 'small-school',
+    start: drafts[0]?.id ?? 'legacy-0',
+    defaults: { background: 'school-dark-vaz' },
+    // The source still contains archived branches that are intentionally not linked after the full chase rewrite.
+    allowUnreachable: true,
+    nodes,
+  })
 }
 
-const schoolBackgroundForScene = (id?: string): Scene['background'] => {
-  if (!id) return 'school-yard-night'
-  if (id.startsWith('start-')) return 'school-dark-vaz'
-  if (id.startsWith('guard-') || id.startsWith('bribe-')) return 'school-main-entrance-night'
-  if (id.startsWith('entry-') || id.startsWith('window-') || id.startsWith('grate-') || id.startsWith('lights-')) return 'school-backyard-night'
-  if (id.startsWith('chase-')) return 'school-corridor-night'
-  if (id.startsWith('computer-room') || id.startsWith('computer-phone') || id.startsWith('phone-') || id.startsWith('next-step-room') || id.startsWith('next-step-phone')) return 'computer-class-night'
-  if (id.startsWith('computer-') || id.startsWith('next-step-')) return 'school-second-floor-night'
-  return 'school-yard-night'
-}
+const buildScenes = (startIndex: number, drafts: DraftScene[]): Scene[] => (
+  compileQuest(startIndex, createSmallSchoolQuestDefinition(drafts))
+)
 
 const line = (
   speaker: Scene['speaker'],
@@ -67,7 +97,7 @@ const line = (
   text,
   left,
   right,
-  background: extra.background ?? schoolBackgroundForScene(extra.id),
+  background: extra.background ?? 'school-dark-vaz',
   next,
   ...extra,
 })
@@ -97,7 +127,7 @@ const chaseChoice = (
   tone: 'danger',
   music: 'school-chase',
   choices,
-  choiceTimer: { durationSeconds: 10, defaultChoiceIndex },
+  choiceTimer: { durationSeconds: _durationSeconds, defaultChoiceIndex },
 })
 
 /** Создаёт последовательность реплик без склеивания реплик разных персонажей. */
@@ -145,8 +175,8 @@ const miniGameSequence = (id: string, from: number, to: number, next: string, ex
   sequence(id, miniGameRange(from, to), next, 'Дмит', 'Вадим', { background: 'school-corridor-night', tone: 'danger', music: 'school-chase', ...extra })
 )
 
-export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStartScene, [
-  line('Рассказчик', 'После Миньки компания идёт по вечернему Арбекову. Впереди шагают Кед и Данз, позади хромает Мишган, а Дмит время от времени оглядывается, проверяя, не появились ли снова люди Матвея.', 'start-2', 'Дмит', 'Кед', { id: 'start-1' }),
+const smallSchoolQuestDrafts: DraftScene[] = [
+  line('Рассказчик', 'После Миньки компания идёт по вечернему Арбекову. Впереди шагают Кед и Данз, позади хромает Мишган, а Дмит время от времени оглядывается, проверяя, не появились ли снова люди Матвея.', 'start-2', 'Дмит', 'Кед', { id: 'start-1', background: 'school-dark-vaz' }),
   line('Данз', 'А куда мы вообще идём?', 'start-3', 'Кед', 'Данз', { id: 'start-2' }),
   line('Кед', 'Ты пять минут назад предложил идти куда глаза смотрят.', 'start-4', 'Кед', 'Данз', { id: 'start-3' }),
   line('Данз', 'Мои глаза уже устали.', 'start-5', 'Кед', 'Данз', { id: 'start-4' }),
@@ -166,10 +196,10 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
   line('Данз', 'Вот именно.', 'school-6', 'Данз', 'Мишган', { id: 'school-5' }),
   line('Кед', 'Вы два дебила.', 'school-7', 'Кед', 'Данз', { id: 'school-6' }),
   line('Дмит', 'Тихо.', 'vadim-1', 'Дмит', 'Кед', { id: 'school-7' }),
-  line('Рассказчик', 'Возле школьного забора кто-то сидит на корточках рядом с велосипедом. На земле лежит снятая цепь, а экран телефона освещает знакомое лицо.', 'vadim-2', 'Дмит', undefined, { id: 'vadim-1', sound: 'bike-chain-rattle' }),
+  line('Рассказчик', 'Возле школьного забора кто-то сидит на корточках рядом с велосипедом. На земле лежит снятая цепь, а экран телефона освещает знакомое лицо.', 'vadim-2', 'Дмит', undefined, { id: 'vadim-1' }),
   line('Дмит', 'Вадим?', 'vadim-3', 'Дмит', 'Вадим', { id: 'vadim-2' }),
   line('Рассказчик', 'Парень поднимает голову. Это Вадим — ученик из младших классов, которого Дмит несколько раз видел в коридорах школы.', 'vadim-4', 'Дмит', 'Вадим', { id: 'vadim-3' }),
-  line('Вадим', 'Здравствуйте.', 'vadim-5', 'Дмит', 'Вадим', { id: 'vadim-4' }),
+  line('Вадим', 'Здравствуйте.', 'vadim-5', 'Дмит', 'Вадим', { id: 'vadim-4', sound: 'bike-chain-rattle' }),
   line('Дмит', 'Какое ещё «здравствуйте»? Ты чё здесь делаешь?', 'vadim-6', 'Дмит', 'Вадим', { id: 'vadim-5' }),
   line('Вадим', 'В данный момент пытаюсь починить цепь. До этого пытался попасть в школу.', 'vadim-7', 'Дмит', 'Вадим', { id: 'vadim-6' }),
   line('Данз', 'Ночью?', 'vadim-8', 'Данз', 'Вадим', { id: 'vadim-7' }),
@@ -322,7 +352,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     ],
   },
 
-  line('Рассказчик', 'Дмит присаживается возле велосипеда и внимательно смотрит на цепь.', 'inspect-success-2', 'Дмит', 'Вадим', { id: 'inspect-success-1', sound: 'bike-chain-rattle' }),
+  line('Рассказчик', 'Дмит присаживается возле велосипеда и внимательно смотрит на цепь.', 'inspect-success-2', 'Дмит', 'Вадим', { id: 'inspect-success-1' }),
   line('Дмит', 'Она не порвалась.', 'inspect-success-3', 'Дмит', 'Вадим', { id: 'inspect-success-2' }),
   line('Вадим', 'Нет. Просто сильно застряла.', 'inspect-success-4', 'Дмит', 'Вадим', { id: 'inspect-success-3' }),
   line('Дмит', 'А это чё?', 'inspect-success-5', 'Дмит', 'Вадим', { id: 'inspect-success-4' }),
@@ -697,7 +727,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
 
   line('Дмит', 'Сначала разберёмся, кто трогал твой велосипед.', 'bike-sabotage-sidequest-2', 'Дмит', 'Вадим', { id: 'bike-sabotage-sidequest-1' }),
   line('Вадим', 'Ты думаешь, это важно?', 'bike-sabotage-sidequest-3', 'Дмит', 'Вадим', { id: 'bike-sabotage-sidequest-2' }),
-  line('Дмит', 'Если кто-то сорвал цепь специально, он мог ждать, что ты вернёшься к школе.', 'bike-sabotage-sidequest-4', 'Кед', 'Вадим', { id: 'bike-sabotage-sidequest-3', sound: 'bike-chain-rattle' }),
+  line('Дмит', 'Если кто-то сорвал цепь специально, он мог ждать, что ты вернёшься к школе.', 'bike-sabotage-sidequest-4', 'Кед', 'Вадим', { id: 'bike-sabotage-sidequest-3' }),
   line('Кед', 'И вот это уже пахнет не велосипедом, а засадой.', 'stage-end-sabotage', 'Кед', 'Вадим', { id: 'bike-sabotage-sidequest-4' }),
 
   line('Рассказчик', 'Компания подходит ближе к школе. Теперь это уже не разговор у забора, а почти план — просто пока без той части, где кто-нибудь понимает, что делает.', 'infiltration-1', 'Дмит', 'Вадим', {
@@ -737,7 +767,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     text: 'Да понял я.',
     left: 'Дмит',
     right: 'Вадим',
-    background: 'school-dark-vaz',
+    background: 'school-yard-night',
     choices: [
       { label: 'Ты умный — ты и говори, куда лезть.', shortLabel: 'Пусть Вадим ведёт.', next: 'entry-neutral-smart-1' },
       { label: 'Без лекций. Покажи самый быстрый вход.', shortLabel: 'Самый быстрый вход.', next: 'entry-neutral-fast-1' },
@@ -940,7 +970,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     text: 'Теперь нужно выбрать способ проникновения. У каждого варианта есть своя цена: деньги, риск, шум, охранник или Данз, что иногда одно и то же.',
     left: 'Дмит',
     right: 'Вадим',
-    background: 'school-dark-vaz',
+    background: 'school-yard-night',
     choices: [
       {
         label: '[Харизма 5] Скажем, что в рюкзаке лекарства. Охранник сам откроет.',
@@ -1150,7 +1180,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     text: 'Главный вход умер как идея. Дмит быстро выбирает запасной путь.',
     left: 'Дмит',
     right: 'Вадим',
-    background: 'school-dark-vaz',
+    background: 'school-yard-night',
     choices: [
       { label: '[Ловкость 5] Лезем через забор и окно раздевалки.', shortLabel: 'Окно раздевалки.', requires: { agility: 5 }, next: 'entry-window-1', failNext: 'entry-window-fail-1', failureText: 'После разговора с охранником руки у Дмита работают хуже, чем рот минуту назад.', effects: { experience: 8, flags: ['SMALL_SCHOOL_ENTRY_LOCKER_WINDOW'] }, failureEffects: { flags: ['SMALL_SCHOOL_WINDOW_ATTEMPT_FAILED'] } },
       { label: '[Интеллект 6] Выключим свет снаружи. Охранник сам выйдет к щитку.', shortLabel: 'Отвлечь светом.', requires: { intelligence: 6 }, next: 'entry-lights-1', failNext: 'entry-lights-fail-1', failureText: 'Щиток внезапно оказывается сложнее, чем Дмит рассказывал секунду назад.', effects: { experience: 10, flags: ['SMALL_SCHOOL_ENTRY_LIGHTS_DISTRACTION'] }, failureEffects: { flags: ['SMALL_SCHOOL_LIGHTS_PLAN_FAILED'] } },
@@ -1621,7 +1651,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
     id: 'computer-open-choice', speaker: 'Рассказчик', text: 'Снизу раздаётся металлический удар. Охранник почти на втором этаже — дверь нужно открыть быстро.', left: 'Дмит', right: 'Вадим', background: 'school-dark-vaz', tone: 'danger',
     choices: [
       { label: '[Интеллект 5] Попросить Вадима найти запасной ключ.', next: 'computer-key-good-1', failNext: 'computer-key-fail-1', requires: { intelligence: 5 }, failureText: 'Вадим быстро перебирает связки, но нужного ключа среди них нет.' },
-      { label: '[Внимательность 5] Осмотреть верх двери и шкаф пожарной безопасности.', next: 'computer-hidden-good-1', failNext: 'computer-hidden-fail-1', requires: { perception: 5 }, failureText: 'Дмит проверяет верх двери и шкаф рядом. Ничего.' },
+      { label: '[Внимательность 5] Осмотреть верх двери и шкаф пожарной безопасности.', next: 'computer-hidden-good-0', failNext: 'computer-hidden-fail-1', requires: { perception: 5 }, failureText: 'Дмит проверяет верх двери и шкаф рядом. Ничего.' },
       { label: '[Ловкость 6] Перелезть через внутреннее окно.', next: 'computer-window-check', failNext: 'computer-window-fail-1', requires: { agility: 6 }, failureText: 'Дмит цепляется за шкаф и громко соскальзывает вниз.' },
       { label: '[Сила 6] Выбить дверь.', next: 'computer-force-good-1', failNext: 'computer-force-fail-1', requires: { strength: 6 }, failureText: 'Дмит врезается в дверь. Она не открывается.' },
       { label: 'Вадим, ты это начал — ты и открывай.', next: 'computer-neutral-open-1' },
@@ -1632,7 +1662,7 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
   line('Рассказчик', 'Вадим перебирает связки: кабинет двадцать четыре, двадцать пять, двадцать шесть.', 'computer-key-good-3', 'Дмит', 'Вадим', { id: 'computer-key-good-2' }),
   line('Вадим', 'Да. Нашёл.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-key-good-3', effects: { flags: ['COMPUTER_ROOM_OPENED_QUIETLY'] } }),
   line('Дмит', 'Тогда этот путь отпадает.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-key-fail-1' }),
-  line('Рассказчик', 'Дмит замечает царапины на дверной коробке и находит маленький ключ, обмотанный изолентой.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-hidden-good-1', effects: { flags: ['COMPUTER_ROOM_HIDDEN_KEY_FOUND'] } }),
+  line('Рассказчик', 'Дмит замечает царапины на дверной коробке и находит маленький ключ, обмотанный изолентой.', 'computer-hidden-good-1', 'Дмит', 'Вадим', { id: 'computer-hidden-good-0', effects: { flags: ['COMPUTER_ROOM_HIDDEN_KEY_FOUND'] } }),
   line('Вадим', 'Учитель прячет ключ над дверью?', 'computer-hidden-good-2', 'Дмит', 'Вадим', { id: 'computer-hidden-good-1' }),
   line('Дмит', 'Все умные люди иногда делают тупую херню.', 'computer-enter-room-1', 'Дмит', 'Вадим', { id: 'computer-hidden-good-2', effects: { flags: ['COMPUTER_ROOM_HIDDEN_KEY_FOUND'] } }),
   line('Вадим', 'Один раз оставят — и ты окажешься прав.', 'computer-open-choice', 'Дмит', 'Вадим', { id: 'computer-hidden-fail-1' }),
@@ -1926,4 +1956,13 @@ export const smallSchoolQuestScenes: Scene[] = buildScenes(smallSchoolQuestStart
       flags: ['CHAPTER_1_SMALL_SCHOOL_MET_VADIM', 'CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY', 'CHAPTER_1_SMALL_SCHOOL_CHAIN_INVESTIGATION'],
     },
   }),
-])
+]
+
+export const smallSchoolQuestDefinition = defineQuest({
+  ...createSmallSchoolQuestDefinition(smallSchoolQuestDrafts),
+})
+
+export const smallSchoolQuestScenes: Scene[] = buildScenes(
+  smallSchoolQuestStartScene,
+  smallSchoolQuestDrafts,
+)
