@@ -21,6 +21,8 @@ export type SceneEffect = {
 
 export type StoryChoice = {
   label: string
+  shortLabel?: string
+  say?: string
   next: number
   failNext?: number
   requiresMoney?: number
@@ -30,6 +32,13 @@ export type StoryChoice = {
   effects?: SceneEffect
   failureEffects?: SceneEffect
   failureText?: string
+}
+
+export type ChoiceTimer = {
+  durationSeconds: number
+  defaultChoiceIndex?: number
+  defaultNext?: number
+  effects?: SceneEffect
 }
 
 export type QuizQuestion = {
@@ -83,6 +92,7 @@ export type Scene = {
   leftEmotion?: Emotion
   rightEmotion?: Emotion
   choices?: StoryChoice[]
+  choiceTimer?: ChoiceTimer
   quiz?: Quiz
   cheatGame?: CheatGame
   roachGame?: RoachGame

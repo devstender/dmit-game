@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { gameSounds, playLoop, playSound } from '../audio/gameAudio'
 import { abilityLabels, experienceForLevel, type PlayerState } from '../data/player'
 import { writeSavedGame } from '../data/saveGame'
@@ -40,6 +40,11 @@ type DialogueLine = {
   speaker: Character
   text: string
 }
+type PendingChoiceResolution = {
+  next?: number
+  effects?: SceneEffect
+  followupDialogue?: DialogueLine
+}
 type PhoneHistoryAccumulator = {
   stop: boolean
   messages: PhoneThreadMessage[]
@@ -59,7 +64,9 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const [testSuspicion, setTestSuspicion] = useState(18)
   const [copiedAnswer, setCopiedAnswer] = useState<string | null>(null)
   const [sideDialogue, setSideDialogue] = useState<DialogueLine | null>(null)
+  const [pendingChoiceResolution, setPendingChoiceResolution] = useState<PendingChoiceResolution | null>(null)
   const [pendingChoiceFailureNext, setPendingChoiceFailureNext] = useState<number | null>(null)
+  const [choiceTimerLeft, setChoiceTimerLeft] = useState<number | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [inventoryOpen, setInventoryOpen] = useState(false)
   const [mapOpen, setMapOpen] = useState(false)
@@ -84,18 +91,25 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         : activeBackground === 'minika'
           ? `linear-gradient(180deg, rgba(14, 15, 27, .18), rgba(12, 9, 18, .58)), url(${minkaBackground})`
           : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
+  const activeQuizQuestion = scene.quiz?.questions[quizQuestion]
+  const typingText = activeQuizQuestion?.question ?? scene.text
   const cinematicActive = Boolean(scene.cinematic && !playedCinematics.includes(sceneIndex))
   const phoneMode = Boolean(scene.phoneMessage)
-  const complete = visibleText.length === scene.text.length
+  const complete = visibleText.length === typingText.length
   const activeCheatQuestion = scene.cheatGame?.questions[testQuestion]
   const teacherPositionLabel = teacherPosition === 'board' ? 'у доски' : teacherPosition === 'rows' ? 'между рядами' : 'за спиной'
   const quizDialogue: DialogueLine | null = pendingQuizAnswer ? { speaker: 'Географичка', text: pendingQuizAnswer.reaction } : null
-  const activeDialogue = quizDialogue ?? sideDialogue
-  const dialogueSpeaker = activeDialogue?.speaker ?? scene.speaker
+  const activeDialogue = sideDialogue ?? quizDialogue
+  const dialogueSpeaker = activeDialogue?.speaker ?? (activeQuizQuestion ? 'Географичка' : scene.speaker)
   const dialogueText = activeDialogue?.text ?? visibleText
   const dialogueComplete = Boolean(activeDialogue) || complete
+  const choiceTimerVisible = Boolean(scene.choiceTimer && scene.choices && dialogueComplete && !activeDialogue && choiceTimerLeft !== null)
+  const choiceTimerProgress = scene.choiceTimer && choiceTimerLeft !== null
+    ? Math.max(0, Math.min(100, (choiceTimerLeft / scene.choiceTimer.durationSeconds) * 100))
+    : 0
   const mobileSpeaker = (dialogueSpeaker !== 'Рассказчик' ? dialogueSpeaker : undefined) as Character | undefined
   const mobileSpeakerPosition = mobileSpeaker === 'Дмит' ? 'left' : 'right'
+  const speakerNameSide = dialogueSpeaker === 'Рассказчик' ? 'narrator' : mobileSpeakerPosition
   const mobileSpeakerEmotion = mobileSpeaker === scene.left ? scene.leftEmotion : mobileSpeaker === scene.right ? scene.rightEmotion : undefined
   const phoneMessages: PhoneThreadMessage[] = scene.phoneMessage ? [
     ...chapter.scenes
@@ -117,7 +131,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     {
       speaker: dialogueSpeaker,
       text: dialogueText,
-      direction: scene.phoneMessage.direction,
+      direction: dialogueSpeaker === 'Дмит' ? 'outgoing' : scene.phoneMessage.direction,
     },
   ] : []
   const seenRelationCharacters = (Object.keys(player.relations) as RelationCharacter[]).filter((character) => (
@@ -141,17 +155,17 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     setVisibleText('')
     if (cinematicActive) return
     if (!textAnimationEnabled) {
-      setVisibleText(scene.text)
+      setVisibleText(typingText)
       return
     }
     let index = 0
     const typing = window.setInterval(() => {
       index += 1
-      setVisibleText(scene.text.slice(0, index))
-      if (index >= scene.text.length) window.clearInterval(typing)
+      setVisibleText(typingText.slice(0, index))
+      if (index >= typingText.length) window.clearInterval(typing)
     }, 14)
     return () => window.clearInterval(typing)
-  }, [cinematicActive, sceneIndex, scene.text, textAnimationEnabled])
+  }, [cinematicActive, sceneIndex, quizQuestion, typingText, textAnimationEnabled])
 
   useEffect(() => {
     window.localStorage.setItem('dmit-text-animation', String(textAnimationEnabled))
@@ -250,7 +264,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
 
   const advance = (next?: number) => {
     if (!complete) {
-      setVisibleText(scene.text)
+      setVisibleText(typingText)
       return
     }
     const resolvedNext = resolveNextScene(next)
@@ -261,7 +275,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       setQuizScore(0)
       setPendingQuizAnswer(null)
       setSideDialogue(null)
-      setPendingChoiceFailureNext(null)
+      setPendingChoiceResolution(null)
       resetTest()
     }
   }
@@ -278,15 +292,60 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     return Math.min(...chances)
   }
 
+  const cleanChoiceText = (text: string) => text
+    .replace(/^\[[^\]]+\]\s*/, '')
+    .replace(/[«»"]/g, '')
+    .trim()
+
+  const shortenChoiceText = (text: string) => {
+    const cleanText = cleanChoiceText(text)
+    if (cleanText.length <= 46) return cleanText
+    const sentenceEnd = cleanText.search(/[.!?…]/)
+    if (sentenceEnd > 12 && sentenceEnd <= 46) return cleanText.slice(0, sentenceEnd + 1)
+    return `${cleanText.slice(0, 43).trimEnd()}…`
+  }
+
+  const spokenChoiceText = (choice: StoryChoice) => choice.say ?? cleanChoiceText(choice.label)
+
+  const queueChoiceResolution = (choice: StoryChoice, resolution: PendingChoiceResolution) => {
+    setChoiceTimerLeft(null)
+    setSideDialogue({
+      speaker: 'Дмит',
+      text: spokenChoiceText(choice),
+    })
+    setPendingChoiceResolution(resolution)
+  }
+
+  const continuePendingChoice = () => {
+    if (!pendingChoiceResolution) return
+
+    if (pendingChoiceResolution.followupDialogue) {
+      applyEffects(pendingChoiceResolution.effects)
+      setSideDialogue(pendingChoiceResolution.followupDialogue)
+      setPendingChoiceResolution({
+        next: pendingChoiceResolution.next,
+      })
+      return
+    }
+
+    applyEffects(pendingChoiceResolution.effects)
+    const nextScene = pendingChoiceResolution.next
+    setPendingChoiceResolution(null)
+    setSideDialogue(null)
+    if (nextScene !== undefined) {
+      advance(nextScene)
+    }
+  }
+
   const formatChoiceLabel = (choice: StoryChoice) => {
     const checks = Object.entries(choice.requires ?? {})
-    if (checks.length === 0) return choice.label
+    const shortLabel = choice.shortLabel ?? shortenChoiceText(choice.label)
+    if (checks.length === 0) return shortLabel
     const requirements = checks.map(([ability, minimum]) => {
       const abilityKey = ability as keyof typeof player.abilities
       return `${abilityLabels[abilityKey]} ${player.abilities[abilityKey]}/${minimum}`
     }).join(', ')
-    const cleanLabel = choice.label.replace(/^\[[^\]]+\]\s*/, '')
-    return `[${requirements} · шанс ${skillCheckChance(choice)}%] ${cleanLabel}`
+    return `[${requirements} · шанс ${skillCheckChance(choice)}%] ${shortLabel}`
   }
 
   const canChoose = (choice: StoryChoice) => (
@@ -300,9 +359,18 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     playSound(gameSounds.uiClick, .58)
     if (Object.keys(choice.requires ?? {}).length > 0 && Math.random() * 100 >= skillCheckChance(choice)) {
       playSound(gameSounds.skillFail, .46)
+      queueChoiceResolution(choice, {
+        next: choice.failNext,
+        effects: choice.failureEffects,
+        followupDialogue: {
+          speaker: 'Рассказчик',
+          text: choice.failureText ?? 'Дмит пытается провернуть это, но районная математика говорит: не сегодня.',
+        },
+      })
+      return
       applyEffects(choice.failureEffects)
       if (choice.failNext !== undefined) {
-        setPendingChoiceFailureNext(choice.failNext)
+        setPendingChoiceFailureNext(choice.failNext ?? null)
         setSideDialogue({
           speaker: 'Рассказчик',
           text: choice.failureText ?? 'Дмит пытается провернуть это, но районная математика говорит: не сегодня.',
@@ -316,13 +384,72 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       return
     }
     if (Object.keys(choice.requires ?? {}).length > 0) playSound(gameSounds.skillSuccess, .58)
+    queueChoiceResolution(choice, {
+      next: choice.next,
+      effects: choice.effects,
+    })
+    return
     applyEffects(choice.effects)
     advance(choice.next)
+  }
+
+  useEffect(() => {
+    const timer = scene.choiceTimer
+    if (!timer || !scene.choices || !complete || activeDialogue) {
+      setChoiceTimerLeft(null)
+      return
+    }
+
+    let expired = false
+    setChoiceTimerLeft(timer.durationSeconds)
+    const startedAt = Date.now()
+    const interval = window.setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000)
+      const left = Math.max(0, timer.durationSeconds - elapsed)
+      setChoiceTimerLeft(left)
+
+      if (left > 0 || expired) return
+      expired = true
+      window.clearInterval(interval)
+      applyEffects(timer.effects)
+
+      if (timer.defaultNext !== undefined) {
+        advance(timer.defaultNext)
+        return
+      }
+
+      const defaultChoice = scene.choices?.[timer.defaultChoiceIndex ?? 0]
+      const fallbackChoice = defaultChoice && canChoose(defaultChoice)
+        ? defaultChoice
+        : scene.choices?.find((choice) => canChoose(choice))
+      if (fallbackChoice) choose(fallbackChoice)
+    }, 250)
+
+    return () => {
+      expired = true
+      window.clearInterval(interval)
+    }
+  }, [sceneIndex, complete, activeDialogue])
+
+  const formatQuizAnswerLine = (answer: QuizAnswer) => {
+    const templates = [
+      (value: string) => `Э-э-э… ${value}.`,
+      (value: string) => `Я думаю, что ${value}.`,
+      (value: string) => `Мне кажется, ${value}.`,
+      (value: string) => `Ну… пусть будет ${value}.`,
+      (value: string) => `Если честно, я бы сказал: ${value}.`,
+      (value: string) => `Так, по ощущениям… ${value}.`,
+    ]
+    return templates[quizQuestion % templates.length](answer.label)
   }
 
   const answerQuiz = (answer: QuizAnswer) => {
     if (!scene.quiz) return
     playSound(gameSounds.uiClick, .58)
+    setSideDialogue({
+      speaker: 'Дмит',
+      text: formatQuizAnswerLine(answer),
+    })
     setPendingQuizAnswer({
       points: answer.points,
       reaction: answer.reaction ?? (answer.points > 0 ? 'Ц. Ладно, этот ответ принимается. Дальше.' : 'Ц-ц-ц. Неправильно. Продолжай мучить карту.'),
@@ -480,7 +607,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   }
   const skipDialogueAnimation = () => {
     playSound(gameSounds.dialoguePage, .34)
-    setVisibleText(scene.text)
+    setVisibleText(typingText)
   }
   const toggleTextAnimation = () => {
     playSound(gameSounds.uiToggle, .48)
@@ -513,7 +640,16 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       return
     }
     if (scene.quiz && pendingQuizAnswer) {
+      if (sideDialogue) {
+        playSound(gameSounds.dialoguePage, .38)
+        setSideDialogue(null)
+        return
+      }
       continueQuiz()
+      return
+    }
+    if (pendingChoiceResolution) {
+      continuePendingChoice()
       return
     }
     if (pendingChoiceFailureNext !== null) {
@@ -529,6 +665,25 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       return
     }
     setMapOpen(true)
+  }
+  const handleMobileStageTap = (event: MouseEvent<HTMLDivElement>) => {
+    if (!window.matchMedia('(max-width: 680px)').matches) return
+    if (cinematicActive || phoneMode || sidebarOpen || inventoryOpen || mapOpen || settingsOpen || pendingPerkLevel) return
+    if (event.target instanceof HTMLElement && event.target.closest([
+      'button',
+      'a',
+      'input',
+      'select',
+      'textarea',
+      '[role="button"]',
+      '.story-topbar',
+      '.dialogue-panel',
+      '.phone-scene',
+      '.control-work-window',
+      '.roach-game',
+    ].join(','))) return
+
+    handleDialoguePanelTap(event)
   }
   const phoneChoiceOptions: PhoneChoiceOption[] = phoneMode && dialogueComplete && scene.choices && !activeDialogue
     ? scene.choices.map((choice) => ({
@@ -553,7 +708,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         onClose={() => setSettingsOpen(false)}
       />
       {pendingPerkLevel && <PerkSelection level={pendingPerkLevel} selectedPerks={player.perks} onSelect={choosePerk} />}
-      <div className="game-stage">
+      <div className="game-stage" onClick={handleMobileStageTap}>
         <div className="story-topbar">
           <button onClick={onExit} aria-label="Вернуться в меню">← Меню</button>
           <span>{chapter.title} <i /> {chapter.subtitle}</span>
@@ -568,17 +723,26 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
           <Portrait character={mobileSpeaker} position={mobileSpeakerPosition} active={Boolean(mobileSpeaker)} emotion={mobileSpeakerEmotion} layoutMode="mobile" visible={Boolean(mobileSpeaker)} transitionKey={`mobile-${dialogueSpeaker}-${sceneIndex}`} />
         </section>}
         {!cinematicActive && phoneMode && scene.phoneMessage && <PhoneMessenger contact={scene.phoneMessage.contact} messages={phoneMessages} complete={dialogueComplete} choices={phoneChoiceOptions} time={scene.phoneMessage.time} onTap={handleDialoguePanelTap} />}
-        {!cinematicActive && !phoneMode && <section className="dialogue-panel" onClick={handleDialoguePanelTap}>
-          <div className={`speaker-name ${dialogueSpeaker === 'Рассказчик' ? 'narrator' : ''}`}>{dialogueSpeaker}</div>
-          <p className="dialogue-text">{dialogueText}<span className={!dialogueComplete ? 'caret' : 'caret hidden'}>▍</span></p>
-          {complete && scene.choices && !activeDialogue && <div className="choices">{scene.choices.map((choice) => <button className={!canChoose(choice) ? 'locked' : ''} disabled={!canChoose(choice)} key={choice.label} onClick={() => choose(choice)}>{formatChoiceLabel(choice)}<span>{canChoose(choice) ? '→' : '×'}</span></button>)}</div>}
+        {!cinematicActive && !phoneMode && <div className="dialogue-shell" onClick={(event) => { event.stopPropagation(); handleDialoguePanelTap(event) }}>
+          <div className={`speaker-name ${speakerNameSide === 'narrator' ? 'narrator' : `speaker-${speakerNameSide}`}`}>{dialogueSpeaker}</div>
+          <section className="dialogue-panel"><p className="dialogue-text">{dialogueText}<span className={!dialogueComplete ? 'caret' : 'caret hidden'}>в–Ќ</span></p>
+          {choiceTimerVisible && <div
+            className="choice-timer"
+            style={{ '--choice-timer-progress': `${choiceTimerProgress}%` } as CSSProperties}
+            aria-label={`Осталось ${choiceTimerLeft} секунд`}
+          >
+            <span>{choiceTimerLeft}</span>
+          </div>}
+          {complete && scene.choices && !activeDialogue && <div className={`choices ${choiceTimerVisible ? 'timed' : ''}`}>{scene.choices.map((choice) => <button className={!canChoose(choice) ? 'locked' : ''} disabled={!canChoose(choice)} key={choice.label} onClick={() => choose(choice)}><span>{formatChoiceLabel(choice)}</span><i>{canChoose(choice) ? '→' : '×'}</i></button>)}</div>}
+          {activeDialogue && pendingChoiceResolution && <button className="continue next-step" onClick={continuePendingChoice}>Дальше <span>↓</span></button>}
           {activeDialogue && pendingChoiceFailureNext !== null && <button className="continue next-step" onClick={() => { const nextScene = pendingChoiceFailureNext; setPendingChoiceFailureNext(null); advance(nextScene) }}>Дальше <span>↓</span></button>}
-          {complete && scene.quiz && !pendingQuizAnswer && <div className="quiz-card"><p className="quiz-progress">{scene.quiz.title} · Вопрос {quizQuestion + 1} из {scene.quiz.questions.length}</p><h2>{scene.quiz.questions[quizQuestion].question}</h2><div className="quiz-answers">{scene.quiz.questions[quizQuestion].answers.map((answer) => <button key={answer.label} onClick={() => answerQuiz(answer)}>{answer.label}</button>)}</div></div>}
+          {complete && scene.quiz && activeQuizQuestion && !pendingQuizAnswer && <div className="choices quiz-dialogue-choices">{activeQuizQuestion.answers.map((answer) => <button key={answer.label} onClick={() => answerQuiz(answer)}><span>{answer.label}</span><i>→</i></button>)}</div>}
           {complete && scene.quiz && pendingQuizAnswer && <button className="continue quiz-continue" onClick={continueQuiz}>Продолжить <span>→</span></button>}
           {complete && !scene.choices && !scene.quiz && !scene.cheatGame && !scene.roachGame && resolveNextScene(scene.next) !== undefined && <button className="continue next-step" onClick={() => advance(scene.next)}>Далее <span>↓</span></button>}
           {complete && !scene.choices && !scene.quiz && !scene.cheatGame && !scene.roachGame && resolveNextScene(scene.next) === undefined && <button className="continue finish" onClick={() => setMapOpen(true)}>Открыть карту <span>↗</span></button>}
           {!complete && <button className="skip" onClick={skipDialogueAnimation}>Показать текст</button>}
-        </section>}
+          </section>
+        </div>}
         {complete && scene.cheatGame && activeCheatQuestion && <section className="control-work-window" aria-label="Контрольная работа"><div className="cheat-card"><div className="cheat-head"><div><p className="quiz-progress">{scene.cheatGame.title} · Лист {testQuestion + 1} из {scene.cheatGame.questions.length}</p><h2>{activeCheatQuestion.prompt}</h2></div><div className={`teacher-watch ${teacherPosition !== 'board' ? 'watching' : ''}`}><i />Географичка {teacherPositionLabel}</div></div><p className="cheat-description">{scene.cheatGame.description}</p><div className="warning-track"><span>Предупреждения</span><b>{testWarnings} / {scene.cheatGame.warningLimit}</b></div><div className="suspicion-meter"><span>Подозрение</span><div><b style={{ width: `${testSuspicion}%` }} /></div><strong>{testSuspicion}%</strong></div><div className="test-sheet">{activeCheatQuestion.answers.map((answer) => <button className={copiedAnswer === answer.label ? 'copied' : ''} key={answer.label} onClick={() => writeTestAnswer(answer)}>Записать: {answer.label}</button>)}</div><div className="cheat-actions"><button onClick={peekAtVeronica}>Подсмотреть у Вероники <small>риск {Math.round(cheatingRisk('peek') * 100)}%</small></button><button onClick={pretendToThink}>Сидеть ровно <small>-подозрение</small></button></div></div></section>}
         {complete && scene.roachGame && <CockroachHuntGame game={scene.roachGame} onFinish={finishRoachGame} />}
         {cinematicActive && <DoorReveal onComplete={completeCinematic} />}
@@ -586,3 +750,5 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     </main>
   )
 }
+
+
