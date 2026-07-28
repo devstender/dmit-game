@@ -2133,6 +2133,10 @@ h1 {
 }
 
 @media (max-width: 680px) {
+  .game-stage {
+    --mobile-bottom-lift: 30px;
+  }
+
   .desktop-portraits {
     display: none;
   }
@@ -2146,7 +2150,7 @@ h1 {
 
   .mobile-portraits .portrait,
   .mobile-portraits .portrait-space {
-    bottom: -8px;
+    bottom: calc(-8px + var(--mobile-bottom-lift));
     width: 66vw;
     height: min(56svh, 480px);
   }
@@ -2190,7 +2194,7 @@ h1 {
 
   .dialogue-panel {
     width: calc(100% - 18px);
-    margin-bottom: 10px;
+    margin-bottom: calc(10px + var(--mobile-bottom-lift) + env(safe-area-inset-bottom, 0px));
     padding: 12px 14px 16px;
     border-radius: 24px 24px 16px 16px;
     cursor: pointer;
@@ -2211,7 +2215,8 @@ h1 {
   }
 
   .continue.next-step,
-  .continue.quiz-continue {
+  .continue.quiz-continue,
+  .skip {
     display: none;
   }
 }
