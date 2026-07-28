@@ -1209,6 +1209,46 @@ h1 {
   opacity: .45;
 }
 
+.menu-screen .menu-character {
+  opacity: 1;
+}
+
+.menu-screen .menu-character img {
+  opacity: 1;
+  filter: drop-shadow(-18px 0 25px rgba(28, 13, 28, .45)) saturate(1.08) contrast(1.04);
+}
+
+.menu-screen .ghost-button {
+  min-height: 48px;
+  padding: 13px 17px;
+  border: 1px solid rgba(255, 220, 162, .72);
+  border-radius: 999px;
+  color: #fff8e9;
+  background: rgba(31, 22, 41, .72);
+  box-shadow: 0 12px 28px rgba(12, 8, 18, .32);
+  opacity: 1;
+  backdrop-filter: blur(6px);
+}
+
+.menu-screen .ghost-button:not(:disabled):hover {
+  color: #28182b;
+  background: #ffe0a2;
+  transform: translateY(-1px);
+}
+
+.menu-screen .ghost-button:disabled {
+  opacity: .58;
+  color: rgba(255, 244, 224, .78);
+  background: rgba(31, 22, 41, .52);
+}
+
+.menu-screen .ghost-button small {
+  display: block;
+  margin-top: 2px;
+  color: #ffd28b;
+  font-size: 9px;
+}
+
 .dialogue-panel:before {
   content: none;
 }
