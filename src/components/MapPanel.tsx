@@ -8,7 +8,7 @@ type MapPanelProps = {
   currentSceneIndex: number
   playerFlags: string[]
   debugModeEnabled?: boolean
-  onStartQuest: (sceneIndex: number, setupFlags?: string[], resetFlags?: string[]) => void
+  onStartQuest: (quest: Quest, setupFlags?: string[], resetFlags?: string[]) => void
 }
 
 export function MapPanel({ open, onClose, currentSceneIndex, playerFlags, debugModeEnabled = false, onStartQuest }: MapPanelProps) {
@@ -38,7 +38,7 @@ export function MapPanel({ open, onClose, currentSceneIndex, playerFlags, debugM
       setDebugSelections(Object.fromEntries(quest.debugSetup.map((group) => [group.id, group.options[0]?.id ?? ''])))
       return
     }
-    onStartQuest(quest.startSceneIndex)
+    onStartQuest(quest)
   }
   const startDebugQuest = () => {
     if (!debugQuest || debugQuest.startSceneIndex === undefined) return
@@ -47,7 +47,7 @@ export function MapPanel({ open, onClose, currentSceneIndex, playerFlags, debugM
     )) ?? []
     const resetFlags = debugQuest.debugSetup?.flatMap((group) => group.options.flatMap((option) => option.flags)) ?? []
     setDebugQuest(null)
-    onStartQuest(debugQuest.startSceneIndex, setupFlags, resetFlags)
+    onStartQuest(debugQuest, setupFlags, resetFlags)
   }
 
   return (
@@ -135,7 +135,7 @@ function MapLocationButton({ location, quests: locationQuests, onClick }: { loca
 
   return (
     <button
-      className={`map-location-zone ${questType ?? ''} ${hasQuest ? 'has-quest' : ''} ${activeQuest ? 'has-active-quest' : ''} ${completedQuest && !activeQuest ? 'has-completed-quest' : ''} ${hasStartableQuest ? 'startable' : ''} ${location.opens ? 'openable' : ''}`}
+      className={`map-location-zone ${questType ?? ''} ${location.markerOnly ? 'marker-only' : ''} ${hasQuest ? 'has-quest' : ''} ${activeQuest ? 'has-active-quest' : ''} ${completedQuest && !activeQuest ? 'has-completed-quest' : ''} ${hasStartableQuest ? 'startable' : ''} ${location.opens ? 'openable' : ''}`}
       onClick={onClick}
       style={{ left: `${location.x}%`, top: `${location.y}%`, width: `${location.width}%`, height: `${location.height}%` }}
       aria-label={location.name}

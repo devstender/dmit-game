@@ -1,7 +1,23 @@
 import { returnHomeQuestStartScene } from '../chapters/chapter-1/quests/return-home/scenes'
 import { boozeMinikaQuestStartScene } from '../chapters/chapter-1/quests/booze-minika/scenes'
+import { interestingPlaceQuestStartScene } from '../chapters/chapter-1/quests/interesting-place/scenes'
+import { smallSchoolQuestStartScene } from '../chapters/chapter-1/quests/small-school/scenes'
+import schoolDarkVazBackground from '../assets/school_dark_vaz.png'
+import nightAmbient from '../assets/audio/ночной_ambient.mp3'
+import phoneNotification from '../assets/audio/уведомление_телефона.mp3'
+import dmitPortrait from '../assets/dmit/main.png'
+import mishganPortrait from '../assets/savelich/main.png'
+import kedPortrait from '../assets/ked/cropped/main.png'
+import danzPortrait from '../assets/danz/danz.png'
+import vadimPortrait from '../assets/vaz/main.png'
+import darlonaPortrait from '../assets/darlona.png'
 
 export type QuestStatus = 'locked' | 'active' | 'completed'
+export type QuestPreloadAsset = {
+  kind: 'background' | 'character' | 'audio'
+  label: string
+  source: string
+}
 export type QuestDebugSetupOption = {
   id: string
   label: string
@@ -27,6 +43,7 @@ export type Quest = {
   completedAfterSceneIndex?: number
   completedByFlags?: string[]
   debugSetup?: QuestDebugSetupGroup[]
+  preloadAssets?: QuestPreloadAsset[]
 }
 
 export type MapLocation = {
@@ -39,11 +56,14 @@ export type MapLocation = {
   description: string
   opens?: 'school'
   questType?: 'main' | 'side'
+  markerOnly?: boolean
 }
 
 export const mapLocations: MapLocation[] = [
   { id: 'school', name: 'Школа № 76', x: 45.6, y: 22.4, width: 21.4, height: 22.1, description: 'Главный корпус. Здесь географичка держит район в страхе сильнее турникетов.', opens: 'school', questType: 'main' },
   { id: 'school-entrance', name: 'Вход в школу', x: 54.4, y: 44.2, width: 7.2, height: 4.8, description: 'Главные ступеньки школы. Место, где разговоры после уроков звучат почти как планы на жизнь.', questType: 'main' },
+  { id: 'small-school-marker', name: 'Младший у школы', x: 66.8, y: 41.8, width: 5, height: 5, description: 'Возле школы кто-то возится у забора. Похоже, без разговора тут не обойтись.', questType: 'main', markerOnly: true },
+  { id: 'school-interesting-place', name: 'Интересное место', x: 62.6, y: 45.4, width: 4.6, height: 3.8, description: 'У входа в школу что-то лежит. Слишком заметно, чтобы быть мусором, и слишком подозрительно, чтобы быть удачей.', questType: 'side' },
   { id: 'sports-ground', name: 'Стадион', x: 69.9, y: 4.5, width: 21, height: 53.4, description: 'Футбольное поле, беговая дорожка и место, где физрук появляется без предупреждения.', questType: 'side' },
   { id: 'courtyard', name: 'Двор у школы', x: 44.8, y: 10.1, width: 7.2, height: 6.2, description: 'Место коротких советов, длинных планов и подозрительно важных перемен.', questType: 'main' },
   { id: 'home', name: 'Дом Дмитa', x: 18.9, y: 60, width: 22, height: 31.3, description: 'Домовая территория. Пока не вершина Арбеково, но уже что-то своё.', questType: 'main' },
@@ -120,6 +140,17 @@ export const quests: Quest[] = [
     ],
   },
   {
+    id: 'school-interesting-place',
+    title: 'Интересное место',
+    description: 'У входа в школу что-то лежит. Дмит может проверить находку и внезапно стать богаче на один очень уверенный перекус.',
+    type: 'side',
+    status: 'active',
+    locationId: 'school-interesting-place',
+    startSceneIndex: interestingPlaceQuestStartScene,
+    availableAfterSceneIndex: 55,
+    completedByFlags: ['CHAPTER_1_FOUND_SCHOOL_ENTRANCE_MONEY'],
+  },
+  {
     id: 'booze-minika',
     title: 'Бухич на миньке',
     description: 'Встретиться с пацанами на Миньке и начать вечер перед лагерем.',
@@ -155,6 +186,48 @@ export const quests: Quest[] = [
           { id: 'beer', label: 'Только пиво', flags: ['CHAPTER_1_ALCOHOL_BEER'] },
           { id: 'heavy', label: 'Водка и пиво', flags: ['CHAPTER_1_ALCOHOL_HEAVY'] },
           { id: 'sober', label: 'Не пить', flags: ['CHAPTER_1_ALCOHOL_SOBER'] },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'small-school',
+    title: 'Младший у школы',
+    description: 'После драки на Миньке компания встречает Вадима у школы № 76. У малого проблемы с велосипедом и слишком спокойный взгляд для такого вечера.',
+    type: 'main',
+    status: 'active',
+    locationId: 'small-school-marker',
+    startSceneIndex: smallSchoolQuestStartScene,
+    availableByFlags: ['CHAPTER_1_MINIKA_BOOZE_DONE'],
+    completedByFlags: ['CHAPTER_1_SMALL_SCHOOL_MET_VADIM'],
+    preloadAssets: [
+      { kind: 'background', label: 'Ночная школа № 76', source: schoolDarkVazBackground },
+      { kind: 'character', label: 'Дмит', source: dmitPortrait },
+      { kind: 'character', label: 'Мишган', source: mishganPortrait },
+      { kind: 'character', label: 'Кед', source: kedPortrait },
+      { kind: 'character', label: 'Данз', source: danzPortrait },
+      { kind: 'character', label: 'Вадим', source: vadimPortrait },
+      { kind: 'character', label: 'Неизвестный номер', source: darlonaPortrait },
+      { kind: 'audio', label: 'Ночной ambient', source: nightAmbient },
+      { kind: 'audio', label: 'Уведомление телефона', source: phoneNotification },
+    ],
+    debugSetup: [
+      {
+        id: 'minika-result',
+        title: 'Минька завершена',
+        description: 'Нужный флаг, чтобы новый квест считался продолжением вечера после драки.',
+        options: [
+          { id: 'done', label: 'Бухич на Миньке завершён', flags: ['CHAPTER_1_MINIKA_BOOZE_DONE'] },
+        ],
+      },
+      {
+        id: 'alcohol',
+        title: 'Состояние Дмита',
+        description: 'От этого зависит первая реакция Вадима.',
+        options: [
+          { id: 'sober', label: 'Трезвый', flags: ['CHAPTER_1_ALCOHOL_SOBER'] },
+          { id: 'beer', label: 'Только пиво', flags: ['CHAPTER_1_ALCOHOL_BEER'] },
+          { id: 'heavy', label: 'Водка с пивом', flags: ['CHAPTER_1_ALCOHOL_HEAVY'] },
         ],
       },
     ],

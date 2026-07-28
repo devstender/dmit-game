@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from
 import { gameSounds, playLoop, playSound } from '../audio/gameAudio'
 import { abilityLabels, experienceForLevel, type PlayerState } from '../data/player'
 import { writeSavedGame } from '../data/saveGame'
+import type { Quest, QuestPreloadAsset } from '../data/map'
 import { InventoryPanel } from './InventoryPanel'
 import { MapPanel } from './MapPanel'
 import { CockroachHuntGame } from './CockroachHuntGame'
@@ -12,6 +13,7 @@ import dmitKitchenBackground from '../assets/dmit_kitchen.png'
 import dmitRoomBackground from '../assets/dmit_room.png'
 import dmitRoomCleanBackground from '../assets/dmit_room_clean.png'
 import minkaBackground from '../assets/minka.png'
+import schoolDarkVazBackground from '../assets/school_dark_vaz.png'
 import type { Ability, Chapter, Character, CheatGameQuestion, QuizQuestion, RelationCharacter, SceneEffect, StoryChoice } from '../types/story'
 import { GameSidebar } from './GameSidebar'
 import { PerkSelection } from './PerkSelection'
@@ -49,6 +51,65 @@ type PhoneHistoryAccumulator = {
   stop: boolean
   messages: PhoneThreadMessage[]
 }
+type QuestLoadingStage = {
+  label: string
+  total: number
+  loaded: number
+  status: 'pending' | 'loading' | 'done'
+}
+type QuestLoadingState = {
+  title: string
+  total: number
+  loaded: number
+  stages: QuestLoadingStage[]
+}
+
+const questLoadingStageLabels: Record<QuestPreloadAsset['kind'], string> = {
+  background: 'Готовим локацию',
+  character: 'Выводим персонажей',
+  audio: 'Настраиваем звук',
+}
+
+const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds))
+
+function preloadAsset(asset: QuestPreloadAsset) {
+  if (asset.kind === 'audio') {
+    return new Promise<void>((resolve) => {
+      const audio = new Audio()
+      let finished = false
+      const complete = () => {
+        if (finished) return
+        finished = true
+        audio.pause()
+        audio.removeEventListener('canplaythrough', complete)
+        audio.removeEventListener('loadeddata', complete)
+        audio.removeEventListener('error', complete)
+        resolve()
+      }
+      audio.preload = 'auto'
+      audio.addEventListener('canplaythrough', complete, { once: true })
+      audio.addEventListener('loadeddata', complete, { once: true })
+      audio.addEventListener('error', complete, { once: true })
+      audio.src = asset.source
+      audio.load()
+      window.setTimeout(complete, 6500)
+    })
+  }
+
+  return new Promise<void>((resolve) => {
+    const image = new Image()
+    let finished = false
+    const complete = () => {
+      if (finished) return
+      finished = true
+      resolve()
+    }
+    image.onload = complete
+    image.onerror = complete
+    image.src = asset.source
+    if (image.complete) complete()
+  })
+}
 
 export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, initialPlayedCinematics = [], onSave, onExit }: StoryScreenProps) {
   const [sceneIndex, setSceneIndex] = useState(() => Math.min(initialSceneIndex, chapter.scenes.length - 1))
@@ -67,6 +128,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const [pendingChoiceResolution, setPendingChoiceResolution] = useState<PendingChoiceResolution | null>(null)
   const [pendingChoiceFailureNext, setPendingChoiceFailureNext] = useState<number | null>(null)
   const [choiceTimerLeft, setChoiceTimerLeft] = useState<number | null>(null)
+  const [questLoading, setQuestLoading] = useState<QuestLoadingState | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [inventoryOpen, setInventoryOpen] = useState(false)
   const [mapOpen, setMapOpen] = useState(false)
@@ -77,6 +139,10 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const [debugModeEnabled, setDebugModeEnabled] = useState(() => import.meta.env.DEV && window.localStorage.getItem('dmit-debug-mode') === 'true')
   const previousSceneIndex = useRef(sceneIndex)
   const ambientAudio = useRef<HTMLAudioElement | null>(null)
+  const musicAudio = useRef<HTMLAudioElement | null>(null)
+  const musicFadeInterval = useRef<number | null>(null)
+  const checkpointTransitionTimeout = useRef<number | null>(null)
+  const [checkpointFading, setCheckpointFading] = useState(false)
   const debugAvailable = import.meta.env.DEV
   const activeDebugMode = debugAvailable && debugModeEnabled
   const scene = chapter.scenes[sceneIndex]
@@ -90,7 +156,9 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         ? `linear-gradient(180deg, rgba(31, 22, 39, .08), rgba(29, 13, 29, .42)), url(${dmitRoomImage})`
         : activeBackground === 'minika'
           ? `linear-gradient(180deg, rgba(14, 15, 27, .18), rgba(12, 9, 18, .58)), url(${minkaBackground})`
-          : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
+          : activeBackground === 'school-dark-vaz'
+            ? `linear-gradient(180deg, rgba(8, 12, 22, .08), rgba(7, 9, 18, .52)), url(${schoolDarkVazBackground})`
+            : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
   const activeQuizQuestion = scene.quiz?.questions[quizQuestion]
   const typingText = activeQuizQuestion?.question ?? scene.text
   const cinematicActive = Boolean(scene.cinematic && !playedCinematics.includes(sceneIndex))
@@ -188,7 +256,6 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (scene.sound === 'phone-vibrate') playSound(gameSounds.phoneVibrate, .62)
     if (scene.sound === 'quest-complete') playSound(gameSounds.questComplete, .62)
     if (scene.sound === 'beer-open') playSound(gameSounds.beerOpen, .72)
-    if (scene.sound === 'matvey-music') playSound(gameSounds.matveyMusic, .64)
     if (scene.sound === 'skill-success') playSound(gameSounds.skillSuccess, .58)
     if (scene.sound === 'skill-fail') playSound(gameSounds.skillFail, .46)
   }, [sceneIndex, scene.sound])
@@ -200,16 +267,32 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         ? gameSounds.classroomAmbient
         : activeBackground === 'minika'
           ? gameSounds.minikaAmbient
+          : activeBackground === 'school-dark-vaz'
+            ? gameSounds.nightAmbient
           : activeBackground === 'home' || activeBackground === 'dmit-room'
             ? gameSounds.dmitRoomAmbient
             : gameSounds.schoolyardAmbient,
-      activeBackground === 'classroom' ? .18 : activeBackground === 'minika' ? .24 : activeBackground === 'home' || activeBackground === 'dmit-room' ? .2 : .2,
+      activeBackground === 'classroom' ? .18 : activeBackground === 'minika' ? .24 : activeBackground === 'school-dark-vaz' ? .22 : activeBackground === 'home' || activeBackground === 'dmit-room' ? .2 : .2,
     )
     return () => {
       ambientAudio.current?.pause()
       ambientAudio.current = null
     }
   }, [activeBackground])
+
+  useEffect(() => {
+    if (scene.music === 'matvey') {
+      startMatveyMusic()
+      return
+    }
+    stopMusic(700)
+  }, [scene.music])
+
+  useEffect(() => () => {
+    ambientAudio.current?.pause()
+    stopMusic()
+    if (checkpointTransitionTimeout.current !== null) window.clearTimeout(checkpointTransitionTimeout.current)
+  }, [])
 
   useEffect(() => {
     if (!scene.cheatGame || !complete) return
@@ -262,6 +345,46 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     return flagRoute?.next ?? scene.fallbackNext
   }
 
+  const stopMusic = (fadeDuration = 0) => {
+    if (musicFadeInterval.current !== null) {
+      window.clearInterval(musicFadeInterval.current)
+      musicFadeInterval.current = null
+    }
+    const currentMusic = musicAudio.current
+    if (!currentMusic) return
+    if (fadeDuration <= 0) {
+      currentMusic.pause()
+      currentMusic.currentTime = 0
+      musicAudio.current = null
+      return
+    }
+    const startVolume = currentMusic.volume
+    const startedAt = Date.now()
+    musicFadeInterval.current = window.setInterval(() => {
+      const progress = Math.min(1, (Date.now() - startedAt) / fadeDuration)
+      currentMusic.volume = startVolume * (1 - progress)
+      if (progress < 1) return
+      if (musicFadeInterval.current !== null) window.clearInterval(musicFadeInterval.current)
+      musicFadeInterval.current = null
+      currentMusic.pause()
+      currentMusic.currentTime = 0
+      if (musicAudio.current === currentMusic) musicAudio.current = null
+    }, 50)
+  }
+
+  const startMatveyMusic = (restart = false) => {
+    if (musicFadeInterval.current !== null) {
+      window.clearInterval(musicFadeInterval.current)
+      musicFadeInterval.current = null
+    }
+    if (restart) stopMusic()
+    if (musicAudio.current) {
+      musicAudio.current.volume = .5
+      return
+    }
+    musicAudio.current = playLoop(gameSounds.matveyMusic, .5)
+  }
+
   const advance = (next?: number) => {
     if (!complete) {
       setVisibleText(typingText)
@@ -269,6 +392,24 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     }
     const resolvedNext = resolveNextScene(next)
     if (resolvedNext !== undefined) {
+      if (scene.transition === 'checkpoint-fade') {
+        setCheckpointFading(true)
+        stopMusic(900)
+        if (checkpointTransitionTimeout.current !== null) window.clearTimeout(checkpointTransitionTimeout.current)
+        checkpointTransitionTimeout.current = window.setTimeout(() => {
+          applyEffects(chapter.scenes[resolvedNext].effects)
+          setSceneIndex(resolvedNext)
+          setQuizQuestion(0)
+          setQuizScore(0)
+          setPendingQuizAnswer(null)
+          setSideDialogue(null)
+          setPendingChoiceResolution(null)
+          resetTest()
+          setCheckpointFading(false)
+          if (chapter.scenes[resolvedNext]?.music === 'matvey') startMatveyMusic(true)
+        }, 1050)
+        return
+      }
       applyEffects(chapter.scenes[resolvedNext].effects)
       setSceneIndex(resolvedNext)
       setQuizQuestion(0)
@@ -306,12 +447,32 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   }
 
   const spokenChoiceText = (choice: StoryChoice) => choice.say ?? cleanChoiceText(choice.label)
+  const normalizeDialogueText = (text: string) => cleanChoiceText(text).replace(/\s+/g, ' ').trim().toLowerCase()
+  const choiceDialogueLine = (choice: StoryChoice): DialogueLine => ({
+    speaker: choice.narration ? 'Рассказчик' : 'Дмит',
+    text: choice.narration ?? spokenChoiceText(choice),
+  })
+
+  const nextSceneRepeatsChoice = (choice: StoryChoice, next?: number) => {
+    if (next === undefined) return false
+    const nextScene = chapter.scenes[next]
+    if (!nextScene) return false
+    const dialogueLine = choiceDialogueLine(choice)
+    return nextScene.speaker === dialogueLine.speaker
+      && normalizeDialogueText(nextScene.text) === normalizeDialogueText(dialogueLine.text)
+  }
 
   const queueChoiceResolution = (choice: StoryChoice, resolution: PendingChoiceResolution) => {
     setChoiceTimerLeft(null)
+    if (!resolution.followupDialogue && nextSceneRepeatsChoice(choice, resolution.next)) {
+      applyEffects(resolution.effects)
+      if (resolution.next !== undefined) advance(resolution.next)
+      return
+    }
+    const dialogueLine = choiceDialogueLine(choice)
     setSideDialogue({
-      speaker: 'Дмит',
-      text: spokenChoiceText(choice),
+      speaker: dialogueLine.speaker,
+      text: dialogueLine.text,
     })
     setPendingChoiceResolution(resolution)
   }
@@ -350,6 +511,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
 
   const canChoose = (choice: StoryChoice) => (
     (choice.requiresMoney === undefined || player.money >= choice.requiresMoney)
+    && (choice.requiresFlags ?? []).every((flag) => player.flags.includes(flag))
     && (choice.requiresPerks ?? []).every((perk) => player.perks.includes(perk))
     && Object.entries(choice.requiresRelations ?? {}).every(([character, minimum]) => player.relations[character as keyof typeof player.relations] >= minimum)
   )
@@ -368,29 +530,12 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         },
       })
       return
-      applyEffects(choice.failureEffects)
-      if (choice.failNext !== undefined) {
-        setPendingChoiceFailureNext(choice.failNext ?? null)
-        setSideDialogue({
-          speaker: 'Рассказчик',
-          text: choice.failureText ?? 'Дмит пытается провернуть это, но районная математика говорит: не сегодня.',
-        })
-        return
-      }
-      setSideDialogue({
-        speaker: 'Рассказчик',
-        text: choice.failureText ?? 'Дмит пытается провернуть это, но районная математика говорит: не сегодня.',
-      })
-      return
     }
     if (Object.keys(choice.requires ?? {}).length > 0) playSound(gameSounds.skillSuccess, .58)
     queueChoiceResolution(choice, {
       next: choice.next,
       effects: choice.effects,
     })
-    return
-    applyEffects(choice.effects)
-    advance(choice.next)
   }
 
   useEffect(() => {
@@ -618,7 +763,8 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     playSound(gameSounds.uiToggle, .48)
     setDebugModeEnabled((current) => !current)
   }
-  const startQuestFromMap = (questSceneIndex: number, setupFlags: string[] = [], resetFlags: string[] = []) => {
+  const startQuestFromMap = async (quest: Quest, setupFlags: string[] = [], resetFlags: string[] = []) => {
+    if (quest.startSceneIndex === undefined) return
     playSound(gameSounds.uiClick, .62)
     if (setupFlags.length > 0 || resetFlags.length > 0) {
       setPlayer((current) => {
@@ -631,7 +777,60 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     setSidebarOpen(false)
     setInventoryOpen(false)
     setSettingsOpen(false)
-    setSceneIndex(Math.min(questSceneIndex, chapter.scenes.length - 1))
+
+    const assets = quest.preloadAssets ?? []
+    if (assets.length > 0) {
+      const groupedAssets = (['background', 'character', 'audio'] as const)
+        .map((kind) => ({ kind, label: questLoadingStageLabels[kind], assets: assets.filter((asset) => asset.kind === kind) }))
+        .filter((stage) => stage.assets.length > 0)
+
+      setQuestLoading({
+        title: quest.title,
+        total: assets.length,
+        loaded: 0,
+        stages: groupedAssets.map((stage) => ({
+          label: stage.label,
+          total: stage.assets.length,
+          loaded: 0,
+          status: 'pending',
+        })),
+      })
+
+      let totalLoaded = 0
+      for (let stageIndex = 0; stageIndex < groupedAssets.length; stageIndex += 1) {
+        setQuestLoading((current) => current ? {
+          ...current,
+          stages: current.stages.map((stage, index) => index === stageIndex ? { ...stage, status: 'loading' } : stage),
+        } : current)
+
+        await Promise.all(groupedAssets[stageIndex].assets.map(async (asset) => {
+          await preloadAsset(asset)
+          totalLoaded += 1
+          setQuestLoading((current) => current ? {
+            ...current,
+            loaded: totalLoaded,
+            stages: current.stages.map((stage, index) => index === stageIndex ? { ...stage, loaded: stage.loaded + 1 } : stage),
+          } : current)
+        }))
+
+        setQuestLoading((current) => current ? {
+          ...current,
+          stages: current.stages.map((stage, index) => index === stageIndex ? { ...stage, status: 'done', loaded: stage.total } : stage),
+        } : current)
+        await wait(180)
+      }
+      await wait(260)
+      setQuestLoading(null)
+    }
+
+    setSceneIndex(Math.min(quest.startSceneIndex, chapter.scenes.length - 1))
+    setQuizQuestion(0)
+    setQuizScore(0)
+    setPendingQuizAnswer(null)
+    setSideDialogue(null)
+    setPendingChoiceResolution(null)
+    setPendingChoiceFailureNext(null)
+    resetTest()
   }
   const handleDialoguePanelTap = (event: MouseEvent<HTMLElement>) => {
     if (event.target instanceof HTMLElement && event.target.closest('button')) return
@@ -698,6 +897,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       <GameSidebar player={player} open={sidebarOpen} onClose={() => setSidebarOpen(false)} onUpgradeAbility={upgradeAbility} visibleRelations={seenRelationCharacters} />
       <InventoryPanel player={player} open={inventoryOpen} onClose={() => setInventoryOpen(false)} />
       <MapPanel open={mapOpen} onClose={() => setMapOpen(false)} currentSceneIndex={sceneIndex} playerFlags={player.flags} debugModeEnabled={activeDebugMode} onStartQuest={startQuestFromMap} />
+      {questLoading && <QuestLoadingOverlay loading={questLoading} />}
       <SettingsPanel
         open={settingsOpen}
         textAnimationEnabled={textAnimationEnabled}
@@ -709,6 +909,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       />
       {pendingPerkLevel && <PerkSelection level={pendingPerkLevel} selectedPerks={player.perks} onSelect={choosePerk} />}
       <div className="game-stage" onClick={handleMobileStageTap}>
+        <div className={`checkpoint-fade ${checkpointFading ? 'active' : ''}`} />
         <div className="story-topbar">
           <button onClick={onExit} aria-label="Вернуться в меню">← Меню</button>
           <span>{chapter.title} <i /> {chapter.subtitle}</span>
@@ -748,6 +949,32 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         {cinematicActive && <DoorReveal onComplete={completeCinematic} />}
       </div>
     </main>
+  )
+}
+
+function QuestLoadingOverlay({ loading }: { loading: QuestLoadingState }) {
+  const progress = loading.total > 0 ? Math.round((loading.loaded / loading.total) * 100) : 100
+
+  return (
+    <section className="quest-loading-overlay" role="status" aria-live="polite">
+      <div className="quest-loading-card">
+        <span className="quest-loading-eyebrow">Подготовка квеста</span>
+        <h2>{loading.title}</h2>
+        <p>Подгружаю нужные ассеты, чтобы сцены не дёргались в самый ответственный момент.</p>
+        <div className="quest-loading-progress" aria-label={`Загружено ${loading.loaded} из ${loading.total}`}>
+          <b style={{ width: `${progress}%` }} />
+        </div>
+        <strong className="quest-loading-counter">{loading.loaded} / {loading.total} · {progress}%</strong>
+        <ol className="quest-loading-stages">
+          {loading.stages.map((stage) => (
+            <li className={stage.status} key={stage.label}>
+              <span>{stage.label}</span>
+              <b>{stage.loaded} / {stage.total}</b>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
   )
 }
 
