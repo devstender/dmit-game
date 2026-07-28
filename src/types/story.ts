@@ -140,6 +140,15 @@ export type RoachGame = {
   failEffects?: SceneEffect;
 };
 
+export type StealthGame = {
+  title: string;
+  description: string;
+  successNext: number;
+  failNext: number;
+  successEffects?: SceneEffect;
+  failEffects?: SceneEffect;
+};
+
 export type Scene = {
   speaker: Character;
   text: string;
@@ -152,6 +161,7 @@ export type Scene = {
   quiz?: Quiz;
   cheatGame?: CheatGame;
   roachGame?: RoachGame;
+  stealthGame?: StealthGame;
   tone?: "default" | "danger";
   background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika";
   cinematic?: "door-reveal";
