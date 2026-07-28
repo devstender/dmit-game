@@ -10,6 +10,11 @@ import runSound from '../assets/audio/звук_бега.mp3'
 import fallSound from '../assets/audio/звук_падения.mp3'
 import guardShoutSound from '../assets/audio/крик_охранника.mp3'
 import phoneNotification from '../assets/audio/уведомление_телефона.mp3'
+import minikaAmbient from '../assets/audio/минька_амбиент.mp3'
+import matveyMusic from '../assets/audio/музыка_матвей.mp3'
+import beerOpen from '../assets/audio/звук_открывания_пива.mp3'
+import dmitRoomAmbient from '../assets/audio/звук_комнаты_дмита.mp3'
+import roachMusic from '../assets/audio/тараканы.mp3'
 import questComplete from '../assets/audio/sfx/quest-complete.wav'
 
 export const gameSounds = {
@@ -19,6 +24,11 @@ export const gameSounds = {
   dmitRun: runSound,
   guardRun: runSound,
   guardShout: guardShoutSound,
+  beerOpen,
+  matveyMusic,
+  minikaAmbient,
+  dmitRoomAmbient,
+  roachMusic,
   mishganFall: fallSound,
   phoneVibrate: phoneNotification,
   questComplete,
@@ -27,6 +37,8 @@ export const gameSounds = {
   teacherReveal,
   uiClick,
   uiToggle,
+  skillSuccess: uiToggle,
+  skillFail: teacherReveal,
 }
 
 export function playSound(source: string, volume = 0.7, maxDurationSeconds?: number) {

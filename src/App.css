@@ -1298,9 +1298,7 @@ h1 {
 
 .background-home:before,
 .background-dmit-room:before {
-  background:
-    linear-gradient(90deg, rgba(37, 24, 35, .46), transparent 28% 72%, rgba(37, 24, 35, .5)),
-    repeating-linear-gradient(90deg, rgba(255, 232, 190, .05) 0 2px, transparent 2px 92px);
+  display: none;
 }
 
 .background-dmit-room:after {
@@ -2515,6 +2513,44 @@ h1 {
   color: #fff;
   background: #2e83ef;
   font: 900 16px/1 Manrope;
+}
+
+.phone-choice-list {
+  margin: 10px 0 2px auto;
+  width: min(94%, 250px);
+  display: grid;
+  gap: 7px;
+}
+
+.phone-choice-list button {
+  min-height: 42px;
+  padding: 9px 10px 9px 12px;
+  border: 1px solid rgba(46, 131, 239, .28);
+  border-radius: 17px;
+  color: #1d4f91;
+  background: rgba(235, 244, 255, .96);
+  box-shadow: 0 5px 13px rgba(28, 76, 136, .1);
+  cursor: pointer;
+  text-align: left;
+  font: 800 10px/1.25 Manrope;
+}
+
+.phone-choice-list button:hover:not(:disabled) {
+  color: #fff;
+  background: #2e83ef;
+}
+
+.phone-choice-list button span {
+  float: right;
+  margin-left: 8px;
+  color: currentColor;
+  font-size: 13px;
+}
+
+.phone-choice-list button.locked {
+  opacity: .45;
+  cursor: not-allowed;
+  filter: grayscale(.85);
 }
 
 .iphone-home {

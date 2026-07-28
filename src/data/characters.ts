@@ -10,6 +10,7 @@ import kedImage from '../assets/ked/cropped/main.png'
 import kedAngryImage from '../assets/ked/cropped/злой.png'
 import kedHappyImage from '../assets/ked/cropped/радостный.png'
 import kedSurprisedImage from '../assets/ked/cropped/удивлен.png'
+import danzImage from '../assets/danz/danz.png'
 import geographyTeacherImage from '../assets/географичка/main.png'
 import guardImage from '../assets/охранник/main.png'
 import veronicaImage from '../assets/veronica/main.png'
@@ -36,7 +37,7 @@ export const characterPresentation: Record<Exclude<Character, 'Рассказч�
     },
   },
   Кед: { initial: 'К', className: 'ked', images: { default: kedImage, angry: kedAngryImage, happy: kedHappyImage, surprised: kedSurprisedImage } },
-  Данз: { initial: 'Д', className: 'danz' },
+  Данз: { initial: 'Д', className: 'danz', images: { default: danzImage } },
   Полина: { initial: 'П', className: 'polina' },
   Географичка: { initial: 'Г', className: 'geography-teacher', images: { default: geographyTeacherImage } },
   Вероника: { initial: 'В', className: 'veronika', images: { default: veronicaImage } },

@@ -7,15 +7,22 @@ export type PhoneThreadMessage = {
   direction: PhoneMessage['direction']
 }
 
+export type PhoneChoiceOption = {
+  label: string
+  locked: boolean
+  onSelect: () => void
+}
+
 type PhoneMessengerProps = {
   contact: Character | string
   messages: PhoneThreadMessage[]
   complete: boolean
+  choices?: PhoneChoiceOption[]
   time?: string
   onTap: (event: MouseEvent<HTMLElement>) => void
 }
 
-export function PhoneMessenger({ contact, messages, complete, time = '13:37', onTap }: PhoneMessengerProps) {
+export function PhoneMessenger({ contact, messages, complete, choices = [], time = '13:37', onTap }: PhoneMessengerProps) {
   const threadRef = useRef<HTMLDivElement | null>(null)
   const currentMessageText = messages[messages.length - 1]?.text ?? ''
 
@@ -23,7 +30,7 @@ export function PhoneMessenger({ contact, messages, complete, time = '13:37', on
     const thread = threadRef.current
     if (!thread) return
     thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' })
-  }, [messages.length, currentMessageText])
+  }, [choices.length, messages.length, currentMessageText])
 
   return (
     <section className="phone-scene" aria-label="Переписка в телефоне" onClick={onTap}>
@@ -60,6 +67,16 @@ export function PhoneMessenger({ contact, messages, complete, time = '13:37', on
                 </article>
               )
             })}
+            {choices.length > 0 && (
+              <div className="phone-choice-list" aria-label="Варианты ответа">
+                {choices.map((choice) => (
+                  <button className={choice.locked ? 'locked' : ''} disabled={choice.locked} key={choice.label} onClick={choice.onSelect}>
+                    {choice.label}
+                    <span>{choice.locked ? '×' : '↑'}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="message-input">
             <span>iMessage</span>

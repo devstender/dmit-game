@@ -3,7 +3,7 @@ export type Emotion = 'default' | 'sad' | 'angry' | 'happy' | 'surprised' | 'thi
 export type Ability = 'strength' | 'perception' | 'endurance' | 'charisma' | 'intelligence' | 'agility' | 'luck'
 export type AbilityScores = Record<Ability, number>
 export type RelationCharacter = 'Мишган' | 'Кед' | 'Данз' | 'Полина' | 'Географичка' | 'Вероника'
-export type SceneSound = 'school-bell' | 'mishgan-fall' | 'dmit-run' | 'guard-run' | 'guard-shout' | 'phone-vibrate' | 'quest-complete'
+export type SceneSound = 'school-bell' | 'mishgan-fall' | 'dmit-run' | 'guard-run' | 'guard-shout' | 'phone-vibrate' | 'quest-complete' | 'beer-open' | 'matvey-music' | 'skill-success' | 'skill-fail'
 export type PhoneMessage = {
   contact: Character | string
   direction: 'incoming' | 'outgoing'
@@ -87,7 +87,7 @@ export type Scene = {
   cheatGame?: CheatGame
   roachGame?: RoachGame
   tone?: 'default' | 'danger'
-  background?: 'school' | 'classroom' | 'home' | 'dmit-room'
+  background?: 'school' | 'classroom' | 'home' | 'dmit-room' | 'minika'
   cinematic?: 'door-reveal'
   sound?: SceneSound
   phoneMessage?: PhoneMessage

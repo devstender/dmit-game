@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { gameSounds, playLoop } from '../audio/gameAudio'
 import type { RoachGame } from '../types/story'
 
 type CockroachHuntGameProps = {
@@ -25,6 +26,17 @@ export function CockroachHuntGame({ game, onFinish }: CockroachHuntGameProps) {
   const [combo, setCombo] = useState(0)
   const finished = useRef(false)
   const nextRoachId = useRef(1)
+  const roachAudio = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if (!started || finished.current) return
+    roachAudio.current?.pause()
+    roachAudio.current = playLoop(gameSounds.roachMusic, .42)
+    return () => {
+      roachAudio.current?.pause()
+      roachAudio.current = null
+    }
+  }, [started])
 
   useEffect(() => {
     if (!started || finished.current) return

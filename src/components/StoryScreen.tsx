@@ -8,10 +8,14 @@ import { CockroachHuntGame } from './CockroachHuntGame'
 import { DoorReveal } from './DoorReveal'
 import { SettingsPanel } from './SettingsPanel'
 import classroomBackground from '../assets/class.png'
+import dmitKitchenBackground from '../assets/dmit_kitchen.png'
+import dmitRoomBackground from '../assets/dmit_room.png'
+import dmitRoomCleanBackground from '../assets/dmit_room_clean.png'
+import minkaBackground from '../assets/minka.png'
 import type { Ability, Chapter, Character, CheatGameQuestion, QuizQuestion, RelationCharacter, SceneEffect, StoryChoice } from '../types/story'
 import { GameSidebar } from './GameSidebar'
 import { PerkSelection } from './PerkSelection'
-import { PhoneMessenger, type PhoneThreadMessage } from './PhoneMessenger'
+import { PhoneMessenger, type PhoneChoiceOption, type PhoneThreadMessage } from './PhoneMessenger'
 import { Portrait } from './Portrait'
 
 type StoryScreenProps = {
@@ -70,13 +74,16 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const activeDebugMode = debugAvailable && debugModeEnabled
   const scene = chapter.scenes[sceneIndex]
   const activeBackground = [...chapter.scenes.slice(0, sceneIndex + 1)].reverse().find((currentScene) => currentScene.background)?.background ?? 'school'
+  const dmitRoomImage = player.flags.includes('CHAPTER_1_ROOM_CLEANED') ? dmitRoomCleanBackground : dmitRoomBackground
   const backgroundImage = activeBackground === 'classroom'
     ? `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${classroomBackground})`
     : activeBackground === 'home'
-      ? 'radial-gradient(circle at 24% 28%, rgba(255, 213, 143, .34), transparent 28%), linear-gradient(135deg, #6f4b43, #3a2d3e 54%, #1e1a2c)'
+      ? `linear-gradient(180deg, rgba(31, 22, 39, .06), rgba(29, 13, 29, .36)), url(${dmitKitchenBackground})`
       : activeBackground === 'dmit-room'
-        ? 'radial-gradient(circle at 72% 22%, rgba(115, 88, 66, .55), transparent 25%), linear-gradient(180deg, #4c3a3f, #241d2d 68%, #161321)'
-        : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
+        ? `linear-gradient(180deg, rgba(31, 22, 39, .08), rgba(29, 13, 29, .42)), url(${dmitRoomImage})`
+        : activeBackground === 'minika'
+          ? `linear-gradient(180deg, rgba(14, 15, 27, .18), rgba(12, 9, 18, .58)), url(${minkaBackground})`
+          : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
   const cinematicActive = Boolean(scene.cinematic && !playedCinematics.includes(sceneIndex))
   const phoneMode = Boolean(scene.phoneMessage)
   const complete = visibleText.length === scene.text.length
@@ -166,11 +173,24 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (scene.sound === 'guard-shout') playSound(gameSounds.guardShout, .78)
     if (scene.sound === 'phone-vibrate') playSound(gameSounds.phoneVibrate, .62)
     if (scene.sound === 'quest-complete') playSound(gameSounds.questComplete, .62)
+    if (scene.sound === 'beer-open') playSound(gameSounds.beerOpen, .72)
+    if (scene.sound === 'matvey-music') playSound(gameSounds.matveyMusic, .64)
+    if (scene.sound === 'skill-success') playSound(gameSounds.skillSuccess, .58)
+    if (scene.sound === 'skill-fail') playSound(gameSounds.skillFail, .46)
   }, [sceneIndex, scene.sound])
 
   useEffect(() => {
     ambientAudio.current?.pause()
-    ambientAudio.current = playLoop(activeBackground === 'classroom' ? gameSounds.classroomAmbient : gameSounds.schoolyardAmbient, activeBackground === 'classroom' ? .18 : .2)
+    ambientAudio.current = playLoop(
+      activeBackground === 'classroom'
+        ? gameSounds.classroomAmbient
+        : activeBackground === 'minika'
+          ? gameSounds.minikaAmbient
+          : activeBackground === 'home' || activeBackground === 'dmit-room'
+            ? gameSounds.dmitRoomAmbient
+            : gameSounds.schoolyardAmbient,
+      activeBackground === 'classroom' ? .18 : activeBackground === 'minika' ? .24 : activeBackground === 'home' || activeBackground === 'dmit-room' ? .2 : .2,
+    )
     return () => {
       ambientAudio.current?.pause()
       ambientAudio.current = null
@@ -279,6 +299,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (!canChoose(choice)) return
     playSound(gameSounds.uiClick, .58)
     if (Object.keys(choice.requires ?? {}).length > 0 && Math.random() * 100 >= skillCheckChance(choice)) {
+      playSound(gameSounds.skillFail, .46)
       applyEffects(choice.failureEffects)
       if (choice.failNext !== undefined) {
         setPendingChoiceFailureNext(choice.failNext)
@@ -294,6 +315,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       })
       return
     }
+    if (Object.keys(choice.requires ?? {}).length > 0) playSound(gameSounds.skillSuccess, .58)
     applyEffects(choice.effects)
     advance(choice.next)
   }
@@ -508,6 +530,13 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     }
     setMapOpen(true)
   }
+  const phoneChoiceOptions: PhoneChoiceOption[] = phoneMode && dialogueComplete && scene.choices && !activeDialogue
+    ? scene.choices.map((choice) => ({
+      label: formatChoiceLabel(choice),
+      locked: !canChoose(choice),
+      onSelect: () => choose(choice),
+    }))
+    : []
 
   return (
     <main className={`story-screen scene-tone-${scene.tone ?? 'default'} ${cinematicActive ? 'cinematic-running' : ''}`}>
@@ -538,8 +567,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         {!cinematicActive && !phoneMode && <section className="portraits mobile-portraits" aria-label="Персонажи сцены на телефоне">
           <Portrait character={mobileSpeaker} position={mobileSpeakerPosition} active={Boolean(mobileSpeaker)} emotion={mobileSpeakerEmotion} layoutMode="mobile" visible={Boolean(mobileSpeaker)} transitionKey={`mobile-${dialogueSpeaker}-${sceneIndex}`} />
         </section>}
-        {!cinematicActive && phoneMode && scene.phoneMessage && <PhoneMessenger contact={scene.phoneMessage.contact} messages={phoneMessages} complete={dialogueComplete} time={scene.phoneMessage.time} onTap={handleDialoguePanelTap} />}
-        {!cinematicActive && phoneMode && dialogueComplete && scene.choices && !activeDialogue && <div className="phone-choices">{scene.choices.map((choice) => <button className={!canChoose(choice) ? 'locked' : ''} disabled={!canChoose(choice)} key={choice.label} onClick={() => choose(choice)}>{formatChoiceLabel(choice)}<span>{canChoose(choice) ? '→' : '×'}</span></button>)}</div>}
+        {!cinematicActive && phoneMode && scene.phoneMessage && <PhoneMessenger contact={scene.phoneMessage.contact} messages={phoneMessages} complete={dialogueComplete} choices={phoneChoiceOptions} time={scene.phoneMessage.time} onTap={handleDialoguePanelTap} />}
         {!cinematicActive && !phoneMode && <section className="dialogue-panel" onClick={handleDialoguePanelTap}>
           <div className={`speaker-name ${dialogueSpeaker === 'Рассказчик' ? 'narrator' : ''}`}>{dialogueSpeaker}</div>
           <p className="dialogue-text">{dialogueText}<span className={!dialogueComplete ? 'caret' : 'caret hidden'}>▍</span></p>
