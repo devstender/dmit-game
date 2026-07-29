@@ -26,6 +26,10 @@
   ? Харизма 3
   -> finish
   !-> finish
+
+- Ответить грубо.
+  @say Да отстань уже.
+  -> finish
 ::end
 
 ::dialogue finish
@@ -34,7 +38,11 @@
 ::end
 ```
 
-Поддерживаются `::dialogue`, `::phone`, `::route`, `::choice` и `::cosmetic`; директивы `@bg`, `@cast`, `@next`, `@end`, `@prompt`, `@continue`, `@contact`, `@time`, `@notify`, `@sound-next`, `@effect-next`, `@cast-next`, `@tone-next`, `@requires`, `@requires-all`, `@requires-any`.
+Поддерживаются `::dialogue`, `::phone`, `::route`, `::choice` и `::cosmetic`; директивы `@bg`, `@cast`, `@next`, `@end`, `@prompt`, `@continue`, `@contact`, `@time`, `@notify`, `@sound-next`, `@effect-next`, `@cast-next`, `@tone-next`, `@requires`, `@requires-all`, `@requires-any`, `@say`, `@narration`.
+
+Текст варианта в `::choice` по умолчанию описывает действие и не появляется
+отдельной репликой. Чтобы Дмит произнёс конкретную фразу до следующей сцены,
+добавьте `@say`. Для описания действия от рассказчика используйте `@narration`.
 
 ```powershell
 npm run quest:check -- src/chapters/chapter-2/scripts/morning.quest

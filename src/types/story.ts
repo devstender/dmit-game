@@ -67,7 +67,8 @@ export type SceneSound =
   | "guard-alert"
   | "black-phone-vibration"
   | "igor-mystery-sting"
-  | "bike-chain-rattle";
+  | "bike-chain-rattle"
+  | "alarm-clock";
 export type PhoneMessage = {
   contact: Character | string;
   direction: "incoming" | "outgoing";
@@ -176,7 +177,7 @@ export type Scene = {
   cheatGame?: CheatGame;
   roachGame?: RoachGame;
   tone?: "default" | "danger";
-  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-corridor-morning" | "school-second-floor-night" | "computer-class-night" | "school-classroom-day" | "school-corridor-day" | "school-yard-day" | "dmit-home-hallway-day" | "dmit-bedroom-day";
+  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-corridor-morning" | "school-second-floor-night" | "computer-class-night" | "school-classroom-day" | "school-corridor-day" | "school-yard-day" | "dmit-home-hallway-day" | "dmit-bedroom-day" | "dmit-bedroom-evening" | "dmit-bedroom-night" | "dmit-bedroom-morning";
   cinematic?: "door-reveal";
   sound?: SceneSound;
   music?: "matvey" | "chase" | "school-chase";

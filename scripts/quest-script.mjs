@@ -6,8 +6,8 @@ import { pathToFileURL } from 'node:url'
 const characters = new Set(['Дмит', 'Мишган', 'Кед', 'Данз', 'Полина', 'Географичка', 'Вероника', 'Охранник', 'Татьяна', 'Игорь', 'Папа', 'Матвей', 'Приятель Матвея', 'Учительница', 'Классная руководительница', 'Мама', 'Вадим', 'Копяр', 'Незнакомка', '???', 'Пацан', 'Пацан Матвея', 'Женщина из окна', 'Женщина с балкона', 'Рассказчик'])
 const relationCharacters = new Set(['Мишган', 'Кед', 'Данз', 'Полина', 'Географичка', 'Вероника', 'Вадим', 'Копяр', 'Мама'])
 const abilities = new Set(['Сила', 'Внимательность', 'Выносливость', 'Харизма', 'Интеллект', 'Ловкость', 'Удача'])
-const backgrounds = new Set(['school', 'school-dark-vaz', 'classroom', 'home', 'dmit-room', 'minika', 'school-yard-night', 'school-main-entrance-night', 'school-backyard-night', 'school-corridor-night', 'school-corridor-morning', 'school-second-floor-night', 'computer-class-night', 'school-classroom-day', 'school-corridor-day', 'school-yard-day', 'dmit-home-hallway-day', 'dmit-bedroom-day'])
-const sounds = new Set(['school-bell', 'mishgan-fall', 'dmit-run', 'guard-run', 'guard-shout', 'phone-vibrate', 'quest-complete', 'beer-open', 'matvey-music', 'skill-success', 'skill-fail', 'school-door-buzz', 'school-entry-creak', 'guard-alert', 'black-phone-vibration', 'igor-mystery-sting', 'bike-chain-rattle'])
+const backgrounds = new Set(['school', 'school-dark-vaz', 'classroom', 'home', 'dmit-room', 'minika', 'school-yard-night', 'school-main-entrance-night', 'school-backyard-night', 'school-corridor-night', 'school-corridor-morning', 'school-second-floor-night', 'computer-class-night', 'school-classroom-day', 'school-corridor-day', 'school-yard-day', 'dmit-home-hallway-day', 'dmit-bedroom-day', 'dmit-bedroom-evening', 'dmit-bedroom-night', 'dmit-bedroom-morning'])
+const sounds = new Set(['school-bell', 'mishgan-fall', 'dmit-run', 'guard-run', 'guard-shout', 'phone-vibrate', 'quest-complete', 'beer-open', 'matvey-music', 'skill-success', 'skill-fail', 'school-door-buzz', 'school-entry-creak', 'guard-alert', 'black-phone-vibration', 'igor-mystery-sting', 'bike-chain-rattle', 'alarm-clock'])
 const phoneOwnershipFlags = new Set(['DMIT_HAS_BLACK_PHONE', 'VADIM_HAS_BLACK_PHONE', 'BLACK_PHONE_LEFT_AT_SCHOOL', 'BLACK_PHONE_DESTROYED', 'BLACK_PHONE_CONFISCATED'])
 
 const fail = (source, line, message) => {
@@ -122,6 +122,8 @@ function parseScript(input, source = 'quest', shouldValidate = true) {
       if (directive === 'effect-next') { pending.effects = [...(pending.effects ?? []), parseEffect(`+${value}`, source, lineNumber)]; return }
       if (directive === 'cast-next') { pending.cast = parseCast(value, source, lineNumber); return }
       if (directive === 'tone-next') { if (!['default', 'danger'].includes(value)) fail(source, lineNumber, 'Tone must be default or danger.'); pending.tone = value; return }
+      if (directive === 'say') { activeOption(lineNumber).say = value; return }
+      if (directive === 'narration') { activeOption(lineNumber).narration = value; return }
       if (directive === 'requires') { activeOption(lineNumber).requiresAll.push(value); return }
       if (directive === 'requires-all') { activeOption(lineNumber).requiresAll.push(...parts); return }
       if (directive === 'requires-any') { activeOption(lineNumber).requiresAny.push(...parts); return }
@@ -299,7 +301,7 @@ function generate(nodes, options) {
     }
     if (node.type === 'choice') {
       const context = contextCode(node)
-      const optionsCode = node.options.map((option) => `      { text: ${quote(option.text)}, say: ${quote(option.text)}, next: ${quote(option.next)}${option.failNext ? `, failNext: ${quote(option.failNext)}` : ''}${option.skill ? `, check: skill(${quote(option.skill.stat)}, ${option.skill.value})` : ''}${requirementsCode(option)}${option.visibleWhen ? `, visibleWhen: ${JSON.stringify(option.visibleWhen)}` : ''}${option.effects.length ? `, effects: [${option.effects.map(effectCode).join(', ')}]` : ''} }`).join(',\n')
+      const optionsCode = node.options.map((option) => `      { text: ${quote(option.text)}${option.say ? `, say: ${quote(option.say)}` : ''}${option.narration ? `, narration: ${quote(option.narration)}` : ''}, next: ${quote(option.next)}${option.failNext ? `, failNext: ${quote(option.failNext)}` : ''}${option.skill ? `, check: skill(${quote(option.skill.stat)}, ${option.skill.value})` : ''}${requirementsCode(option)}${option.visibleWhen ? `, visibleWhen: ${JSON.stringify(option.visibleWhen)}` : ''}${option.effects.length ? `, effects: [${option.effects.map(effectCode).join(', ')}]` : ''} }`).join(',\n')
       return `choice({\n    id: ${quote(node.id)},\n    speaker: 'Дмит',\n    prompt: ${quote(node.prompt)},\n${context ? `    ${context},\n` : ''}    options: [\n${optionsCode}\n    ],\n  })`
     }
     const context = contextCode(node)

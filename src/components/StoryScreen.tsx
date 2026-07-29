@@ -24,7 +24,7 @@ import schoolCorridorNightBackground from '../assets/small-school/school_inside_
 import schoolCorridorMorningBackground from '../assets/chapter_2/quest-school-1/school-corridor-morning.webp'
 import schoolSecondFloorNightBackground from '../assets/small-school/school_green_light_cabinet.webp'
 import computerClassNightBackground from '../assets/small-school/school_inside_cabinet.webp'
-import type { Ability, Chapter, Character, CheatGameQuestion, QuizQuestion, RelationCharacter, SceneEffect, StoryChoice } from '../types/story'
+import type { Ability, Chapter, Character, CheatGameQuestion, QuizQuestion, RelationCharacter, Scene, SceneEffect, SceneSound, StoryChoice } from '../types/story'
 import { GameSidebar } from './GameSidebar'
 import { PerkSelection } from './PerkSelection'
 import { PhoneMessenger, type PhoneChoiceOption, type PhoneThreadMessage } from './PhoneMessenger'
@@ -79,7 +79,7 @@ type QuestLoadingState = {
 type RelationNotification = {
   id: number
   text: string
-  tone: 'positive' | 'negative'
+  tone: 'positive' | 'negative' | 'story'
 }
 
 const hasPortrait = (character: Character | undefined): character is Exclude<Character, 'Рассказчик'> => (
@@ -90,6 +90,127 @@ const questLoadingStageLabels: Record<QuestPreloadAsset['kind'], string> = {
   background: 'Готовим локацию',
   character: 'Выводим персонажей',
   audio: 'Настраиваем звук',
+}
+
+const storyBackgroundSources: Partial<Record<NonNullable<Scene['background']>, readonly string[]>> = {
+  school: [schoolYardDayBackground],
+  'school-yard-day': [schoolYardDayBackground],
+  classroom: [classroomBackground],
+  'school-classroom-day': [classroomBackground],
+  home: [dmitKitchenBackground],
+  'dmit-home-hallway-day': [dmitKitchenBackground],
+  'dmit-room': [dmitRoomBackground, dmitRoomCleanBackground],
+  'dmit-bedroom-day': [dmitRoomBackground, dmitRoomCleanBackground],
+  'dmit-bedroom-evening': [dmitRoomBackground, dmitRoomCleanBackground],
+  'dmit-bedroom-night': [dmitRoomBackground, dmitRoomCleanBackground],
+  'dmit-bedroom-morning': [dmitRoomBackground, dmitRoomCleanBackground],
+  minika: [minkaBackground],
+  'school-dark-vaz': [schoolDarkVazBackground],
+  'school-yard-night': [schoolYardNightBackground],
+  'school-main-entrance-night': [schoolMainEntranceNightBackground],
+  'school-backyard-night': [schoolBackyardNightBackground],
+  'school-corridor-night': [schoolCorridorNightBackground],
+  'school-corridor-morning': [schoolCorridorMorningBackground],
+  'school-corridor-day': [schoolCorridorMorningBackground],
+  'school-second-floor-night': [schoolSecondFloorNightBackground],
+  'computer-class-night': [computerClassNightBackground],
+}
+
+const sceneSoundSources: Record<SceneSound, string> = {
+  'school-bell': gameSounds.schoolBell,
+  'mishgan-fall': gameSounds.mishganFall,
+  'dmit-run': gameSounds.dmitRun,
+  'guard-run': gameSounds.guardRun,
+  'guard-shout': gameSounds.guardShout,
+  'phone-vibrate': gameSounds.phoneVibrate,
+  'quest-complete': gameSounds.questComplete,
+  'beer-open': gameSounds.beerOpen,
+  'matvey-music': gameSounds.matveyMusic,
+  'skill-success': gameSounds.skillSuccess,
+  'skill-fail': gameSounds.skillFail,
+  'school-door-buzz': gameSounds.schoolDoorBuzz,
+  'school-entry-creak': gameSounds.schoolEntryCreak,
+  'guard-alert': gameSounds.guardAlert,
+  'black-phone-vibration': gameSounds.blackPhoneVibration,
+  'igor-mystery-sting': gameSounds.igorMysterySting,
+  'bike-chain-rattle': gameSounds.bikeChainRattle,
+  'alarm-clock': gameSounds.schoolBell,
+}
+
+const sceneMusicSources = {
+  matvey: gameSounds.matveyMusic,
+  chase: gameSounds.chaseMusic,
+  'school-chase': gameSounds.schoolChase,
+}
+
+const ambientSources: Partial<Record<NonNullable<Scene['background']>, string>> = {
+  school: gameSounds.schoolyardAmbient,
+  'school-yard-day': gameSounds.schoolyardAmbient,
+  classroom: gameSounds.classroomAmbient,
+  'school-classroom-day': gameSounds.classroomAmbient,
+  home: gameSounds.dmitRoomAmbient,
+  'dmit-home-hallway-day': gameSounds.dmitRoomAmbient,
+  'dmit-room': gameSounds.dmitRoomAmbient,
+  'dmit-bedroom-day': gameSounds.dmitRoomAmbient,
+  'dmit-bedroom-evening': gameSounds.dmitRoomAmbient,
+  'dmit-bedroom-night': gameSounds.dmitRoomAmbient,
+  'dmit-bedroom-morning': gameSounds.dmitRoomAmbient,
+  minika: gameSounds.minikaAmbient,
+  'school-corridor-morning': gameSounds.schoolyardAmbient,
+  'school-corridor-day': gameSounds.schoolyardAmbient,
+  'school-dark-vaz': gameSounds.nightAmbient,
+  'school-yard-night': gameSounds.nightAmbient,
+  'school-main-entrance-night': gameSounds.nightAmbient,
+  'school-backyard-night': gameSounds.nightAmbient,
+  'school-corridor-night': gameSounds.nightAmbient,
+  'school-second-floor-night': gameSounds.nightAmbient,
+  'computer-class-night': gameSounds.nightAmbient,
+}
+
+function collectStoryPreloadAssets(chapter: Chapter, startIndex = 0, endIndex = chapter.scenes.length) {
+  const assets: QuestPreloadAsset[] = []
+  const seen = new Set<string>()
+  const add = (kind: QuestPreloadAsset['kind'], label: string, source: string | undefined) => {
+    if (!source) return
+    const key = `${kind}:${source}`
+    if (seen.has(key)) return
+    seen.add(key)
+    assets.push({ kind, label, source })
+  }
+
+  add('background', 'Фон главы', chapter.background)
+
+  for (const currentScene of chapter.scenes.slice(startIndex, endIndex)) {
+    if (currentScene.background) {
+      storyBackgroundSources[currentScene.background]?.forEach((source) => add('background', 'Локация', source))
+      add('audio', 'Атмосфера', ambientSources[currentScene.background])
+    }
+
+    for (const character of [currentScene.speaker, currentScene.left, currentScene.right]) {
+      const presentation = character && characterPresentation[character as Exclude<Character, 'Рассказчик'>]
+      presentation?.images && Object.values(presentation.images).forEach((source) => add('character', 'Персонаж', source))
+    }
+
+    if (currentScene.sound) add('audio', 'Эффект', sceneSoundSources[currentScene.sound])
+    if (currentScene.music) add('audio', 'Музыка', sceneMusicSources[currentScene.music])
+    if (currentScene.phoneMessage) add('audio', 'Сообщения', gameSounds.phoneMessageReceived)
+  }
+
+  return assets
+}
+
+function createLoadingState(title: string, assets: QuestPreloadAsset[]): QuestLoadingState | null {
+  if (assets.length === 0) return null
+  const stages = (['background', 'character', 'audio'] as const)
+    .map((kind) => ({ kind, label: questLoadingStageLabels[kind], assets: assets.filter((asset) => asset.kind === kind) }))
+    .filter((stage) => stage.assets.length > 0)
+
+  return {
+    title,
+    total: assets.length,
+    loaded: 0,
+    stages: stages.map((stage) => ({ label: stage.label, total: stage.assets.length, loaded: 0, status: 'pending' })),
+  }
 }
 
 const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds))
@@ -110,6 +231,38 @@ const relationReactionText = (character: RelationCharacter, delta: number) => {
   return delta > 0 ? reactions[character].positive : reactions[character].negative
 }
 
+// Only outcomes that redirect a character arc or unlock a later story branch
+// should interrupt the scene with a notification. Future scripts can opt in
+// explicitly by adding a STORY_* flag to the choice effects.
+const importantStoryFlags = new Set([
+  'CHAPTER_1_HELPED_MISHGAN',
+  'CHAPTER_1_LEFT_MISHGAN',
+  'CHAPTER_1_MATVEY_DEFEATED',
+  'CHAPTER_1_MATVEY_HUMILIATED_DMIT',
+  'CHAPTER_1_SMALL_SCHOOL_REFUSED_VADIM',
+  'CHAPTER_1_SMALL_SCHOOL_SENT_VADIM_HOME',
+  'CHAPTER_1_SMALL_SCHOOL_TEACHER_HELP',
+  'CHAPTER_1_SMALL_SCHOOL_WALK_WITH_VADIM',
+  'DMIT_HAS_BLACK_PHONE',
+  'DMIT_ABANDONED_VADIM',
+  'DMIT_DOUBLE_ABANDONMENT',
+  'DMIT_RETURNED_FOR_VADIM',
+  'VADIM_LEFT_WITH_GUARD',
+  'VADIM_TRUST_DESTROYED',
+  'VADIM_TRUST_IMPROVED',
+  'BLACK_PHONE_DESTROYED',
+  'BLACK_PHONE_CONFISCATED',
+  'BLACK_PHONE_LEFT_AT_SCHOOL',
+  'BLACK_PHONE_LEFT_SCHOOL',
+  'CHAPTER_2_DMIT_ADMITTED_VADIM_ABANDONMENT',
+  'CHAPTER_2_DMIT_BLAMED_VADIM_AFTER_ABANDONMENT',
+  'CHAPTER_2_LEARNED_IGOR_CONNECTED_TO_CAMP',
+  'CHAPTER_2_NOTICED_IGOR_IN_CAMP_DOCUMENTS',
+  'CHAPTER_2_UNKNOWN_CONTACT_WARNED_ABOUT_BUILDER',
+])
+
+const isImportantStoryFlag = (flag: string) => importantStoryFlags.has(flag) || flag.startsWith('STORY_')
+
 function preloadAsset(asset: QuestPreloadAsset) {
   if (asset.kind === 'audio') {
     return new Promise<void>((resolve) => {
@@ -120,17 +273,15 @@ function preloadAsset(asset: QuestPreloadAsset) {
         finished = true
         audio.pause()
         audio.removeEventListener('canplaythrough', complete)
-        audio.removeEventListener('loadeddata', complete)
         audio.removeEventListener('error', complete)
         resolve()
       }
       audio.preload = 'auto'
       audio.addEventListener('canplaythrough', complete, { once: true })
-      audio.addEventListener('loadeddata', complete, { once: true })
       audio.addEventListener('error', complete, { once: true })
       audio.src = asset.source
       audio.load()
-      window.setTimeout(complete, 6500)
+      window.setTimeout(complete, 12000)
     })
   }
 
@@ -166,6 +317,9 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const [pendingChoiceFailureNext, setPendingChoiceFailureNext] = useState<number | null>(null)
   const [choiceTimerLeft, setChoiceTimerLeft] = useState<number | null>(null)
   const [questLoading, setQuestLoading] = useState<QuestLoadingState | null>(null)
+  const [chapterLoading, setChapterLoading] = useState<QuestLoadingState | null>(() => (
+    createLoadingState(chapter.title, collectStoryPreloadAssets(chapter))
+  ))
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [inventoryOpen, setInventoryOpen] = useState(false)
   const [mapOpen, setMapOpen] = useState(false)
@@ -187,17 +341,20 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const musicTrack = useRef<'matvey' | 'chase' | 'school-chase' | null>(null)
   const musicFadeInterval = useRef<number | null>(null)
   const checkpointTransitionTimeout = useRef<number | null>(null)
+  const backgroundTransitionTimeout = useRef<number | null>(null)
   const [checkpointFading, setCheckpointFading] = useState(false)
+  const [backgroundFading, setBackgroundFading] = useState(false)
   const debugAvailable = import.meta.env.DEV
   const activeDebugMode = debugAvailable && debugModeEnabled
   const scene = chapter.scenes[sceneIndex]
   const activeBackground = [...chapter.scenes.slice(0, sceneIndex + 1)].reverse().find((currentScene) => currentScene.background)?.background ?? 'school'
+  const previousBackground = useRef(activeBackground)
   const dmitRoomImage = player.flags.includes('CHAPTER_1_ROOM_CLEANED') ? dmitRoomCleanBackground : dmitRoomBackground
   const backgroundImage = activeBackground === 'classroom' || activeBackground === 'school-classroom-day'
     ? `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${classroomBackground})`
     : activeBackground === 'home' || activeBackground === 'dmit-home-hallway-day'
       ? `linear-gradient(180deg, rgba(31, 22, 39, .06), rgba(29, 13, 29, .36)), url(${dmitKitchenBackground})`
-      : activeBackground === 'dmit-room' || activeBackground === 'dmit-bedroom-day'
+      : activeBackground === 'dmit-room' || activeBackground === 'dmit-bedroom-day' || activeBackground === 'dmit-bedroom-evening' || activeBackground === 'dmit-bedroom-night' || activeBackground === 'dmit-bedroom-morning'
         ? `linear-gradient(180deg, rgba(31, 22, 39, .08), rgba(29, 13, 29, .42)), url(${dmitRoomImage})`
         : activeBackground === 'minika'
           ? `linear-gradient(180deg, rgba(14, 15, 27, .18), rgba(12, 9, 18, .58)), url(${minkaBackground})`
@@ -312,9 +469,59 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   ))
 
   useEffect(() => {
+    let cancelled = false
+    const assets = collectStoryPreloadAssets(chapter)
+    const loadingState = createLoadingState(chapter.title, assets)
+    setChapterLoading(loadingState)
+    if (!loadingState) return () => { cancelled = true }
+
+    const groupedAssets = (['background', 'character', 'audio'] as const)
+      .map((kind) => ({ kind, assets: assets.filter((asset) => asset.kind === kind) }))
+      .filter((stage) => stage.assets.length > 0)
+
+    const preloadChapter = async () => {
+      let totalLoaded = 0
+      for (let stageIndex = 0; stageIndex < groupedAssets.length; stageIndex += 1) {
+        if (cancelled) return
+        setChapterLoading((current) => current ? {
+          ...current,
+          stages: current.stages.map((stage, index) => index === stageIndex ? { ...stage, status: 'loading' } : stage),
+        } : current)
+
+        await Promise.all(groupedAssets[stageIndex].assets.map(async (asset) => {
+          await preloadAsset(asset)
+          if (cancelled) return
+          totalLoaded += 1
+          setChapterLoading((current) => current ? {
+            ...current,
+            loaded: totalLoaded,
+            stages: current.stages.map((stage, index) => index === stageIndex ? { ...stage, loaded: stage.loaded + 1 } : stage),
+          } : current)
+        }))
+
+        if (cancelled) return
+        setChapterLoading((current) => current ? {
+          ...current,
+          stages: current.stages.map((stage, index) => index === stageIndex ? { ...stage, status: 'done', loaded: stage.total } : stage),
+        } : current)
+        await wait(150)
+      }
+
+      if (!cancelled) {
+        await wait(220)
+        if (!cancelled) setChapterLoading(null)
+      }
+    }
+
+    void preloadChapter()
+    return () => { cancelled = true }
+  }, [chapter])
+
+  useEffect(() => {
+    if (chapterLoading) return
     writeSavedGame({ chapterId, sceneIndex, player, playedCinematics })
     onSave?.()
-  }, [chapterId, sceneIndex, player, playedCinematics, onSave])
+  }, [chapterId, sceneIndex, player, playedCinematics, onSave, chapterLoading])
 
   useEffect(() => {
     const saveBeforeUnload = () => writeSavedGame({ chapterId, sceneIndex, player, playedCinematics })
@@ -337,6 +544,17 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     setChoiceTimerLeft(null)
     resetTest()
   }, [sceneIndex, scene.autoRoute, scene.nextByFlag, scene.fallbackNext, player.flags])
+
+  useLayoutEffect(() => {
+    if (previousBackground.current === activeBackground) return
+    previousBackground.current = activeBackground
+    setBackgroundFading(true)
+    if (backgroundTransitionTimeout.current !== null) window.clearTimeout(backgroundTransitionTimeout.current)
+    backgroundTransitionTimeout.current = window.setTimeout(() => {
+      setBackgroundFading(false)
+      backgroundTransitionTimeout.current = null
+    }, 620)
+  }, [activeBackground])
 
   useEffect(() => {
     if (!debugAvailable) return
@@ -365,9 +583,10 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (scene.sound === 'beer-open') playSound(gameSounds.beerOpen, .72)
     if (scene.sound === 'skill-success') playSound(gameSounds.skillSuccess, .58)
     if (scene.sound === 'skill-fail') playSound(gameSounds.skillFail, .46)
-  }, [sceneIndex, scene.sound, scene.text, activePhoneMessage?.direction])
+  }, [sceneIndex, scene.sound, scene.text, activePhoneMessage?.direction, chapterLoading])
 
   useEffect(() => {
+    if (chapterLoading) return
     ambientAudio.current?.pause()
     if (scene.music === 'school-chase') {
       ambientAudio.current = null
@@ -395,20 +614,22 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       ambientAudio.current?.pause()
       ambientAudio.current = null
     }
-  }, [activeBackground, scene.music])
+  }, [activeBackground, scene.music, chapterLoading])
 
   useEffect(() => {
+    if (chapterLoading) return
     if (scene.music === 'matvey' || scene.music === 'chase' || scene.music === 'school-chase') {
       startMusic(scene.music)
       return
     }
     stopMusic(700)
-  }, [scene.music])
+  }, [scene.music, chapterLoading])
 
   useEffect(() => () => {
     ambientAudio.current?.pause()
     stopMusic()
     if (checkpointTransitionTimeout.current !== null) window.clearTimeout(checkpointTransitionTimeout.current)
+    if (backgroundTransitionTimeout.current !== null) window.clearTimeout(backgroundTransitionTimeout.current)
   }, [])
 
   useEffect(() => {
@@ -442,7 +663,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     relationNotificationTimers.current.forEach((timer) => window.clearTimeout(timer))
   }, [])
 
-  const applyEffects = (effects?: SceneEffect) => {
+  const applyEffects = (effects?: SceneEffect, fromChoice = false) => {
     if (!effects) return
     const hasChanges = Boolean(
       effects.experience
@@ -480,6 +701,22 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         }, 3400)
         relationNotificationTimers.current.push(timer)
       })
+    }
+
+    const hasNewStoryFlag = fromChoice && (effects.flags ?? []).some((flag) => (
+      !player.flags.includes(flag) && isImportantStoryFlag(flag)
+    ))
+    if (hasNewStoryFlag) {
+      const notification: RelationNotification = {
+        id: ++relationNotificationId.current,
+        text: 'Это решение повлияет на дальнейшую историю.',
+        tone: 'story',
+      }
+      setRelationNotifications((current) => [...current, notification].slice(-3))
+      const timer = window.setTimeout(() => {
+        setRelationNotifications((current) => current.filter((item) => item.id !== notification.id))
+      }, 4200)
+      relationNotificationTimers.current.push(timer)
     }
 
     setPlayer((current) => {
@@ -616,30 +853,51 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     return `${cleanText.slice(0, 43).trimEnd()}…`
   }
 
-  const spokenChoiceText = (choice: StoryChoice) => choice.say ?? cleanChoiceText(choice.label)
+  // Старые сгенерированные .quest могли записывать say равным label автоматически.
+  // Такой текст — название действия, а не отдельная реплика персонажа.
+  const spokenChoiceText = (choice: StoryChoice) => (
+    choice.say && choice.say !== choice.label ? choice.say : ''
+  )
   const normalizeDialogueText = (text: string) => cleanChoiceText(text).replace(/\s+/g, ' ').trim().toLowerCase()
-  const choiceDialogueLine = (choice: StoryChoice): DialogueLine => ({
-    speaker: choice.narration ? 'Рассказчик' : 'Дмит',
-    text: choice.narration ?? spokenChoiceText(choice),
-  })
+  const choiceDialogueLine = (choice: StoryChoice): DialogueLine | null => {
+    const text = choice.narration ?? spokenChoiceText(choice)
+    if (!text) return null
+    return {
+      speaker: choice.narration ? 'Рассказчик' : 'Дмит',
+      text,
+    }
+  }
 
   const nextSceneRepeatsChoice = (choice: StoryChoice, next?: number) => {
     if (next === undefined) return false
     const nextScene = chapter.scenes[next]
     if (!nextScene) return false
     const dialogueLine = choiceDialogueLine(choice)
+    if (!dialogueLine) return false
     return nextScene.speaker === dialogueLine.speaker
       && normalizeDialogueText(nextScene.text) === normalizeDialogueText(dialogueLine.text)
   }
 
   const queueChoiceResolution = (choice: StoryChoice, resolution: PendingChoiceResolution) => {
     setChoiceTimerLeft(null)
+    const dialogueLine = choiceDialogueLine(choice)
+
+    if (!dialogueLine) {
+      applyEffects(resolution.effects, true)
+      if (resolution.followupDialogue) {
+        setSideDialogue(resolution.followupDialogue)
+        setPendingChoiceResolution({ next: resolution.next })
+      } else if (resolution.next !== undefined) {
+        advance(resolution.next)
+      }
+      return
+    }
+
     if (!resolution.followupDialogue && nextSceneRepeatsChoice(choice, resolution.next)) {
-      applyEffects(resolution.effects)
+      applyEffects(resolution.effects, true)
       if (resolution.next !== undefined) advance(resolution.next)
       return
     }
-    const dialogueLine = choiceDialogueLine(choice)
     setSideDialogue({
       speaker: dialogueLine.speaker,
       text: dialogueLine.text,
@@ -651,7 +909,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (!pendingChoiceResolution) return
 
     if (pendingChoiceResolution.followupDialogue) {
-      applyEffects(pendingChoiceResolution.effects)
+      applyEffects(pendingChoiceResolution.effects, true)
       setSideDialogue(pendingChoiceResolution.followupDialogue)
       setPendingChoiceResolution({
         next: pendingChoiceResolution.next,
@@ -659,7 +917,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       return
     }
 
-    applyEffects(pendingChoiceResolution.effects)
+    applyEffects(pendingChoiceResolution.effects, true)
     const nextScene = pendingChoiceResolution.next
     setPendingChoiceResolution(null)
     setSideDialogue(null)
@@ -975,7 +1233,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     resetTest()
   }
   const startQuestFromMap = async (quest: Quest, setupFlags: string[] = [], resetFlags: string[] = []) => {
-    if (quest.startSceneIndex === undefined) return
+    if (quest.startSceneIndex === undefined || chapterLoading || questLoading) return
     playSound(gameSounds.uiClick, .62)
     if (setupFlags.length > 0 || resetFlags.length > 0) {
       setPlayer((current) => {
@@ -989,7 +1247,13 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     setInventoryOpen(false)
     setSettingsOpen(false)
 
-    const assets = quest.preloadAssets ?? []
+    const assets = quest.preloadAssets?.length
+      ? quest.preloadAssets
+      : collectStoryPreloadAssets(
+        chapter,
+        quest.startSceneIndex,
+        quest.completedAfterSceneIndex === undefined ? chapter.scenes.length : quest.completedAfterSceneIndex + 1,
+      )
     if (assets.length > 0) {
       const groupedAssets = (['background', 'character', 'audio'] as const)
         .map((kind) => ({ kind, label: questLoadingStageLabels[kind], assets: assets.filter((asset) => asset.kind === kind) }))
@@ -1044,6 +1308,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     resetTest()
   }
   const handleDialoguePanelTap = (event: MouseEvent<HTMLElement>) => {
+    if (chapterLoading || questLoading) return
     if (event.target instanceof HTMLElement && event.target.closest('button')) return
     if (!dialogueComplete) return
     if (scene.quiz && pendingQuizAnswer) {
@@ -1078,6 +1343,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     setMapOpen(true)
   }
   const handleMobileStageTap = (event: MouseEvent<HTMLDivElement>) => {
+    if (chapterLoading || questLoading) return
     if (!window.matchMedia('(max-width: 680px)').matches) return
     if (cinematicActive || phoneMode || sidebarOpen || inventoryOpen || mapOpen || settingsOpen || debugStageSidebarOpen || pendingPerkLevel) return
     if (event.target instanceof HTMLElement && event.target.closest([
@@ -1111,7 +1377,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         <div className="relation-notifications" aria-live="polite" aria-atomic="false">
           {relationNotifications.map((notification) => (
             <div className={`relation-notification ${notification.tone}`} key={notification.id}>
-              <span aria-hidden="true">{notification.tone === 'positive' ? '↑' : '↓'}</span>
+              <span aria-hidden="true">{notification.tone === 'positive' ? '↑' : notification.tone === 'negative' ? '↓' : '✦'}</span>
               {notification.text}
             </div>
           ))}
@@ -1120,7 +1386,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       <GameSidebar player={player} open={sidebarOpen} onClose={() => setSidebarOpen(false)} onUpgradeAbility={upgradeAbility} visibleRelations={seenRelationCharacters} />
       <InventoryPanel player={player} open={inventoryOpen} onClose={() => setInventoryOpen(false)} />
       {chapterId === 'chapter-1' && <MapPanel open={mapOpen} onClose={() => setMapOpen(false)} currentSceneIndex={sceneIndex} playerFlags={player.flags} debugModeEnabled={activeDebugMode} onStartQuest={startQuestFromMap} />}
-      {questLoading && <QuestLoadingOverlay loading={questLoading} />}
+      {(chapterLoading ?? questLoading) && <QuestLoadingOverlay loading={chapterLoading ?? questLoading!} />}
       <SettingsPanel
         open={settingsOpen}
         debugModeEnabled={activeDebugMode}
@@ -1134,7 +1400,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       {activeDebugMode && <DebugStageSidebar chapter={chapter} currentSceneIndex={sceneIndex} open={debugStageSidebarOpen} onClose={() => setDebugStageSidebarOpen(false)} onSelectStage={startDebugStage} />}
       {pendingPerkLevel && <PerkSelection level={pendingPerkLevel} selectedPerks={player.perks} onSelect={choosePerk} />}
       <div className="game-stage" onClick={handleMobileStageTap}>
-        <div className={`checkpoint-fade ${checkpointFading ? 'active' : ''}`} />
+        <div className={`checkpoint-fade ${checkpointFading || backgroundFading ? 'active' : ''}`} />
         <div className="story-topbar">
           <button onClick={onExit} aria-label="Вернуться в меню">← Меню</button>
           <span>{chapter.title} <i /> {chapter.subtitle}</span>
@@ -1149,7 +1415,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
           <Portrait character={mobileSpeaker} position={mobileSpeakerPosition} active={Boolean(mobileSpeaker)} emotion={mobileSpeakerEmotion} layoutMode="mobile" visible={Boolean(mobileSpeaker)} transitionKey={`mobile-${mobileSpeaker}-${mobileSpeakerPosition}`} />
         </section>}
         {!scene.autoRoute && !cinematicActive && phoneMode && activePhoneMessage && <PhoneMessenger contact={activePhoneMessage.contact} messages={phoneMessages} complete={dialogueComplete} choices={phoneChoiceOptions} time={activePhoneMessage.time} onTap={handleDialoguePanelTap} />}
-        {!scene.autoRoute && !cinematicActive && !phoneMode && <div className="dialogue-shell" onClick={(event) => { event.stopPropagation(); handleDialoguePanelTap(event) }}>
+        {!scene.autoRoute && !cinematicActive && !phoneMode && <div className={`dialogue-shell dialogue-shell-${speakerNameSide}`} onClick={(event) => { event.stopPropagation(); handleDialoguePanelTap(event) }}>
           <div className={`speaker-name ${speakerNameSide === 'narrator' ? 'narrator' : `speaker-${speakerNameSide}`}`}>{dialogueSpeaker}</div>
           <section className="dialogue-panel"><p className="dialogue-text">{dialogueText}<span className={!dialogueComplete ? 'caret' : 'caret hidden'}>в–Ќ</span></p>
           {choiceTimerVisible && <div
@@ -1183,7 +1449,7 @@ function QuestLoadingOverlay({ loading }: { loading: QuestLoadingState }) {
   return (
     <section className="quest-loading-overlay" role="status" aria-live="polite">
       <div className="quest-loading-card">
-        <span className="quest-loading-eyebrow">Подготовка квеста</span>
+        <span className="quest-loading-eyebrow">Подготовка истории</span>
         <h2>{loading.title}</h2>
         <p>Подгружаю нужные ассеты, чтобы сцены не дёргались в самый ответственный момент.</p>
         <div className="quest-loading-progress" aria-label={`Загружено ${loading.loaded} из ${loading.total}`}>

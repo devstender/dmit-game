@@ -14,4 +14,7 @@
 @include "./part-7-school-main.quest"
 @include "./part-8-packaging.quest"
 @include "./part-9-home-packing-start.quest"
+@include "./part-8-home-igor-main.quest"
+@include "./part-8-home-igor-branches.quest"
+@include "./part-9-home-packing-finish.quest"
 ::end
