@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import districtMapImage from '../assets/map.png'
+import districtMapImage from '../assets/map.webp'
 import { mapLocations, quests, schoolLocations, type MapLocation, type Quest, type QuestStatus } from '../data/map'
 
 type MapPanelProps = {

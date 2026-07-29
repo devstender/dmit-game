@@ -9,8 +9,14 @@ export type Character =
   | "Охранник"
   | "Татьяна"
   | "Игорь"
+  | "Папа"
   | "Матвей"
+  | "Приятель Матвея"
+  | "Учительница"
+  | "Классная руководительница"
+  | "Мама"
   | "Вадим"
+  | "Копяр"
   | "Незнакомка"
   | "???"
   | "Пацан"
@@ -35,12 +41,15 @@ export type Ability =
   | "luck";
 export type AbilityScores = Record<Ability, number>;
 export type RelationCharacter =
+  | "Вадим"
+  | "Копяр"
   | "Мишган"
   | "Кед"
   | "Данз"
   | "Полина"
   | "Географичка"
-  | "Вероника";
+  | "Вероника"
+  | "Мама";
 export type SceneSound =
   | "school-bell"
   | "mishgan-fall"
@@ -87,6 +96,11 @@ export type StoryChoice = {
   requiresAnyFlags?: string[];
   requiresPerks?: string[];
   requiresRelations?: Partial<Record<RelationCharacter, number>>;
+  visibleWhen?: {
+    allFlags?: string[];
+    anyFlags?: string[];
+    unlessFlags?: string[];
+  };
   effects?: SceneEffect;
   failureEffects?: SceneEffect;
   failureText?: string;
@@ -148,6 +162,8 @@ export type RoachGame = {
 };
 
 export type Scene = {
+  /** Stable stage identifier emitted by the Quest DSL compiler. */
+  id?: string;
   speaker: Character;
   text: string;
   left?: Character;
@@ -160,15 +176,24 @@ export type Scene = {
   cheatGame?: CheatGame;
   roachGame?: RoachGame;
   tone?: "default" | "danger";
-  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-second-floor-night" | "computer-class-night";
+  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-corridor-morning" | "school-second-floor-night" | "computer-class-night" | "school-classroom-day" | "school-corridor-day" | "school-yard-day" | "dmit-home-hallway-day" | "dmit-bedroom-day";
   cinematic?: "door-reveal";
   sound?: SceneSound;
   music?: "matvey" | "chase" | "school-chase";
   transition?: "checkpoint-fade";
+  /** Internal DSL marker: resolve this flag route without rendering a dialogue. */
+  autoRoute?: boolean;
   phoneMessage?: PhoneMessage;
   effects?: SceneEffect;
   next?: number;
   nextByFlag?: { flag: string; next: number }[];
+  conditionalNext?: {
+    next: number;
+    allFlags?: string[];
+    anyFlags?: string[];
+    unlessFlags?: string[];
+    priority?: number;
+  }[];
   fallbackNext?: number;
 };
 

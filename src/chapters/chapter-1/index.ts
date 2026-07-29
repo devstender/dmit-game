@@ -1,4 +1,4 @@
-import schoolBackground from '../../assets/school.png'
+import schoolBackground from '../../assets/school.webp'
 import type { Chapter } from '../../types/story'
 import { chapterOneScenes } from './scenes'
 

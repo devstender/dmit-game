@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { gameSounds, playSound } from '../audio/gameAudio'
-import startBackground from '../assets/start.png'
+import startBackground from '../assets/start.webp'
 import { abilityLabels, defaultAbilities, specialAbilityOrder } from '../data/player'
 import type { Ability, AbilityScores } from '../types/story'
 

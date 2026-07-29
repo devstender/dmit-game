@@ -16,6 +16,7 @@ export function Portrait({ character, position, active, emotion = 'default', lay
   if (!character || character === 'Рассказчик') return <div className={`portrait-space ${position}`} />
 
   const presentation = characterPresentation[character]
+  if (!presentation) return <div className={`portrait-space ${position}`} />
   const image = presentation.images?.[emotion] ?? presentation.images?.default
   const mobile = layoutMode === 'mobile'
 
@@ -31,9 +32,9 @@ export function Portrait({ character, position, active, emotion = 'default', lay
           y: active ? (mobile ? -6 : -18) : 0,
           filter: active || mobile ? 'saturate(1.08) brightness(1)' : 'saturate(.74) brightness(.82)',
         }}
-        initial={mobile ? { opacity: 0, x: position === 'left' ? -120 : 120, scale: .94 } : false}
-        exit={mobile ? { opacity: 0, x: position === 'left' ? -120 : 120, scale: .94 } : undefined}
-        transition={mobile ? { duration: .34, ease: [.2, .82, .22, 1] } : { type: 'spring', stiffness: 260, damping: 25, mass: .7 }}
+        initial={{ opacity: 0, x: position === 'left' ? (mobile ? -120 : -36) : (mobile ? 120 : 36), y: mobile ? 0 : 12, scale: mobile ? .94 : .97 }}
+        exit={{ opacity: 0, x: position === 'left' ? (mobile ? -120 : -24) : (mobile ? 120 : 24), y: mobile ? 0 : 8, scale: mobile ? .94 : .98 }}
+        transition={mobile ? { duration: .34, ease: [.2, .82, .22, 1] } : { duration: .24, ease: [.22, .8, .24, 1] }}
       >
         <AnimatePresence mode="wait" initial={false}>
         {image ? (

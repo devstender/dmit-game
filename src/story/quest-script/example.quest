@@ -1,0 +1,30 @@
+::dialogue morning-corridor
+@bg school-yard-night
+@cast Дмит | Мишган
+
+Рассказчик: Последние школьные дни всегда проходили одинаково.
+Мишган: Уф-уф, бля. Живой?
+Дмит: Был живой, пока ты не заорал.
+@next phone-state
+::end
+
+::route phone-state
+DMIT_HAS_BLACK_PHONE -> phone-with-dmit
+* -> finish
+::end
+
+::phone phone-with-dmit
+@contact Неизвестный номер
+@time 08:14
+@notify black-phone-vibration
+
+Неизвестный номер: Ты едешь в Строитель?
+Дмит: Ты кто?
+Неизвестный номер: Игоря там не ищи.
+@next finish
+::end
+
+::dialogue finish
+Рассказчик: Утро стало ещё хуже.
+@end
+::end

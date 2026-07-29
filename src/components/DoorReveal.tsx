@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { gameSounds, playSound } from '../audio/gameAudio'
-import geographyTeacherImage from '../assets/географичка/main.png'
+import geographyTeacherImage from '../assets/географичка/main.webp'
 
 type DoorRevealProps = { onComplete: () => void }
 

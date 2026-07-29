@@ -6,6 +6,7 @@ import {
   dialogue,
   flag,
   money,
+  hook,
   requiresAllFlags,
   requiresAnyFlag,
   requiresMoney,
@@ -66,9 +67,21 @@ export const runQuestDslTests = () => {
   const cosmetic = scenes.find((scene) => scene.text === 'cosmetic')
   assert(cosmetic?.choices?.[0]?.next !== undefined, 'Cosmetic choices need a generated reply branch.')
   const router = scenes.find((scene) => scene.text === '')
-  assert(router?.nextByFlag?.[0]?.flag === 'WIN' && router.fallbackNext !== undefined, 'Routes must compile.')
+  assert(router?.autoRoute && router.nextByFlag?.[0]?.flag === 'WIN' && router.fallbackNext !== undefined, 'Routes must compile as automatic transitions.')
   assert(scenes[0]?.background === 'school-yard-night' && scenes[1]?.tone === 'danger', 'Node and line context must inherit and override deterministically.')
   assert(JSON.stringify(compileQuest(41, quest)) === JSON.stringify(scenes), 'Generated scene indices must be stable.')
+
+  const hookQuest = defineQuest({
+    id: 'hook-unit',
+    start: 'hook',
+    nodes: [
+      hook({ id: 'hook', fallback: 'fallback', branches: [{ start: 'branch', allFlags: ['HEAVY'], priority: 100 }] }),
+      dialogue({ id: 'branch', lines: [[narrator, 'branch']], end: true }),
+      dialogue({ id: 'fallback', lines: [[narrator, 'fallback']], end: true }),
+    ],
+  })
+  const hookScene = compileQuest(0, hookQuest)[0]
+  assert(hookScene?.conditionalNext?.[0]?.allFlags?.includes('HEAVY') && hookScene.fallbackNext !== undefined, 'Hooks must compile prioritized conditional branches and a fallback.')
 
   expectError(() => validateQuest(defineQuest({ id: 'missing', start: 'a', nodes: [dialogue({ id: 'a', lines: [[narrator, 'x']], next: 'lost' })] })), 'Unknown target')
   expectError(() => validateQuest(defineQuest({ id: 'duplicate', start: 'a', nodes: [dialogue({ id: 'a', lines: [[narrator, 'x']], end: true }), dialogue({ id: 'a', lines: [[narrator, 'y']], end: true })] })), 'Duplicate node id')

@@ -2,6 +2,7 @@ import classDoor from '../assets/audio/class-door.ogg'
 import classroomAmbient from '../assets/audio/в классе.mp3'
 import dialoguePage from '../assets/audio/dialogue-page.ogg'
 import schoolBell from '../assets/audio/school-bell.mp3'
+import schoolyardAmbient from '../assets/audio/двор.mp3'
 import nightAmbient from '../assets/audio/ночной_ambient.mp3'
 import teacherReveal from '../assets/audio/teacher-reveal.ogg'
 import uiClick from '../assets/audio/ui-click.ogg'
@@ -51,6 +52,7 @@ export const gameSounds = {
   phoneVibrate: phoneNotification,
   questComplete,
   schoolBell,
+  schoolyardAmbient,
   nightAmbient,
   teacherReveal,
   uiClick,

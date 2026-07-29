@@ -1,9 +1,11 @@
 import type { PlayerState } from './player'
 
 export const SAVE_GAME_KEY = 'dmit-save-v1'
+export type StoryChapterId = 'chapter-1' | 'chapter-2'
 
 export type SavedGame = {
   version: 1
+  chapterId: StoryChapterId
   sceneIndex: number
   player: PlayerState
   playedCinematics: number[]
@@ -18,6 +20,7 @@ export function readSavedGame(): SavedGame | null {
     if (save.version !== 1 || typeof save.sceneIndex !== 'number' || !save.player) return null
     return {
       version: 1,
+      chapterId: save.chapterId === 'chapter-2' ? 'chapter-2' : 'chapter-1',
       sceneIndex: save.sceneIndex,
       player: save.player,
       playedCinematics: Array.isArray(save.playedCinematics) ? save.playedCinematics : [],
@@ -28,9 +31,10 @@ export function readSavedGame(): SavedGame | null {
   }
 }
 
-export function writeSavedGame(save: Pick<SavedGame, 'sceneIndex' | 'player' | 'playedCinematics'>) {
+export function writeSavedGame(save: Pick<SavedGame, 'sceneIndex' | 'player' | 'playedCinematics'> & { chapterId?: StoryChapterId }) {
   const nextSave: SavedGame = {
     version: 1,
+    chapterId: save.chapterId ?? 'chapter-1',
     ...save,
     updatedAt: new Date().toISOString(),
   }

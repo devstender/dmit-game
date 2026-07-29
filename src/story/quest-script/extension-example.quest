@@ -1,0 +1,46 @@
+::hook morning-recap
+@fallback morning-canonical
+@continue morning-finish
+::end
+
+::extend morning-recap
+@when HEAVY_ALCOHOL
+@unless CONTACT_ALERTED
+@priority 100
+@start morning-heavy
+::end
+
+::dialogue morning-canonical
+Рассказчик: Каноническое утро.
+@next morning-recap-exit
+::end
+
+::dialogue morning-heavy
+Рассказчик: Последствия тяжёлого вечера.
+@next morning-recap-exit
+::end
+
+::dialogue morning-finish
+Рассказчик: Основная линия продолжается.
+@next response
+::end
+
+::choice response
+@prompt Что ответить?
+
+- Ничего.
+  -> finish
+::end
+
+::extend-choice response
+@when HEAVY_ALCOHOL
+@position 1
+
+- Признаться, что вчера было лишнее.
+  -> finish
+::end
+
+::dialogue finish
+Рассказчик: Утро продолжается.
+@end
+::end

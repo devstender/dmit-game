@@ -41,6 +41,9 @@ export const abilityLabels: Record<Ability, string> = {
 export const specialAbilityOrder: Ability[] = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck']
 
 export const relationLabels: Record<RelationCharacter, string> = {
+  "Вадим": "Вадим",
+  "Копяр": "Копяр",
+  Мама: 'Мама',
   Мишган: 'Мишган',
   Кед: 'Кед',
   Данз: 'Данз',
@@ -66,6 +69,9 @@ export const createPlayerState = (abilities: AbilityScores): PlayerState => ({
     ...abilities,
   },
   relations: {
+    "Вадим": 0,
+    "Копяр": 0,
+    Мама: 0,
     Мишган: 0,
     Кед: 0,
     Данз: 0,

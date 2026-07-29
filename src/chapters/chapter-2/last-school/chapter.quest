@@ -1,0 +1,17 @@
+::chapter chapter-2-last-school
+@title Путёвка
+@start morning-corridor-start
+
+# Вторая глава собирается из независимых расширяемых частей.
+# Новые ветки можно добавлять отдельными .quest-файлами в branches/.
+@include "./part-1.extensible.quest"
+@include "./part-2.extensible.quest"
+@include "./part-3-alcohol.quest"
+@include "./part-4-phone-morning.quest"
+@include "./part-5-vadim-consequences.quest"
+@include "./part-6-matvey-history.quest"
+@include "./part-7-school-branches.quest"
+@include "./part-7-school-main.quest"
+@include "./part-8-packaging.quest"
+@include "./part-9-home-packing-start.quest"
+::end

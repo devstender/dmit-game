@@ -16,6 +16,11 @@ type Tone = NonNullable<Scene['tone']>
 type Background = NonNullable<Scene['background']>
 type Music = NonNullable<Scene['music']>
 
+type Effect =
+  | { kind: 'flag'; name: string }
+  | { kind: 'relation'; character: RelationCharacter; delta: number }
+  | { kind: 'money'; delta: number }
+
 type Context = {
   background?: Background
   cast?: Cast
@@ -25,13 +30,17 @@ type Context = {
   sound?: SceneSound
   music?: Music
   phoneMessage?: PhoneMessage
-  effects?: SceneEffect
+  /** Compatibility for authored phone conversations; compiles to an incoming message. */
+  phone?: { contact: string; time?: string }
+  effects?: SceneEffect | readonly Effect[]
   transition?: Scene['transition']
 }
 
+type DialogueSpeaker = Character | string
+
 type DialogueLine =
-  | readonly [Character, string]
-  | readonly [Character, string, Cast | Context]
+  | readonly [DialogueSpeaker, string]
+  | readonly [DialogueSpeaker, string, Cast | Context]
 
 type SkillCheck = {
   stat: Ability
@@ -43,10 +52,11 @@ type Requirement =
   | { kind: 'flags-any'; flags: readonly string[] }
   | { kind: 'money'; amount: number }
 
-type Effect =
-  | { kind: 'flag'; name: string }
-  | { kind: 'relation'; character: RelationCharacter; delta: number }
-  | { kind: 'money'; delta: number }
+type FlagVisibility = {
+  allFlags?: string[]
+  anyFlags?: string[]
+  unlessFlags?: string[]
+}
 
 type Option = {
   text: string
@@ -66,6 +76,7 @@ type Option = {
   failureEffects?: readonly Effect[]
   failureSceneEffects?: SceneEffect
   failureText?: string
+  visibleWhen?: FlagVisibility
 }
 
 type DialogueNode = Context & {
@@ -111,7 +122,21 @@ type RouteNode = {
   fallback: string
 }
 
-type QuestNode = DialogueNode | ChoiceNode | CosmeticChoiceNode | RouteNode
+type HookBranch = FlagVisibility & {
+  start: string
+  priority?: number
+}
+
+type HookNode = {
+  kind: 'hook'
+  id: string
+  fallback: string
+  branches: readonly HookBranch[]
+}
+
+type RouteInput = { flag: string; next: string } | readonly [string, string]
+
+type QuestNode = DialogueNode | ChoiceNode | CosmeticChoiceNode | RouteNode | HookNode
 
 type QuestDefinition = {
   id: string
@@ -128,11 +153,14 @@ type PublicTimedChoiceInput = Omit<ChoiceNode, 'kind'> & {
   defaultOptionIndex?: number
 }
 type PublicCosmeticChoiceInput = Omit<CosmeticChoiceNode, 'kind'>
-type PublicRouteInput = Omit<RouteNode, 'kind'>
+type PublicRouteInput = Omit<RouteNode, 'kind' | 'routes'> & { routes: readonly RouteInput[] }
+type PublicHookInput = Omit<HookNode, 'kind'>
 
 type GeneratedScene = Scene & { id: string }
 
 const isCast = (value: Cast | Context): value is Cast => Array.isArray(value)
+const isEffectList = (value: Context['effects']): value is readonly Effect[] => Array.isArray(value)
+const isRouteTuple = (value: RouteInput): value is readonly [string, string] => Array.isArray(value)
 
 const contextFrom = (defaults: Context | undefined, node: Context, line?: Context): Context => ({
   ...defaults,
@@ -148,8 +176,14 @@ const toSceneContext = (context: Context): Pick<Scene, 'left' | 'right' | 'leftE
   ...(context.background ? { background: context.background } : {}),
   ...(context.sound ? { sound: context.sound } : {}),
   ...(context.music ? { music: context.music } : {}),
-  ...(context.phoneMessage ? { phoneMessage: context.phoneMessage } : {}),
-  ...(context.effects ? { effects: context.effects } : {}),
+  ...(context.phoneMessage || context.phone ? {
+    phoneMessage: context.phoneMessage ?? {
+      contact: context.phone!.contact,
+      direction: 'incoming',
+      ...(context.phone!.time ? { time: context.phone!.time } : {}),
+    },
+  } : {}),
+  ...(context.effects ? { effects: isEffectList(context.effects) ? mergeEffects(context.effects) : context.effects } : {}),
   ...(context.transition ? { transition: context.transition } : {}),
 })
 
@@ -184,6 +218,7 @@ const optionTargets = (option: Option): string[] => [option.next, ...(option.fai
 const nodeTargets = (node: QuestNode): string[] => {
   if (node.kind === 'dialogue') return [...(node.next ? [node.next] : []), ...(node.routes?.map((route) => route.next) ?? []), ...(node.fallback ? [node.fallback] : [])]
   if (node.kind === 'route') return [...node.routes.map((route) => route.next), node.fallback]
+  if (node.kind === 'hook') return [node.fallback, ...node.branches.map((branch) => branch.start)]
   if (node.kind === 'cosmetic-choice') return [node.continueTo]
   return node.options.flatMap(optionTargets)
 }
@@ -204,8 +239,31 @@ export const dialogue = (node: PublicDialogueInput): DialogueNode => ({ kind: 'd
 export const choice = (node: PublicChoiceInput): ChoiceNode => ({ kind: 'choice', ...node })
 export const cosmeticChoice = (node: PublicCosmeticChoiceInput): CosmeticChoiceNode => ({ kind: 'cosmetic-choice', ...node })
 export const timedChoice = (node: PublicTimedChoiceInput): ChoiceNode => ({ kind: 'timed-choice', ...node })
-export const route = (node: PublicRouteInput): RouteNode => ({ kind: 'route', ...node })
-export const skill = (stat: Ability, value: number): SkillCheck => ({ stat, value })
+export const route = (node: PublicRouteInput): RouteNode => ({
+  kind: 'route',
+  ...node,
+  routes: node.routes.map((item): { flag: string; next: string } => isRouteTuple(item) ? { flag: item[0], next: item[1] } : item),
+})
+export const hook = (node: PublicHookInput): HookNode => ({ kind: 'hook', ...node })
+/**
+ * Marks a location change. The compiler emits it once; the story screen keeps
+ * the last emitted background until another node calls setBackground().
+ */
+export const setBackground = (background: Background): Pick<Context, 'background'> => ({ background })
+const localizedAbilityNames: Record<string, Ability> = {
+  'Сила': 'strength',
+  'Внимательность': 'perception',
+  'Выносливость': 'endurance',
+  'Харизма': 'charisma',
+  'Интеллект': 'intelligence',
+  'Ловкость': 'agility',
+  'Удача': 'luck',
+}
+
+export const skill = (stat: Ability | keyof typeof localizedAbilityNames, value: number): SkillCheck => ({
+  stat: localizedAbilityNames[stat] ?? stat as Ability,
+  value,
+})
 export const flag = (name: string): Effect => ({ kind: 'flag', name })
 export const relation = (character: RelationCharacter, delta: number): Effect => ({ kind: 'relation', character, delta })
 export const money = (delta: number): Effect => ({ kind: 'money', delta })
@@ -239,7 +297,7 @@ export const validateQuest = (quest: QuestDefinition): void => {
       if (!node.continueTo) errors.push(message(quest, node, 'Cosmetic choice requires continueTo.'))
       if (node.options.length === 0) errors.push(message(quest, node, 'Cosmetic choice must contain at least one option.'))
     }
-    if (node.kind === 'route' && !node.fallback) errors.push(message(quest, node, 'Route requires fallback.'))
+    if ((node.kind === 'route' || node.kind === 'hook') && !node.fallback) errors.push(message(quest, node, 'Route requires fallback.'))
   }
 
   if (!ids.has(quest.start)) errors.push(`Quest "${quest.id}"\nMissing start node: "${quest.start}".`)
@@ -292,12 +350,15 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
   const sceneIdToIndex = new Map<string, number>()
   const nodeEntry = new Map<string, string>()
   const add = (scene: GeneratedScene) => {
+    // A quest default is an initial state, not a command to redraw every line.
+    // This keeps backgrounds persistent and makes location changes explicit.
+    if (drafts.length > 0 && scene.background === quest.defaults?.background) delete scene.background
     sceneIdToIndex.set(scene.id, drafts.length)
     drafts.push(scene)
   }
 
   for (const node of quest.nodes) {
-    const base = contextFrom(quest.defaults, node.kind === 'route' ? {} : node)
+    const base = contextFrom(quest.defaults, node.kind === 'route' || node.kind === 'hook' ? {} : node)
     if (node.kind === 'dialogue') {
       nodeEntry.set(node.id, node.id)
       node.lines.forEach((line, index) => {
@@ -305,7 +366,7 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
         const lineContext = extension && !isCast(extension) ? extension : undefined
         const cast = extension && isCast(extension) ? extension : undefined
         const id = index === 0 ? node.id : `${node.id}__${index}`
-        add({ id, speaker, text, ...toSceneContext(contextFrom(base, { ...(cast ? { cast } : {}) }, lineContext)) })
+        add({ id, speaker: speaker as Character, text, ...toSceneContext(contextFrom(base, { ...(cast ? { cast } : {}) }, lineContext)) })
       })
     } else if (node.kind === 'cosmetic-choice') {
       nodeEntry.set(node.id, node.id)
@@ -316,12 +377,18 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
           const lineContext = extension && !isCast(extension) ? extension : undefined
           const cast = extension && isCast(extension) ? extension : undefined
           const id = `${node.id}__option_${optionIndex}${lineIndex ? `__${lineIndex}` : ''}`
-          add({ id, speaker, text, ...toSceneContext(contextFrom(base, { ...(cast ? { cast } : {}) }, lineContext)) })
+          add({ id, speaker: speaker as Character, text, ...toSceneContext(contextFrom(base, { ...(cast ? { cast } : {}) }, lineContext)) })
         })
       })
     } else {
       nodeEntry.set(node.id, node.id)
-      add({ id: node.id, speaker: node.kind === 'route' ? 'Рассказчик' : node.speaker ?? 'Рассказчик', text: node.kind === 'route' ? '' : node.prompt, ...toSceneContext(base) })
+      add({
+        id: node.id,
+        speaker: node.kind === 'route' || node.kind === 'hook' ? 'Рассказчик' : node.speaker ?? 'Рассказчик',
+        text: node.kind === 'route' || node.kind === 'hook' ? '' : node.prompt,
+        ...(node.kind === 'route' || node.kind === 'hook' ? { autoRoute: true } : {}),
+        ...toSceneContext(base),
+      })
     }
   }
 
@@ -345,6 +412,7 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
     next: resolve(option.next),
     ...(option.failNext ? { failNext: resolve(option.failNext) } : {}),
     ...(option.runtimeRequires ?? (option.check ? { [option.check.stat]: option.check.value } : undefined) ? { requires: option.runtimeRequires ?? (option.check ? { [option.check.stat]: option.check.value } : undefined) } : {}),
+    ...(option.visibleWhen ? { visibleWhen: option.visibleWhen } : {}),
     ...requirementsToChoice(option.require),
     ...(option.runtimeRequiresMoney !== undefined ? { requiresMoney: option.runtimeRequiresMoney } : {}),
     ...(option.runtimeRequiresFlags?.length ? { requiresFlags: option.runtimeRequiresFlags } : {}),
@@ -394,6 +462,19 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
     if (node.kind === 'route') {
       const scene = at(node.id)
       scene.nextByFlag = node.routes.map((item) => ({ flag: item.flag, next: resolve(item.next) }))
+      scene.fallbackNext = resolve(node.fallback)
+    }
+    if (node.kind === 'hook') {
+      const scene = at(node.id)
+      scene.conditionalNext = [...node.branches]
+        .sort((left, right) => (right.priority ?? 0) - (left.priority ?? 0))
+        .map((branch) => ({
+          next: resolve(branch.start),
+          ...(branch.allFlags?.length ? { allFlags: branch.allFlags } : {}),
+          ...(branch.anyFlags?.length ? { anyFlags: branch.anyFlags } : {}),
+          ...(branch.unlessFlags?.length ? { unlessFlags: branch.unlessFlags } : {}),
+          ...(branch.priority !== undefined ? { priority: branch.priority } : {}),
+        }))
       scene.fallbackNext = resolve(node.fallback)
     }
   }

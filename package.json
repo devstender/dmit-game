@@ -7,10 +7,15 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "test:quest-dsl": "node src/story/questDsl.test.ts && node scripts/verify-small-school.mjs",
+    "quest:build": "node scripts/quest-script.mjs",
+    "quest:check": "node scripts/quest-script.mjs --check",
+    "quest:chapter-2": "node scripts/quest-script.mjs src/chapters/chapter-2/last-school/chapter.quest --out src/chapters/chapter-2/last-school/chapter.generated.ts",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^3.0.0",
+    "@xyflow/react": "^12.11.2",
     "framer-motion": "^12.42.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

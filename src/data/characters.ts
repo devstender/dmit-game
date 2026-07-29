@@ -1,24 +1,26 @@
-import dmitImage from "../assets/dmit/main.png";
-import tatyanaImage from "../assets/dmit/tatyana.png";
-import igorImage from "../assets/dmit/igor.png";
-import mishganImage from "../assets/savelich/main.png";
-import mishganSadImage from "../assets/savelich/грустный.png";
-import mishganAngryImage from "../assets/savelich/злой.png";
-import mishganHappyImage from "../assets/savelich/радостный.png";
-import mishganSurprisedImage from "../assets/savelich/удивлен.png";
-import kedImage from "../assets/ked/cropped/main.png";
-import kedAngryImage from "../assets/ked/cropped/злой.png";
-import kedHappyImage from "../assets/ked/cropped/радостный.png";
-import kedSurprisedImage from "../assets/ked/cropped/удивлен.png";
-import danzImage from "../assets/danz/danz.png";
-import geographyTeacherImage from "../assets/географичка/main.png";
-import guardImage from "../assets/охранник/main.png";
-import veronicaImage from "../assets/veronica/main.png";
-import matveyImage from "../assets/mat/main.png";
-import matveyGuyOneImage from "../assets/mat/pacan1.png";
-import matveyGuyTwoImage from "../assets/mat/pacan2.png";
-import darlonaImage from "../assets/darlona.png";
-import vadimImage from "../assets/vaz/main.png";
+import dmitImage from "../assets/dmit/main.webp";
+import tatyanaImage from "../assets/dmit/tatyana.webp";
+import igorImage from "../assets/dmit/igor.webp";
+import mishganImage from "../assets/savelich/main.webp";
+import mishganSadImage from "../assets/savelich/грустный.webp";
+import mishganAngryImage from "../assets/savelich/злой.webp";
+import mishganHappyImage from "../assets/savelich/радостный.webp";
+import mishganSurprisedImage from "../assets/savelich/удивлен.webp";
+import kedImage from "../assets/ked/cropped/main.webp";
+import kedAngryImage from "../assets/ked/cropped/злой.webp";
+import kedHappyImage from "../assets/ked/cropped/радостный.webp";
+import kedSurprisedImage from "../assets/ked/cropped/удивлен.webp";
+import danzImage from "../assets/danz/danz.webp";
+import geographyTeacherImage from "../assets/географичка/main.webp";
+import guardImage from "../assets/охранник/main.webp";
+import veronicaImage from "../assets/veronica/main.webp";
+import matveyImage from "../assets/mat/main.webp";
+import matveyGuyOneImage from "../assets/mat/pacan1.webp";
+import matveyGuyTwoImage from "../assets/mat/pacan2.webp";
+import darlonaImage from "../assets/darlona.webp";
+import vadimImage from "../assets/vaz/main.webp";
+import kopyarImage from "../assets/cap/main.webp";
+import teacherImage from "../assets/chapter_2/quest-school-1/teacher.webp";
 import type { Character, Emotion } from "../types/story";
 
 type CharacterPresentation = {
@@ -76,12 +78,18 @@ export const characterPresentation: Record<
     images: { default: tatyanaImage },
   },
   Игорь: { initial: "И", className: "igor", images: { default: igorImage } },
+  Папа: { initial: "П", className: "igor", images: { default: igorImage } },
   Матвей: {
     initial: "М",
     className: "matvey",
     images: { default: matveyImage },
   },
+  "Приятель Матвея": { initial: "П", className: "matvey-guy" },
+  Учительница: { initial: "У", className: "teacher", images: { default: teacherImage } },
+  "Классная руководительница": { initial: "К", className: "teacher", images: { default: teacherImage } },
+  Мама: { initial: "М", className: "tatyana", images: { default: tatyanaImage } },
   Вадим: { initial: "В", className: "vadim", images: { default: vadimImage } },
+  Копяр: { initial: "К", className: "kopyar", images: { default: kopyarImage } },
   Незнакомка: { initial: "?", className: "stranger", images: { default: darlonaImage } },
   "???": { initial: "?", className: "stranger", images: { default: darlonaImage } },
   Пацан: {
