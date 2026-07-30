@@ -1,0 +1,869 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — КОРОТКАЯ ПОГОНЯ ДЛЯ ШУМНЫХ И ПОДОЗРИТЕЛЬНЫХ ВХОДОВ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue chase-start-1
+@cast Дмит | Вадим
+@sound-next school-entry-creak
+# tone: danger
+# music: school-chase
+
+Рассказчик: Внутри школы тихо. Издалека слышны телевизор охранника и мерное тиканье настенных часов.
+@next chase-start-2
+::end
+
+::dialogue chase-start-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: До лестницы нужно пройти два коридора.
+@next chase-start-3
+::end
+
+::dialogue chase-start-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Веди.
+@next chase-start-4
+::end
+
+::dialogue chase-start-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Ты сказал, что пойдёшь первым.
+@next chase-start-5
+::end
+
+::dialogue chase-start-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Тогда показывай сзади.
+@next chase-start-6
+::end
+
+::dialogue chase-start-6
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Это неудобно.
+@next chase-start-7
+::end
+
+::dialogue chase-start-7
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Зато безопасно.
+@next chase-start-8
+::end
+
+::dialogue chase-start-8
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит выходит из раздевалки. Вадим держится в нескольких шагах позади.
+@next chase-start-9
+::end
+
+::dialogue chase-start-9
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Направо.
+@next chase-start-10
+::end
+
+::dialogue chase-start-10
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Я знаю.
+@next chase-start-11
+::end
+
+::dialogue chase-start-11
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Ты пошёл налево.
+@next chase-start-12
+::end
+
+::dialogue chase-start-12
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Я проверял.
+@next chase-start-13
+::end
+
+::dialogue chase-start-13
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Кого?
+@next chase-start-14
+::end
+
+::dialogue chase-start-14
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Тебя.
+@next chase-start-15
+::end
+
+::dialogue chase-start-15
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: Из-за угла появляется охранник с фонариком.
+@next chase-start-16
+::end
+
+::dialogue chase-start-16
+@cast Дмит | Охранник
+@sound-next guard-alert
+# tone: danger
+# music: school-chase
+
+Охранник: А НУ СТОЯТЬ!
+@next chase-start-17
+::end
+
+::dialogue chase-start-17
+@cast Дмит | Вадим
+@sound-next dmit-run
+# tone: danger
+# music: school-chase
+
+Дмит: Бля. Бежим!
+@next chase-first-choice
+::end
+
+::dialogue chase-first-choice-option-1-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит попадает носком в стену и теряет несколько секунд.
+@effect-next flag CHASE_ERROR_1
+@next chase-first-fail
+::end
+
+::dialogue chase-first-choice-option-2-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дверь кабинета музыки оказывается заперта.
+@effect-next flag CHASE_ERROR_1
+@next chase-first-fail
+::end
+
+::choice chase-first-choice
+@prompt Слева дверь спортивного зала, справа кабинет музыки, у стены стоит коробка с мячами.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 4 seconds; default option index: 3
+
+- [Ловкость 5] Пнуть коробку с мячами под ноги охраннику.
+  ? Ловкость 5
+  -> chase-balls-good
+  !-> chase-first-choice-option-1-failure
+
+- [Интеллект 5] Включить шум в кабинете музыки.
+  ? Интеллект 5
+  -> chase-music-good
+  !-> chase-first-choice-option-2-failure
+
+- Крикнуть: Они побежали в спортзал!
+  -> chase-lie
+
+- Просто бежать вперёд.
+  -> chase-run
+
+::end
+
+::dialogue chase-balls-good
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит бьёт по коробке. Мячи раскатываются, охранник едва удерживается на ногах.
+@effect-next flag GUARD_LOST_ADVANTAGE_1
+@next chase-route-choice
+::end
+
+::dialogue chase-music-good
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит ударяет по клавишам старого синтезатора. БА-А-АМ! Охранник сворачивает в кабинет.
+@effect-next flag GUARD_LOST_ADVANTAGE_1
+@next chase-route-choice
+::end
+
+::dialogue chase-first-fail
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Не останавливайся!
+@next chase-route-choice
+::end
+
+::dialogue chase-lie
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Дмит: Они в спортзал побежали!
+@next chase-lie-2
+::end
+
+::dialogue chase-lie-2
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Охранник: Кто — они?! Я вас вижу!
+@next chase-route-choice
+::end
+
+::dialogue chase-run
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Он очень громко кричит!
+@next chase-route-choice
+::end
+
+::dialogue chase-route-choice-option-1-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит замечает дверь слишком поздно и пролетает мимо неё.
+@effect-next flag CHASE_ERROR_2
+@next chase-hall
+::end
+
+::choice chase-route-choice
+@prompt В конце коридора путь разделяется: освещённый холл, тёмный тупик и узкая служебная дверь между шкафами.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 3 seconds; default option index: 1
+
+- [Внимательность 5] Заметить служебную дверь.
+  ? Внимательность 5
+  -> chase-service-good
+  !-> chase-route-choice-option-1-failure
+
+- Побежать через освещённый холл.
+  +flag CHASE_ERROR_2
+  -> chase-hall
+
+- Повернуть в тёмный коридор.
+  +flag CHASE_ERROR_2
+  -> chase-dark-choice
+
+- Вадим, сам решай!
+  -> chase-hall
+
+::end
+
+::dialogue chase-service-good
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Сюда!
+@next chase-service-good-2
+::end
+
+::dialogue chase-service-good-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Это кладовая уборщицы.
+@next chase-service-good-3
+::end
+
+::dialogue chase-service-good-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Через кладовую ребята выскакивают в соседний коридор. Охранник теряет их из виду.
+@effect-next flag GUARD_LOST_ADVANTAGE_2
+@next chase-cart-choice
+::end
+
+::dialogue chase-hall
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Охранник: Вижу вас!
+@next chase-hall-2
+::end
+
+::dialogue chase-hall-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: А мы тебя!
+@next chase-hall-3
+::end
+
+::dialogue chase-hall-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Зачем ты ему ответил?
+@next chase-cart-choice
+::end
+
+::dialogue chase-dark-choice-option-1-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит теряет время возле двери. Охранник хватает Вадима за рюкзак.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next chase-critical-1
+::end
+
+::dialogue chase-dark-choice-option-2-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит цепляется за подоконник и теряет время.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next chase-critical-1
+::end
+
+::choice chase-dark-choice
+@prompt Тёмный коридор заканчивается запертой металлической дверью. Охранник почти догнал.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 3 seconds; default option index: 2
+
+- [Сила 5] Выбить дверь плечом.
+  ? Сила 5
+  +flag SCHOOL_DOOR_BROKEN
+  -> chase-dark-strength
+  !-> chase-dark-choice-option-1-failure
+
+- [Ловкость 5] Перепрыгнуть через подоконник.
+  ? Ловкость 5
+  -> chase-dark-agility
+  !-> chase-dark-choice-option-2-failure
+
+- Развернуться и бежать обратно.
+  +flag CHASE_CRITICAL_ERROR
+  -> chase-critical-1
+
+::end
+
+::dialogue chase-dark-strength
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит выбивает дверь плечом. Замок вылетает из крепления.
+@next chase-cart-choice
+::end
+
+::dialogue chase-dark-agility
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит перебирается через подоконник и протягивает Вадиму руку.
+@next chase-cart-choice
+::end
+
+::dialogue chase-cart-choice-option-1-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Колесо застревает. Охранник уже рядом.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next chase-critical-1
+::end
+
+::dialogue chase-cart-choice-option-2-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Крышка ведра не поддаётся.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next chase-critical-1
+::end
+
+::choice chase-cart-choice
+@prompt Возле лестницы тележка уборщицы: ведро, швабра и бутылки. Охранник догоняет.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 4 seconds; default option index: 3
+
+- [Сила 5] Опрокинуть тележку поперёк коридора.
+  ? Сила 5
+  +flag JANITOR_CART_TRAP_USED
+  -> chase-cart-strength
+  !-> chase-cart-choice-option-1-failure
+
+- [Интеллект 5] Разлить воду и поставить знак Мокрый пол.
+  ? Интеллект 5
+  +flag WET_FLOOR_TRAP_USED
+  -> chase-cart-intelligence
+  !-> chase-cart-choice-option-2-failure
+
+- Бросить швабру под ноги охраннику.
+  -> chase-mop-route
+
+- Спрятаться за тележкой.
+  +flag CHASE_CRITICAL_ERROR
+  -> chase-critical-1
+
+::end
+
+::dialogue chase-cart-strength
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит переворачивает тележку. Охранник задевает ведро и падает на колени.
+@next chase-last-choice
+::end
+
+::dialogue chase-cart-intelligence
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Табличку!
+@next chase-cart-intelligence-2
+::end
+
+::dialogue chase-cart-intelligence-2
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник пытается обойти табличку, наступает в воду и скользит.
+@next chase-last-choice
+::end
+
+::dialogue chase-mop-route
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит бросает швабру. От того, пил ли он, зависит, куда она полетит.
+@next chase-mop-route-route-hook
+::end
+
+::hook chase-mop-route-route-hook
+@fallback chase-mop-drunk
+@continue chase-mop-drunk
+::end
+
+::extend chase-mop-route-route-hook
+@when CHAPTER_1_ALCOHOL_SOBER
+@priority 100
+@start chase-mop-sober
+::end
+
+::dialogue chase-mop-sober
+@bg school-corridor-night
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Швабра падает под ноги охраннику. Он вынужден остановиться.
+@next chase-last-choice
+::end
+
+::dialogue chase-mop-drunk
+@bg school-corridor-night
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Швабра ударяется о стену и падает в стороне.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next chase-critical-1
+::end
+
+::dialogue chase-critical-1
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник догоняет ребят у лестницы и хватает Вадима за воротник.
+@next chase-critical-2
+::end
+
+::dialogue chase-critical-2
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Вадим: Дмит!
+@next chase-critical-3
+::end
+
+::dialogue chase-critical-3
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Дмит: Отпусти его!
+@next chase-critical-choice
+::end
+
+::dialogue chase-critical-choice-option-1-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник отталкивает Дмита на пол.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next chase-caught-1
+::end
+
+::dialogue chase-critical-choice-option-2-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник не верит и не оборачивается.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next chase-caught-1
+::end
+
+::dialogue chase-critical-choice-option-3-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит не успевает дотянуться до молнии.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next chase-caught-1
+::end
+
+::choice chase-critical-choice
+@prompt Один выбор решает: продолжится погоня или закончится на вахте.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 3 seconds; default option index: 3
+
+- [Сила 6] Выдернуть Вадима из рук охранника.
+  ? Сила 6
+  -> chase-save-strength
+  !-> chase-critical-choice-option-1-failure
+
+- [Харизма 6] Сзади ещё трое! Они дверь ломают!
+  ? Харизма 6
+  -> chase-save-charisma
+  !-> chase-critical-choice-option-2-failure
+
+- [Ловкость 6] Расстегнуть куртку Вадима.
+  ? Ловкость 6
+  -> chase-save-agility
+  !-> chase-critical-choice-option-3-failure
+
+- Убежать одному.
+  +flag DMIT_ABANDONED_VADIM
+  +trait Ответственность -1
+  +trait Товарищество -2
+  -> chase-abandon-1
+
+::end
+
+::dialogue chase-save-strength
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит выдёргивает Вадима, но получает локтем в лицо.
+@effect-next flag DMIT_DAMAGED
+@next chase-last-choice
+::end
+
+::dialogue chase-save-charisma
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+
+Дмит: Сзади ещё трое! Они дверь подсобки ломают!
+@next chase-save-charisma-2
+::end
+
+::dialogue chase-save-charisma-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник оборачивается, и Вадим вырывается.
+@next chase-last-choice
+::end
+
+::dialogue chase-save-agility
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Вадим выскальзывает из расстёгнутой куртки. Охранник остаётся держать одежду.
+@next chase-last-choice
+::end
+
+::dialogue chase-last-choice-option-1-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Стойка выскальзывает. Охранник продолжает преследование.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next chase-caught-1
+::end
+
+::dialogue chase-last-choice-option-2-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Маты оказываются тяжелее, чем выглядят.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next chase-caught-1
+::end
+
+::dialogue chase-last-choice-option-3-failure
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Верёвка падает на пол раньше, чем Дмит успевает её закрепить.
+@next chase-caught-1
+::end
+
+::choice chase-last-choice
+@prompt У лестницы — противопожарные двери, стенд, верёвка и спортивные маты. Охранник снова в конце коридора.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 4 seconds; default option index: 3
+
+- [Интеллект 6] Закрыть дверь и заблокировать стойкой.
+  ? Интеллект 6
+  +flag GUARD_BLOCKED_BY_FIRE_DOOR
+  -> chase-end-1
+  !-> chase-last-choice-option-1-failure
+
+- [Сила 6] Сбросить спортивные маты на лестницу.
+  ? Сила 6
+  +flag GYM_MATS_TRAP_USED
+  -> chase-end-1
+  !-> chase-last-choice-option-2-failure
+
+- [Ловкость 6] Натянуть верёвку поперёк прохода.
+  ? Ловкость 6
+  +flag SCHOOL_BREAK_IN_FAILED
+  -> chase-end-1
+  !-> chase-last-choice-option-3-failure
+
+- Перевернуть стенд с отличниками.
+  +flag HONOUR_BOARD_DESTROYED
+  -> chase-end-1
+
+::end
+
+::dialogue chase-end-1
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Дмит и Вадим поднимаются на второй этаж и захлопывают за собой дверь. Снизу слышны удары охранника и отборная ругань.
+@next chase-end-2
+::end
+
+::dialogue chase-end-2
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Я ВАС ВСЁ РАВНО НАЙДУ!
+@next chase-end-3
+::end
+
+::dialogue chase-end-3
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Пусть сначала поднимется.
+@next chase-end-4
+::end
+
+::dialogue chase-end-4
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Он поднимется.
+@next chase-end-5
+::end
+
+::dialogue chase-end-5
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Ты всегда такой успокаивающий?
+@next chase-end-6
+::end
+
+::dialogue chase-end-6
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Я стараюсь оценивать ситуацию честно.
+@next chase-end-7
+::end
+
+::dialogue chase-end-7
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Второй этаж погружён в темноту. В конце длинного коридора находится кабинет информатики.
+@next chase-end-8
+::end
+
+::dialogue chase-end-8
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Рюкзак там.
+@next chase-end-9
+::end
+
+::dialogue chase-end-9
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Тогда быстро забираем и валим.
+@next chase-end-10
+::end
+
+::dialogue chase-end-10
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Охранник перекрыл путь назад.
+@next chase-end-11
+::end
+
+::dialogue chase-end-11
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Значит, найдём другой.
+@next chase-end-12
+::end
+
+::dialogue chase-end-12
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Ты знаешь другой выход?
+@next chase-end-13
+::end
+
+::dialogue chase-end-13
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Нет.
+@next chase-end-14
+::end
+
+::dialogue chase-end-14
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Отлично.
+@next chase-end-15
+::end
+
+::dialogue chase-end-15
+@cast Дмит | Вадим
+@sound-next quest-complete
+# tone: danger
+
+Дмит: Не привыкай.
+@effect-next experience 18
+@effect-next flag SCHOOL_FIRST_FLOOR_PASSED
+@effect-next flag DMIT_AND_VADIM_REACHED_SECOND_FLOOR
+@effect-next flag GUARD_SEARCHING_SECOND_FLOOR
+@next computer-branch
+::end
+
+::dialogue chase-caught-1
+@cast Дмит | Охранник
+@sound-next guard-shout
+# tone: danger
+
+Рассказчик: Охранник удерживает Вадима, а Дмит падает на пол. Ночной поход заканчивается на вахте.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next computer-branch
+::end
+
+::dialogue chase-abandon-1
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Вадим… извини.
+@next chase-abandon-2
+::end
+
+::dialogue chase-abandon-2
+@cast Дмит | Вадим
+@sound-next dmit-run
+# tone: danger
+
+Рассказчик: Дмит бежит на второй этаж один. Охранник остаётся с Вадимом, а его голос ещё долго слышно снизу.
+@effect-next flag DMIT_ABANDONED_VADIM
+@effect-next flag SCHOOL_FIRST_FLOOR_PASSED
+@next computer-branch
+::end

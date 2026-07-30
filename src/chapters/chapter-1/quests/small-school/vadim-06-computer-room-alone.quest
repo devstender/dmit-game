@@ -1,0 +1,988 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — ДМИТ ОДИН И ОКОНЧАТЕЛЬНОЕ РЕШЕНИЕ О ВАДИМЕ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue next-step-alone-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит поднимается на второй этаж один. Снизу доносится голос Вадима.
+@next next-step-alone-1
+::end
+
+::dialogue next-step-alone-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: Дмит!
+@next next-step-alone-2
+::end
+
+::dialogue next-step-alone-2
+@cast Дмит | Вадим
+
+Охранник: Стой спокойно!
+@next next-step-alone-3
+::end
+
+::dialogue next-step-alone-3
+@cast Дмит | Вадим
+
+Вадим: Ты обещал помочь!
+@next next-step-alone-4
+::end
+
+::dialogue next-step-alone-4
+@cast Дмит | Вадим
+
+Рассказчик: Дмит не останавливается.
+@next next-step-alone-5
+::end
+
+::dialogue next-step-alone-5
+@cast Дмит | Вадим
+
+Дмит: Бля…
+@next next-step-alone-6
+::end
+
+::dialogue next-step-alone-6
+@cast Дмит | Вадим
+
+Рассказчик: Перед ним тянется пустой коридор. Кабинет информатики находится в самом конце.
+@next next-step-alone-7
+::end
+
+::dialogue next-step-alone-7
+@cast Дмит | Вадим
+
+Рассказчик: Телефон Дмита вибрирует.
+@next next-step-alone-8
+::end
+
+::dialogue next-step-alone-8
+@cast Дмит | Вадим
+
+Кед: Дмит, где Вадим?
+@next next-step-alone-9
+::end
+
+::dialogue next-step-alone-9
+@cast Дмит | Вадим
+
+Дмит: Охранник его поймал.
+@next next-step-alone-10
+::end
+
+::dialogue next-step-alone-10
+@cast Дмит | Вадим
+
+Кед: А ты?
+@next next-step-alone-11
+::end
+
+::dialogue next-step-alone-11
+@cast Дмит | Вадим
+
+Дмит: Я наверху.
+@next next-step-alone-12
+::end
+
+::dialogue next-step-alone-12
+@cast Дмит | Вадим
+
+Кед: Один?
+@next next-step-alone-13
+::end
+
+::dialogue next-step-alone-13
+@cast Дмит | Вадим
+
+Дмит: Ну да.
+@next next-step-alone-14
+::end
+
+::dialogue next-step-alone-14
+@cast Дмит | Вадим
+
+Кед: Ты опять человека бросил?
+@next next-step-alone-15
+::end
+
+::dialogue next-step-alone-15
+@cast Дмит | Вадим
+
+Дмит: Он уже у охранника. Чё я сделаю?
+@next next-step-alone-16
+::end
+
+::dialogue next-step-alone-16
+@cast Дмит | Вадим
+
+Мишган: Вернёшься.
+@next next-step-alone-17
+::end
+
+::dialogue next-step-alone-17
+@cast Дмит | Вадим
+
+Дмит: Там охранник.
+@next next-step-alone-18
+::end
+
+::dialogue next-step-alone-18
+@cast Дмит | Вадим
+
+Мишган: Я заметил.
+@next next-step-alone-19
+::end
+
+::dialogue next-step-alone-19
+@cast Дмит | Вадим
+
+Данз: Можно сказать, что Вадим пожертвовал собой ради миссии.
+@next next-step-alone-20
+::end
+
+::dialogue next-step-alone-20
+@cast Дмит | Вадим
+
+Кед: Закройся, Данз.
+@next next-step-alone-21
+::end
+
+::dialogue next-step-alone-21
+@cast Дмит | Вадим
+
+Мишган: Дмит. Вернись.
+@next next-step-alone-choice
+::end
+
+::choice next-step-alone-choice
+@bg school-second-floor-night
+@prompt У Дмита есть десять секунд на решение.
+@cast Дмит | Вадим
+# tone: danger
+# timed-choice: 10 seconds; default option index: 1
+
+- Бля, ладно. Попробую его вытащить.
+  +trait Ответственность 2
+  +trait Товарищество 1
+  -> next-step-return-0
+
+- Сначала заберу рюкзак. Не зря же мы сюда полезли.
+  +trait Ответственность -1
+  -> next-step-alone-room-0
+
+- [Интеллект 6] Включите снаружи пожарную сигнализацию. Охранник отвлечётся.
+  ? Интеллект 6
+  +trait Хитрость 1
+  +trait Ответственность 1
+  -> next-step-alarm-success-0
+  !-> next-step-alarm-fail-0
+
+- Это не моя проблема. Он сам полез.
+  +trait Ответственность -2
+  +trait Товарищество -2
+  -> next-step-double-betrayal-0
+
+::end
+
+::dialogue next-step-return-0
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Бля, ладно. Попробую его вытащить.
+@next next-step-return-1
+::end
+
+::dialogue next-step-return-1
+@cast Дмит | Вадим
+
+Мишган: Вот теперь нормально.
+@next next-step-return-2
+::end
+
+::dialogue next-step-return-2
+@cast Дмит | Вадим
+
+Дмит: Не начинай.
+@next next-step-return-3
+::end
+
+::dialogue next-step-return-3
+@cast Дмит | Вадим
+
+Кед: Мы отвлечём охранника снаружи.
+@next next-step-return-4
+::end
+
+::dialogue next-step-return-4
+@cast Дмит | Вадим
+
+Данз: Я могу кинуть камень в окно.
+@next next-step-return-5
+::end
+
+::dialogue next-step-return-5
+@cast Дмит | Вадим
+
+Рассказчик: Все: Нет!
+@next next-step-return-6
+::end
+
+::dialogue next-step-return-6
+@cast Дмит | Вадим
+
+Дмит: Просто шумите у главного входа.
+@next next-step-return-7
+::end
+
+::dialogue next-step-return-7
+@cast Дмит | Вадим
+
+Мишган: Уф-уф. Работаем.
+@next next-step-return-8
+::end
+
+::dialogue next-step-return-8
+@cast Дмит | Вадим
+
+Рассказчик: Снаружи раздаётся грохот.
+@next next-step-return-9
+::end
+
+::dialogue next-step-return-9
+@cast Дмит | Вадим
+
+Мишган: ЭЙ, ОХРАННИК! У ТЕБЯ СТОЙКА КРИВАЯ!
+@next next-step-return-10
+::end
+
+::dialogue next-step-return-10
+@cast Дмит | Вадим
+
+Охранник: ЧЕГО?!
+@next next-step-return-11
+::end
+
+::dialogue next-step-return-11
+@cast Дмит | Вадим
+
+Данз: И телевизор говно!
+@next next-step-return-12
+::end
+
+::dialogue next-step-return-12
+@cast Дмит | Вадим
+
+Охранник: Я СЕЙЧАС ВЫЙДУ!
+@next next-step-return-13
+::end
+
+::dialogue next-step-return-13
+@cast Дмит | Вадим
+
+Рассказчик: Охранник оставляет Вадима возле вахты и направляется к главному входу.
+@next next-step-return-14
+::end
+
+::dialogue next-step-return-14
+@cast Дмит | Вадим
+
+Дмит: Вадим!
+@next next-step-return-15
+::end
+
+::dialogue next-step-return-15
+@cast Дмит | Вадим
+
+Вадим: Ты вернулся.
+@next next-step-return-16
+::end
+
+::dialogue next-step-return-16
+@cast Дмит | Вадим
+
+Дмит: Потом порадуешься. Беги наверх.
+@next next-step-return-17
+::end
+
+::dialogue next-step-return-17
+@cast Дмит | Вадим
+
+Вадим: Я не радуюсь.
+@next next-step-return-18
+::end
+
+::dialogue next-step-return-18
+@cast Дмит | Вадим
+
+Дмит: Вижу.
+@next next-step-return-19
+::end
+
+::dialogue next-step-return-19
+@cast Дмит | Вадим
+
+Рассказчик: Вадим поднимается к Дмиту.
+@effect-next flag DMIT_RETURNED_FOR_VADIM
+@next next-step-return-talk-choice
+::end
+
+::choice next-step-return-talk-choice
+@prompt Почему ты сначала убежал?
+@cast Дмит | Вадим
+
+- Испугался.
+  -> next-step-return-talk-1-0
+
+- Думал, что так будет проще.
+  -> next-step-return-talk-2-0
+
+- Затупил. Бывает.
+  -> next-step-return-talk-3-0
+
+- Не сейчас, Вадим.
+  -> next-step-return-talk-4-0
+
+::end
+
+::dialogue next-step-return-talk-1-0
+@cast Дмит | Вадим
+
+Дмит: Испугался.
+@next next-step-return-talk-1-1
+::end
+
+::dialogue next-step-return-talk-1-1
+@cast Дмит | Вадим
+
+Вадим: Это хотя бы честно.
+@next next-step-return-talk-1-2
+::end
+
+::dialogue next-step-return-talk-1-2
+@cast Дмит | Вадим
+
+Дмит: Никому не говори.
+@next next-step-return-talk-1-3
+::end
+
+::dialogue next-step-return-talk-1-3
+@cast Дмит | Вадим
+
+Вадим: Не обещаю.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-return-talk-2-0
+@cast Дмит | Вадим
+
+Дмит: Думал, что так будет проще.
+@next next-step-return-talk-2-1
+::end
+
+::dialogue next-step-return-talk-2-1
+@cast Дмит | Вадим
+
+Вадим: Для кого?
+@next next-step-return-talk-2-2
+::end
+
+::dialogue next-step-return-talk-2-2
+@cast Дмит | Вадим
+
+Дмит: Для меня.
+@next next-step-return-talk-2-3
+::end
+
+::dialogue next-step-return-talk-2-3
+@cast Дмит | Вадим
+
+Вадим: Это я понял.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-return-talk-3-0
+@cast Дмит | Вадим
+
+Дмит: Затупил. Бывает.
+@next next-step-return-talk-3-1
+::end
+
+::dialogue next-step-return-talk-3-1
+@cast Дмит | Вадим
+
+Вадим: У тебя это происходит довольно часто.
+@next next-step-return-talk-3-2
+::end
+
+::dialogue next-step-return-talk-3-2
+@cast Дмит | Вадим
+
+Дмит: Но я вернулся.
+@next next-step-return-talk-3-3
+::end
+
+::dialogue next-step-return-talk-3-3
+@cast Дмит | Вадим
+
+Вадим: Да.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-return-talk-4-0
+@cast Дмит | Вадим
+
+Дмит: Не сейчас, Вадим.
+@next next-step-return-talk-4-1
+::end
+
+::dialogue next-step-return-talk-4-1
+@cast Дмит | Вадим
+
+Вадим: Хорошо. Но разговор не закончился.
+@next next-step-return-talk-4-2
+::end
+
+::dialogue next-step-return-talk-4-2
+@cast Дмит | Вадим
+
+Дмит: Да понял.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-alarm-success-0
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Кед, возле спортивного входа есть красная кнопка. Нажми её и бегите.
+@next next-step-alarm-success-1
+::end
+
+::dialogue next-step-alarm-success-1
+@cast Дмит | Вадим
+
+Кед: Пожарная?
+@next next-step-alarm-success-2
+::end
+
+::dialogue next-step-alarm-success-2
+@cast Дмит | Вадим
+
+Дмит: Ага.
+@next next-step-alarm-success-3
+::end
+
+::dialogue next-step-alarm-success-3
+@cast Дмит | Вадим
+
+Вадим: Это незаконно.
+@next next-step-alarm-success-4
+::end
+
+::dialogue next-step-alarm-success-4
+@cast Дмит | Вадим
+
+Дмит: Ты сейчас не в положении спорить.
+@next next-step-alarm-success-5
+::end
+
+::dialogue next-step-alarm-success-5
+@cast Дмит | Вадим
+
+Рассказчик: Через несколько секунд по школе разносится вой сигнализации.
+@next next-step-alarm-success-6
+::end
+
+::dialogue next-step-alarm-success-6
+@cast Дмит | Вадим
+
+Рассказчик: У-У-У-У!
+@next next-step-alarm-success-7
+::end
+
+::dialogue next-step-alarm-success-7
+@cast Дмит | Вадим
+
+Охранник: Да что сегодня происходит?!
+@next next-step-alarm-success-8
+::end
+
+::dialogue next-step-alarm-success-8
+@cast Дмит | Вадим
+
+Рассказчик: Охранник отпускает Вадима и бежит к пожарному щиту.
+@next next-step-alarm-success-9
+::end
+
+::dialogue next-step-alarm-success-9
+@cast Дмит | Вадим
+
+Дмит: Вадим, наверх!
+@next next-step-alarm-success-10
+::end
+
+::dialogue next-step-alarm-success-10
+@cast Дмит | Вадим
+
+Рассказчик: Вадим вырывается и поднимается по лестнице.
+@next next-step-alarm-success-11
+::end
+
+::dialogue next-step-alarm-success-11
+@cast Дмит | Вадим
+
+Вадим: Ты устроил ложную пожарную тревогу.
+@next next-step-alarm-success-12
+::end
+
+::dialogue next-step-alarm-success-12
+@cast Дмит | Вадим
+
+Дмит: Зато ты свободен.
+@next next-step-alarm-success-13
+::end
+
+::dialogue next-step-alarm-success-13
+@cast Дмит | Вадим
+
+Вадим: Это не отменяет первое.
+@effect-next flag FALSE_FIRE_ALARM_TRIGGERED
+@effect-next flag DMIT_RETURNED_FOR_VADIM
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-alarm-fail-0
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Дмит: Кед, нажми красную кнопку возле спортивного входа.
+@next next-step-alarm-fail-1
+::end
+
+::dialogue next-step-alarm-fail-1
+@cast Дмит | Охранник
+
+Кед: Тут две.
+@next next-step-alarm-fail-2
+::end
+
+::dialogue next-step-alarm-fail-2
+@cast Дмит | Охранник
+
+Дмит: Любую.
+@next next-step-alarm-fail-3
+::end
+
+::dialogue next-step-alarm-fail-3
+@cast Дмит | Охранник
+
+Вадим: Нельзя нажимать любую!
+@next next-step-alarm-fail-4
+::end
+
+::dialogue next-step-alarm-fail-4
+@cast Дмит | Охранник
+
+Данз: Нажал обе.
+@next next-step-alarm-fail-5
+::end
+
+::dialogue next-step-alarm-fail-5
+@cast Дмит | Охранник
+
+Рассказчик: Сигнализация не включается. Вместо этого автоматически блокируются боковые двери.
+@next next-step-alarm-fail-6
+::end
+
+::dialogue next-step-alarm-fail-6
+@cast Дмит | Охранник
+
+Охранник: Ага. Теперь вообще никто не выйдет.
+@next next-step-alarm-fail-7
+::end
+
+::dialogue next-step-alarm-fail-7
+@cast Дмит | Охранник
+
+Дмит: Данз, ты долбоёб.
+@next next-step-alarm-fail-8
+::end
+
+::dialogue next-step-alarm-fail-8
+@cast Дмит | Охранник
+
+Данз: Я действовал решительно.
+@effect-next flag SCHOOL_EXITS_LOCKED
+@effect-next flag VADIM_LEFT_WITH_GUARD
+@next next-step-alone-room-0
+::end
+
+::dialogue next-step-double-betrayal-0
+@bg school-dark-vaz
+@cast Дмит | Мишган
+
+Дмит: Это не моя проблема. Он сам полез.
+@next next-step-double-betrayal-1
+::end
+
+::dialogue next-step-double-betrayal-1
+@cast Дмит | Мишган
+
+Мишган: Нет.
+@next next-step-double-betrayal-2
+::end
+
+::dialogue next-step-double-betrayal-2
+@cast Дмит | Мишган
+
+Дмит: Чё нет?
+@next next-step-double-betrayal-3
+::end
+
+::dialogue next-step-double-betrayal-3
+@cast Дмит | Мишган
+
+Мишган: Ты его повёл.
+@next next-step-double-betrayal-4
+::end
+
+::dialogue next-step-double-betrayal-4
+@cast Дмит | Мишган
+
+Дмит: Он сам хотел.
+@next next-step-double-betrayal-5
+::end
+
+::dialogue next-step-double-betrayal-5
+@cast Дмит | Мишган
+
+Мишган: А ты согласился быть старшим.
+@next next-step-double-betrayal-6
+::end
+
+::dialogue next-step-double-betrayal-6
+@cast Дмит | Мишган
+
+Дмит: Да пошёл ты.
+@next next-step-double-betrayal-7
+::end
+
+::dialogue next-step-double-betrayal-7
+@cast Дмит | Мишган
+
+Мишган: Уже иду. Только не с тобой.
+@next next-step-double-betrayal-8
+::end
+
+::dialogue next-step-double-betrayal-8
+@cast Дмит | Мишган
+
+Рассказчик: Мишган отключается.
+@effect-next flag DMIT_DOUBLE_ABANDONMENT
+@effect-next flag VADIM_TRUST_DESTROYED
+@next next-step-alone-room-0
+::end
+
+::dialogue next-step-alone-room-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Дмит: Сначала заберу рюкзак. Не зря же мы сюда полезли.
+@next next-step-alone-room-1
+::end
+
+::dialogue next-step-alone-room-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Мишган: Он важнее рюкзака.
+@next next-step-alone-room-2
+::end
+
+::dialogue next-step-alone-room-2
+@cast Дмит | Вадим
+
+Дмит: Я потом вернусь.
+@next next-step-alone-room-3
+::end
+
+::dialogue next-step-alone-room-3
+@cast Дмит | Вадим
+
+Мишган: Ты это уже говорил?
+@next next-step-alone-room-4
+::end
+
+::dialogue next-step-alone-room-4
+@cast Дмит | Вадим
+
+Дмит: Не говорил.
+@next next-step-alone-room-5
+::end
+
+::dialogue next-step-alone-room-5
+@cast Дмит | Вадим
+
+Мишган: Но подумал.
+@next next-step-alone-room-6
+::end
+
+::dialogue next-step-alone-room-6
+@cast Дмит | Вадим
+
+Кед: Дмит, это херовая тема.
+@next next-step-alone-room-7
+::end
+
+::dialogue next-step-alone-room-7
+@cast Дмит | Вадим
+
+Дмит: Пять минут.
+@next next-step-alone-room-8
+::end
+
+::dialogue next-step-alone-room-8
+@cast Дмит | Вадим
+
+Рассказчик: Дмит сбрасывает звонок и идёт к кабинету информатики.
+@next next-step-alone-room-9
+::end
+
+::dialogue next-step-alone-room-9
+@cast Дмит | Вадим
+
+Рассказчик: Дмит доходит до закрытой двери кабинета.
+@next next-step-alone-room-10
+::end
+
+::dialogue next-step-alone-room-10
+@cast Дмит | Вадим
+
+Дмит: Ну конечно.
+@next next-step-alone-room-11
+::end
+
+::dialogue next-step-alone-room-11
+@cast Дмит | Вадим
+
+Рассказчик: Дмит включает фонарик на телефоне и проходит между компьютерами.
+@next next-step-alone-room-12
+::end
+
+::dialogue next-step-alone-room-12
+@cast Дмит | Вадим
+
+Дмит: Третий компьютер… Какой третий?
+@next next-step-alone-room-13
+::end
+
+::dialogue next-step-alone-room-13
+@cast Дмит | Вадим
+
+Рассказчик: В кабинете четыре ряда, и Дмит не помнит, откуда Вадим начинал считать.
+@next next-step-alone-room-14
+::end
+
+::dialogue next-step-alone-room-14
+@cast Дмит | Вадим
+
+Рассказчик: Дмит вытаскивает из-под стола рюкзак Вадима.
+@next next-step-alone-room-15
+::end
+
+::dialogue next-step-alone-room-15
+@cast Дмит | Вадим
+
+Дмит: Нашёл.
+@next next-step-alone-room-16
+::end
+
+::dialogue next-step-alone-room-16
+@cast Дмит | Вадим
+
+Рассказчик: В этот момент на учительском столе начинает вибрировать чёрный телефон.
+@next next-step-alone-room-17
+::end
+
+::phone next-step-alone-room-17
+@cast Дмит | Вадим
+@contact Неизвестный номер
+@time 22:43
+
+Рассказчик: Машина будет у школы в 23:40.
+@next next-step-alone-room-18
+::end
+
+::phone next-step-alone-room-18
+@cast Дмит | Вадим
+@contact Неизвестный номер
+@time 22:43
+
+Рассказчик: Деньги у Игоря.
+@next next-step-alone-room-19
+::end
+
+::phone next-step-alone-room-19
+@cast Дмит | Вадим
+@contact Неизвестный номер
+@time 22:43
+
+Рассказчик: Младший ничего не должен увидеть.
+@next next-step-alone-room-20
+::end
+
+::dialogue next-step-alone-room-20
+@cast Дмит | Вадим
+
+Дмит: Какой ещё Игорь?
+@next next-step-alone-room-21
+::end
+
+::dialogue next-step-alone-room-21
+@cast Дмит | Вадим
+
+Рассказчик: Снизу слышен голос Вадима.
+@next next-step-alone-room-22
+::end
+
+::dialogue next-step-alone-room-22
+@cast Дмит | Вадим
+
+Вадим: Дмит!
+@next next-step-alone-room-23
+::end
+
+::dialogue next-step-alone-room-23
+@cast Дмит | Вадим
+
+Рассказчик: Теперь у Дмита в руках рюкзак, а перед ним лежит неизвестный телефон.
+@effect-next flag VADIM_LEFT_WITH_GUARD
+@next next-step-alone-call-0
+::end
+
+::dialogue next-step-alone-call-0
+@cast Дмит | Вадим
+
+Дмит: Вадим, где твой рюкзак?
+@next next-step-alone-call-1
+::end
+
+::dialogue next-step-alone-call-1
+@cast Дмит | Вадим
+
+Вадим: Ты серьёзно?
+@next next-step-alone-call-2
+::end
+
+::dialogue next-step-alone-call-2
+@cast Дмит | Вадим
+
+Дмит: Да.
+@next next-step-alone-call-3
+::end
+
+::dialogue next-step-alone-call-3
+@cast Дмит | Вадим
+
+Вадим: Ты оставил меня с охранником и теперь спрашиваешь, где рюкзак?
+@next next-step-alone-call-4
+::end
+
+::dialogue next-step-alone-call-4
+@cast Дмит | Вадим
+
+Дмит: Я за ним и пришёл.
+@next next-step-alone-call-5
+::end
+
+::dialogue next-step-alone-call-5
+@cast Дмит | Вадим
+
+Вадим: Третий ряд, второй стол от окна.
+@next next-step-alone-call-6
+::end
+
+::dialogue next-step-alone-call-6
+@cast Дмит | Вадим
+
+Дмит: Спасибо.
+@next next-step-alone-call-7
+::end
+
+::dialogue next-step-alone-call-7
+@cast Дмит | Вадим
+
+Вадим: Я не для тебя сказал. В рюкзаке моя работа.
+@next next-step-alone-end-choice
+::end
+
+::choice next-step-alone-end-choice
+@bg school-second-floor-night
+@prompt Десять секунд на окончательное решение.
+@cast Дмит
+# tone: danger
+# timed-choice: 10 seconds; default option index: 0
+
+- Забрать рюкзак и вернуться за Вадимом.
+  +flag DMIT_RETURNED_WITH_BACKPACK
+  -> next-step-alone-finish-0
+
+- Забрать рюкзак и чёрный телефон, но оставить Вадима охраннику.
+  +flag DMIT_DOUBLE_ABANDONMENT
+  +flag DMIT_HAS_BLACK_PHONE
+  -> next-step-alone-finish-0
+
+- Оставить рюкзак и телефон, сразу вернуться за Вадимом.
+  +flag DMIT_RETURNED_FOR_VADIM
+  -> next-step-alone-finish-0
+
+- Забрать только чёрный телефон и искать другой выход.
+  +flag DMIT_DOUBLE_ABANDONMENT
+  +flag DMIT_HAS_BLACK_PHONE
+  -> next-step-alone-finish-0
+
+::end
+
+::dialogue next-step-alone-finish-0
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Рассказчик: Дмит надевает рюкзак Вадима на плечо.
+@next next-step-alone-finish-1
+::end
+
+::dialogue next-step-alone-finish-1
+@cast Дмит | Вадим
+
+Рассказчик: Телефон снова вибрирует.
+@next next-step-alone-finish-2
+::end
+
+::dialogue next-step-alone-finish-2
+@cast Дмит | Вадим
+
+Вадим: Дмит!
+@next next-step-alone-finish-3
+::end
+
+::dialogue next-step-alone-finish-3
+@cast Дмит | Вадим
+
+Дмит: Иду…
+@next next-step-alone-finish-4
+::end
+
+::dialogue next-step-alone-finish-4
+@cast Дмит | Вадим
+
+Рассказчик: Но сначала ему нужно решить, куда идти: обратно к Вадиму или искать выход одному.
+@effect-next experience 9
+@effect-next flag SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE
+@next school-exit-entry
+::end

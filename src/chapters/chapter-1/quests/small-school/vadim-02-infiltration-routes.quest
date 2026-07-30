@@ -1,0 +1,2862 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — ВАРИАНТЫ ПРОНИКНОВЕНИЯ, ДИСПЕТЧЕР РЕЖИМОВ И СОПРОВОЖДЕНИЕ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue infiltration-1
+@cast Дмит | Вадим
+
+Рассказчик: Дмит ещё раз смотрит на тёмные окна школы. Свет горит только на первом этаже — возле главного входа и в коридоре рядом с учительской.
+@next infiltration-2
+::end
+
+::dialogue infiltration-2
+@cast Дмит | Вадим
+
+Дмит: Так. Сначала решаем, как входим.
+@next infiltration-3
+::end
+
+::dialogue infiltration-3
+@cast Дмит | Вадим
+
+Вадим: Я предлагаю через окно раздевалки.
+@next infiltration-4
+::end
+
+::dialogue infiltration-4
+@cast Кед | Вадим
+
+Кед: А если оно закрыто?
+@next infiltration-5
+::end
+
+::dialogue infiltration-5
+@cast Данз | Вадим
+
+Вадим: Тогда придётся выбрать другой путь.
+@next infiltration-6
+::end
+
+::dialogue infiltration-6
+@cast Данз | Вадим
+
+Данз: Или разбить его камнем.
+@next infiltration-7
+::end
+
+::dialogue infiltration-7
+@cast Данз | Вадим
+
+Вадим: Нет.
+@next infiltration-8
+::end
+
+::dialogue infiltration-8
+@cast Данз | Вадим
+
+Данз: Почему сразу нет?
+@next infiltration-9
+::end
+
+::dialogue infiltration-9
+@cast Данз | Вадим
+
+Вадим: Потому что разбитое окно обычно замечают.
+@next infiltration-10
+::end
+
+::dialogue infiltration-10
+@cast Кед | Данз
+
+Данз: А если разбить очень аккуратно?
+@next infiltration-11
+::end
+
+::dialogue infiltration-11
+@cast Данз | Мишган
+
+Кед: Ты даже упал сегодня неаккуратно.
+@next infiltration-12
+::end
+
+::dialogue infiltration-12
+@cast Данз | Мишган
+
+Мишган: Он не упал. Он провёл удар ногой по мне, а потом принял горизонтальную стойку.
+@next infiltration-13
+::end
+
+::dialogue infiltration-13
+@cast Данз | Мишган
+
+Данз: Звучит профессионально.
+@next infiltration-14
+::end
+
+::dialogue infiltration-14
+@cast Дмит | Мишган
+
+Мишган: Нога до сих пор не согласна.
+@next infiltration-15
+::end
+
+::dialogue infiltration-15
+@cast Дмит | Вадим
+
+Дмит: Тихо. Нам рюкзак забрать надо, а не ещё один бой начать.
+@next infiltration-16
+::end
+
+::dialogue infiltration-16
+@cast Дмит | Вадим
+
+Вадим: У школы четыре возможных входа.
+@next infiltration-17
+::end
+
+::dialogue infiltration-17
+@cast Дмит | Вадим
+
+Дмит: Откуда знаешь?
+@next infiltration-18
+::end
+
+::dialogue infiltration-18
+@cast Дмит | Вадим
+
+Вадим: Я здесь учусь.
+@next infiltration-19
+::end
+
+::dialogue infiltration-19
+@cast Дмит | Вадим
+
+Дмит: Я тоже здесь учусь.
+@next infiltration-20
+::end
+
+::dialogue infiltration-20
+@cast Дмит | Вадим
+
+Вадим: Ты однажды искал кабинет химии на третьем этаже.
+@next infiltration-21
+::end
+
+::dialogue infiltration-21
+@cast Данз | Вадим
+
+Дмит: И чё?
+@next infiltration-22
+::end
+
+::dialogue infiltration-22
+@cast Данз | Вадим
+
+Вадим: Он находится на втором.
+@next infiltration-23
+::end
+
+::dialogue infiltration-23
+@cast Дмит | Данз
+
+Данз: Он тебя опять.
+@next infiltration-24
+::end
+
+::choice infiltration-24
+@bg school-yard-night
+@prompt Да понял я.
+@cast Дмит | Вадим
+
+- Ты умный — ты и говори, куда лезть.
+  # short-label: Пусть Вадим ведёт.
+  -> entry-neutral-smart-1
+
+- Без лекций. Покажи самый быстрый вход.
+  # short-label: Самый быстрый вход.
+  -> entry-neutral-fast-1
+
+- Сейчас сами разберёмся. Мы тут старшие.
+  # short-label: Мы тут старшие.
+  -> entry-neutral-older-1
+
+- Давайте сначала спокойно всё проверим.
+  # short-label: Спокойно проверить.
+  -> entry-neutral-calm-1
+
+::end
+
+::dialogue entry-choice-option-1-failure
+@cast Дмит | Вадим
+
+Рассказчик: Дмит пытается звучать убедительно, но слово «лекарства» выходит так, будто он сам не знает, от чего они.
+@effect-next flag SMALL_SCHOOL_GUARD_SUSPICIOUS
+@next entry-guard-talk-fail-1
+::end
+
+::dialogue entry-choice-option-3-failure
+@cast Дмит | Вадим
+
+Рассказчик: Дмит примеряется к забору, но ночная школа внезапно становится выше, чем казалась в разговоре.
+@effect-next flag SMALL_SCHOOL_WINDOW_ATTEMPT_FAILED
+@next entry-window-fail-1
+::end
+
+::dialogue entry-choice-option-4-failure
+@cast Дмит | Вадим
+
+Рассказчик: Дмит объясняет план со щитком, но на середине понимает, что щиток он видел только в кино и один раз на подъезде.
+@effect-next flag SMALL_SCHOOL_LIGHTS_PLAN_FAILED
+@next entry-lights-fail-1
+::end
+
+::dialogue entry-choice-option-5-failure
+@cast Дмит | Вадим
+
+Рассказчик: Дмит берётся за решётку, но та держится так уверенно, будто её ставили не строители, а обиженный физрук.
+@effect-next flag SMALL_SCHOOL_GRATE_NOISE
+@next entry-grate-fail-1
+::end
+
+::choice entry-choice
+@bg school-yard-night
+@prompt Теперь нужно выбрать способ проникновения. У каждого варианта есть своя цена: деньги, риск, шум, охранник или Данз, что иногда одно и то же.
+@cast Дмит | Вадим
+
+- [Харизма 5] Скажем, что в рюкзаке лекарства. Охранник сам откроет.
+  # short-label: Уговорить охранника.
+  ? Харизма 5
+  +experience 8
+  +flag SMALL_SCHOOL_ENTRY_GUARD_TALK
+  -> entry-guard-talk-1
+  !-> entry-choice-option-1-failure
+
+- [Деньги 200 ₽] Дадим ему денег. Пять минут нам хватит.
+  # short-label: Подкупить охранника.
+  @requires-money 200
+  +experience 6
+  +flag SMALL_SCHOOL_ENTRY_BRIBE_GUARD
+  +money -200
+  -> entry-bribe-1
+
+- [Ловкость 5] Лезем через забор и окно раздевалки.
+  # short-label: Окно раздевалки.
+  ? Ловкость 5
+  +experience 8
+  +flag SMALL_SCHOOL_ENTRY_LOCKER_WINDOW
+  -> entry-window-1
+  !-> entry-choice-option-3-failure
+
+- [Интеллект 6] Выключим свет снаружи. Охранник сам выйдет к щитку.
+  # short-label: Отвлечь светом.
+  ? Интеллект 6
+  +experience 10
+  +flag SMALL_SCHOOL_ENTRY_LIGHTS_DISTRACTION
+  -> entry-lights-1
+  !-> entry-choice-option-4-failure
+
+- [Сила 6] Сломаем старую решётку у подсобки.
+  # short-label: Решётка подсобки.
+  ? Сила 6
+  +experience 8
+  +flag SMALL_SCHOOL_ENTRY_STORAGE_GRATE
+  +flag SMALL_SCHOOL_ALARM_RISK
+  -> entry-grate-1
+  !-> entry-choice-option-5-failure
+
+::end
+
+::dialogue entry-guard-talk-1
+@bg school-main-entrance-night
+@cast Дмит | Вадим
+
+Вадим: В моём рюкзаке нет лекарств.
+@next guard-talk-2
+::end
+
+::dialogue guard-talk-2
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Он этого не знает.
+@next guard-talk-3
+::end
+
+::dialogue guard-talk-3
+@cast Дмит | Вадим
+
+Вадим: Это ложь.
+@next guard-talk-4
+::end
+
+::dialogue guard-talk-4
+@cast Дмит | Вадим
+
+Дмит: Это временная версия правды.
+@next guard-talk-5
+::end
+
+::dialogue guard-talk-5
+@cast Данз | Вадим
+
+Вадим: Так не бывает.
+@next guard-talk-6
+::end
+
+::dialogue guard-talk-6
+@cast Кед | Данз
+
+Данз: Бывает. Я так про возраст в интернете пишу.
+@next guard-talk-7
+::end
+
+::dialogue guard-talk-7
+@cast Кед | Мишган
+
+Кед: Тебе вообще нельзя участвовать.
+@next guard-talk-8
+::end
+
+::dialogue guard-talk-8
+@cast Мишган | Вадим
+
+Мишган: Вадим, главное — грустное лицо и тяжёлое дыхание. Как после удара в печень.
+@next guard-talk-9
+::end
+
+::dialogue guard-talk-9
+@cast Мишган | Вадим
+
+Вадим: Я не умею изображать удар в печень.
+@next guard-talk-10
+::end
+
+::dialogue guard-talk-10
+@cast Мишган | Вадим
+
+Мишган: Могу помочь.
+@next guard-talk-11
+::end
+
+::dialogue guard-talk-11
+@cast Дмит | Вадим
+
+Вадим: Не надо.
+@next guard-talk-12
+::end
+
+::dialogue guard-talk-12
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим подходят к главному входу. Остальные остаются возле забора и делают вид, что не являются частью преступной презентации.
+@next guard-talk-13
+::end
+
+::dialogue guard-talk-13
+@cast Дмит | Вадим
+
+Дмит: Звонок где?
+@next guard-talk-14
+::end
+
+::dialogue guard-talk-14
+@cast Дмит | Вадим
+
+Вадим: Справа.
+@next guard-talk-15
+::end
+
+::dialogue guard-talk-15
+@cast Дмит | Вадим
+
+Дмит: Я видел.
+@next guard-talk-16
+::end
+
+::dialogue guard-talk-16
+@cast Дмит | Вадим
+
+Вадим: Ты смотрел налево.
+@next guard-talk-17
+::end
+
+::dialogue guard-talk-17
+@cast Дмит | Охранник
+
+Дмит: Не начинай.
+@next guard-talk-18
+::end
+
+::dialogue guard-talk-18
+@cast Дмит | Охранник
+@sound-next school-door-buzz
+
+Рассказчик: Дмит несколько раз нажимает кнопку звонка. В глубине школы появляется охранник — медленно, как финальный босс в тапках.
+@next guard-talk-19
+::end
+
+::dialogue guard-talk-19
+@cast Дмит | Охранник
+
+Охранник: Кого там ещё принесло?
+@next guard-talk-20
+::end
+
+::dialogue guard-talk-20
+@cast Дмит | Охранник
+
+Дмит: Здравствуйте.
+@next guard-talk-21
+::end
+
+::dialogue guard-talk-21
+@cast Дмит | Охранник
+
+Охранник: Школа закрыта.
+@next guard-talk-22
+::end
+
+::dialogue guard-talk-22
+@cast Дмит | Охранник
+
+Дмит: У нас проблема.
+@next guard-talk-23
+::end
+
+::dialogue guard-talk-23
+@cast Дмит | Охранник
+
+Охранник: У меня тоже. Вы.
+@next guard-talk-24
+::end
+
+::dialogue guard-talk-24
+@cast Дмит | Охранник
+
+Дмит: Мелкий рюкзак забыл. Там лекарства.
+@next guard-talk-25
+::end
+
+::dialogue guard-talk-25
+@cast Дмит | Охранник
+
+Охранник: Какие лекарства?
+@next guard-talk-26
+::end
+
+::dialogue guard-talk-26
+@cast Дмит | Охранник
+
+Дмит: Важные.
+@next guard-talk-27
+::end
+
+::dialogue guard-talk-27
+@cast Дмит | Охранник
+
+Охранник: Название.
+@next guard-talk-28
+::end
+
+::dialogue guard-talk-28
+@cast Дмит | Вадим
+
+Дмит: Ну… таблетки.
+@next guard-talk-29
+::end
+
+::dialogue guard-talk-29
+@cast Дмит | Вадим
+
+Вадим: Дмит.
+@next guard-talk-30
+::end
+
+::dialogue guard-talk-30
+@cast Дмит | Вадим
+
+Дмит: Молчи, тебе плохо.
+@next guard-talk-31
+::end
+
+::dialogue guard-talk-31
+@cast Дмит | Охранник
+
+Вадим: Мне не плохо.
+@next guard-talk-32
+::end
+
+::dialogue guard-talk-32
+@cast Дмит | Охранник
+
+Охранник: Я вижу.
+@next guard-neutral-choice
+::end
+
+::choice guard-neutral-choice
+@prompt Ну? Какие таблетки-то?
+@cast Дмит | Охранник
+
+- От аллергии. Он орехов нажрался.
+  # short-label: Аллергия на орехи.
+  -> guard-allergy-1
+
+- Название сложное. Я не врач.
+  # short-label: Сложное название.
+  -> guard-hard-name-1
+
+- Пусть Вадим сам скажет. Ему виднее.
+  # short-label: Попросить Вадима.
+  -> guard-vadim-says-1
+
+- Мужик, просто откройте на пять минут.
+  # short-label: Сказать прямо.
+  -> guard-direct-1
+
+::end
+
+::dialogue guard-allergy-1
+@cast Дмит | Охранник
+
+Охранник: Каких орехов?
+@next guard-allergy-2
+::end
+
+::dialogue guard-allergy-2
+@cast Дмит | Вадим
+
+Дмит: Обычных.
+@next guard-allergy-3
+::end
+
+::dialogue guard-allergy-3
+@cast Дмит | Вадим
+
+Вадим: Фундук.
+@next guard-allergy-4
+::end
+
+::dialogue guard-allergy-4
+@cast Дмит | Охранник
+
+Дмит: Вот. Фундук.
+@next guard-allergy-5
+::end
+
+::dialogue guard-allergy-5
+@cast Дмит | Охранник
+
+Охранник: И где его сейчас раздуло?
+@next guard-allergy-6
+::end
+
+::dialogue guard-allergy-6
+@cast Дмит | Вадим
+
+Дмит: Пока нигде. Мы заранее пришли.
+@next guard-allergy-7
+::end
+
+::dialogue guard-allergy-7
+@cast Дмит | Охранник
+
+Вадим: Это называется профилактика.
+@next guard-allergy-8
+::end
+
+::dialogue guard-allergy-8
+@cast Дмит | Охранник
+
+Охранник: Чё-то вы оба слишком бодрые.
+@next guard-success-1
+::end
+
+::dialogue guard-hard-name-1
+@cast Дмит | Охранник
+
+Охранник: Зато врать умеешь.
+@next guard-hard-name-2
+::end
+
+::dialogue guard-hard-name-2
+@cast Дмит | Вадим
+
+Дмит: Плохо умею. Поэтому и заметили.
+@next guard-hard-name-3
+::end
+
+::dialogue guard-hard-name-3
+@cast Дмит | Охранник
+
+Вадим: Это не лучший аргумент.
+@next guard-hard-name-4
+::end
+
+::dialogue guard-hard-name-4
+@cast Дмит | Охранник
+
+Охранник: Хоть один из вас это понимает.
+@next guard-success-1
+::end
+
+::dialogue guard-vadim-says-1
+@cast Дмит | Вадим
+
+Вадим: Мне нужен рюкзак. Там документы и флешка.
+@next guard-vadim-says-2
+::end
+
+::dialogue guard-vadim-says-2
+@cast Дмит | Вадим
+
+Дмит: И таблетки.
+@next guard-vadim-says-3
+::end
+
+::dialogue guard-vadim-says-3
+@cast Дмит | Охранник
+
+Вадим: Нет таблеток.
+@next guard-vadim-says-4
+::end
+
+::dialogue guard-vadim-says-4
+@cast Дмит | Охранник
+
+Охранник: Вы между собой сначала договоритесь.
+@next guard-success-1
+::end
+
+::dialogue guard-direct-1
+@cast Дмит | Охранник
+
+Охранник: Я тебе не мужик.
+@next guard-direct-2
+::end
+
+::dialogue guard-direct-2
+@cast Дмит | Охранник
+
+Дмит: А кто?
+@next guard-direct-3
+::end
+
+::dialogue guard-direct-3
+@cast Дмит | Охранник
+
+Охранник: Охранник.
+@next guard-direct-4
+::end
+
+::dialogue guard-direct-4
+@cast Дмит | Вадим
+
+Дмит: Ну вот. Охранник, откройте.
+@next guard-direct-5
+::end
+
+::dialogue guard-direct-5
+@cast Дмит | Вадим
+
+Вадим: Кажется, вежливее не стало.
+@next guard-direct-6
+::end
+
+::dialogue guard-direct-6
+@cast Дмит | Охранник
+
+Дмит: Зато понятно.
+@next guard-success-1
+::end
+
+::dialogue guard-success-1
+@cast Дмит | Охранник
+
+Дмит: Слушайте, у него аллергия. Таблетки лежат в рюкзаке. Если ему станет плохо, первым спросят, почему вы нас не пустили.
+@next guard-success-2
+::end
+
+::dialogue guard-success-2
+@cast Дмит | Охранник
+
+Охранник: Меня?
+@next guard-success-3
+::end
+
+::dialogue guard-success-3
+@cast Дмит | Вадим
+
+Дмит: А кого? Я несовершеннолетний.
+@next guard-success-4
+::end
+
+::dialogue guard-success-4
+@cast Дмит | Вадим
+
+Вадим: Ты тоже ученик этой школы.
+@next guard-success-5
+::end
+
+::dialogue guard-success-5
+@cast Дмит | Вадим
+
+Дмит: Вадим, тебе тяжело разговаривать.
+@next guard-success-6
+::end
+
+::dialogue guard-success-6
+@cast Дмит | Вадим
+
+Вадим: Мне нормально.
+@next guard-success-7
+::end
+
+::dialogue guard-success-7
+@cast Дмит | Охранник
+
+Дмит: Ты держишься.
+@next guard-success-8
+::end
+
+::dialogue guard-success-8
+@cast Дмит | Вадим
+
+Охранник: И где этот рюкзак?
+@next guard-success-9
+::end
+
+::dialogue guard-success-9
+@cast Дмит | Охранник
+
+Вадим: В кабинете информатики.
+@next guard-success-10
+::end
+
+::dialogue guard-success-10
+@cast Дмит | Вадим
+
+Охранник: Второй этаж?
+@next guard-success-11
+::end
+
+::dialogue guard-success-11
+@cast Дмит | Охранник
+
+Вадим: Да.
+@next guard-success-12
+::end
+
+::dialogue guard-success-12
+@cast Дмит | Охранник
+
+Охранник: Пять минут. Я иду с вами.
+@next guard-success-13
+::end
+
+::dialogue guard-success-13
+@cast Дмит | Охранник
+
+Дмит: Может, мы сами?
+@next guard-success-14
+::end
+
+::dialogue guard-success-14
+@cast Дмит | Охранник
+
+Охранник: Нет.
+@next guard-success-15
+::end
+
+::dialogue guard-success-15
+@cast Дмит | Охранник
+
+Дмит: А вы телевизор смотрели.
+@next guard-success-16
+::end
+
+::dialogue guard-success-16
+@cast Дмит | Охранник
+
+Охранник: Теперь буду смотреть на вас.
+@next guard-success-17
+::end
+
+::dialogue guard-success-17
+@cast Дмит | Вадим
+
+Рассказчик: Охранник открывает дверь и пропускает Дмита с Вадимом внутрь.
+@next guard-success-18
+::end
+
+::dialogue guard-success-18
+@cast Дмит | Вадим
+
+Вадим: Это действительно сработало.
+@next guard-success-19
+::end
+
+::dialogue guard-success-19
+@cast Дмит | Вадим
+
+Дмит: Я умею говорить с людьми.
+@next guard-success-20
+::end
+
+::dialogue guard-success-20
+@cast Дмит | Вадим
+
+Вадим: Ты соврал человеку про смертельную аллергию.
+@next guard-success-21
+::end
+
+::dialogue guard-success-21
+@cast Дмит | Вадим
+
+Дмит: Главное — уверенно.
+@effect-next flag GUARD_ALLOWED_ENTRY
+@effect-next flag INFILTRATION_MODE_ESCORT
+@next entry-route-end
+::end
+
+::dialogue entry-guard-talk-fail-1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Дмит: Короче, ему таблетки нужны. Очень.
+@next guard-fail-2
+::end
+
+::dialogue guard-fail-2
+@cast Дмит | Охранник
+
+Охранник: Какие?
+@next guard-fail-3
+::end
+
+::dialogue guard-fail-3
+@cast Дмит | Вадим
+
+Дмит: От головы.
+@next guard-fail-4
+::end
+
+::dialogue guard-fail-4
+@cast Дмит | Вадим
+
+Вадим: У меня не болит голова.
+@next guard-fail-5
+::end
+
+::dialogue guard-fail-5
+@cast Дмит | Вадим
+
+Дмит: Уже болит.
+@next guard-fail-6
+::end
+
+::dialogue guard-fail-6
+@cast Дмит | Вадим
+
+Вадим: Нет.
+@next guard-fail-7
+::end
+
+::dialogue guard-fail-7
+@cast Дмит | Охранник
+
+Дмит: Сейчас заболит.
+@next guard-fail-8
+::end
+
+::dialogue guard-fail-8
+@cast Дмит | Охранник
+
+Охранник: Так. Оба отошли от двери.
+@next guard-fail-9
+::end
+
+::dialogue guard-fail-9
+@cast Дмит | Охранник
+
+Рассказчик: Охранник подходит ближе к стеклу и внимательно рассматривает Дмита.
+@next guard-fail-10
+::end
+
+::dialogue guard-fail-10
+@cast Дмит | Охранник
+
+Охранник: Погоди. Я тебя знаю.
+@next guard-fail-11
+::end
+
+::dialogue guard-fail-11
+@cast Дмит | Охранник
+
+Дмит: Мы знакомы?
+@next guard-fail-12
+::end
+
+::dialogue guard-fail-12
+@cast Дмит | Охранник
+
+Охранник: Я тебя к директору за воротник водил.
+@next guard-fail-13
+::end
+
+::dialogue guard-fail-13
+@cast Дмит | Охранник
+
+Дмит: А. Точно. Хорошо выглядите.
+@next guard-fail-14
+::end
+
+::dialogue guard-fail-14
+@cast Дмит | Охранник
+
+Охранник: Домой пошёл.
+@next guard-fail-15
+::end
+
+::dialogue guard-fail-15
+@cast Дмит | Охранник
+
+Дмит: Может, всё-таки откроете?
+@next guard-fail-16
+::end
+
+::dialogue guard-fail-16
+@cast Дмит | Охранник
+
+Охранник: Нет.
+@next guard-fail-17
+::end
+
+::dialogue guard-fail-17
+@cast Дмит | Охранник
+
+Дмит: Там реально важные вещи.
+@next guard-fail-18
+::end
+
+::dialogue guard-fail-18
+@cast Дмит | Вадим
+
+Охранник: Утром заберёт.
+@next guard-fail-19
+::end
+
+::dialogue guard-fail-19
+@cast Дмит | Охранник
+
+Вадим: Утром будет поздно.
+@next guard-fail-20
+::end
+
+::dialogue guard-fail-20
+@cast Дмит | Вадим
+
+Охранник: Надо было головой думать.
+@next guard-fail-21
+::end
+
+::dialogue guard-fail-21
+@cast Дмит | Вадим
+
+Дмит: Он маленький ещё.
+@next guard-fail-22
+::end
+
+::dialogue guard-fail-22
+@cast Дмит | Охранник
+
+Вадим: Я младше тебя только на два года.
+@next guard-fail-23
+::end
+
+::dialogue guard-fail-23
+@cast Дмит | Охранник
+
+Охранник: Оба маленькие. Оба домой.
+@next guard-fail-23-route-hook
+::end
+
+::hook guard-fail-23-route-hook
+@fallback guard-scout-check
+@continue guard-scout-check
+::end
+
+::extend guard-fail-23-route-hook
+@when CHAPTER_1_LEFT_MISHGAN
+@priority 100
+@start guard-left-mishgan-1
+::end
+
+::dialogue guard-left-mishgan-1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Охранник: Ты ещё друга тогда оставил.
+@next guard-left-mishgan-2
+::end
+
+::dialogue guard-left-mishgan-2
+@cast Дмит | Мишган
+
+Мишган: Во! Даже он помнит!
+@next guard-left-mishgan-3
+::end
+
+::dialogue guard-left-mishgan-3
+@cast Дмит | Мишган
+
+Дмит: Ты откуда слышишь?
+@next guard-left-mishgan-4
+::end
+
+::dialogue guard-left-mishgan-4
+@cast Дмит | Охранник
+
+Мишган: Громко говорите!
+@next guard-left-mishgan-5
+::end
+
+::dialogue guard-left-mishgan-5
+@cast Дмит | Охранник
+
+Охранник: И вся ваша компания здесь?
+@next guard-left-mishgan-6
+::end
+
+::dialogue guard-left-mishgan-6
+@cast Данз | Охранник
+
+Дмит: Нет.
+@next guard-left-mishgan-7
+::end
+
+::dialogue guard-left-mishgan-7
+@cast Дмит | Охранник
+
+Данз: Нас здесь нет!
+@next guard-left-mishgan-8
+::end
+
+::dialogue guard-left-mishgan-8
+@cast Дмит | Охранник
+
+Охранник: Я сейчас милицию вызову.
+@next guard-left-mishgan-9
+::end
+
+::dialogue guard-left-mishgan-9
+@cast Дмит | Вадим
+
+Дмит: Всё, уходим.
+@next guard-scout-check
+::end
+
+::dialogue guard-scout-check
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Рассказчик: Главный вход окончательно закрыт для переговоров. Остаются варианты, в которых меньше стекла и больше риска.
+@effect-next flag GUARD_SUSPICIOUS
+@effect-next flag MAIN_ENTRANCE_CLOSED
+@next guard-scout-check-route-hook
+::end
+
+::hook guard-scout-check-route-hook
+@fallback entry-recovery-choice
+@continue entry-recovery-choice
+::end
+
+::extend guard-scout-check-route-hook
+@when MATVEY_SCOUT_SAW_GROUP
+@priority 100
+@start guard-scout-1
+::end
+
+::dialogue guard-scout-1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Охранник: Мне уже позвонили и сказали, что вы вокруг школы ходите.
+@next guard-scout-2
+::end
+
+::dialogue guard-scout-2
+@cast Дмит | Охранник
+
+Дмит: Кто сказал?
+@next guard-scout-3
+::end
+
+::dialogue guard-scout-3
+@cast Дмит | Вадим
+
+Охранник: Неважно.
+@next guard-scout-4
+::end
+
+::dialogue guard-scout-4
+@cast Дмит | Вадим
+
+Вадим: Вероятно, человек Матвея.
+@next guard-scout-5
+::end
+
+::dialogue guard-scout-5
+@cast Дмит | Охранник
+
+Дмит: Вот крыса.
+@next guard-scout-6
+::end
+
+::dialogue guard-scout-6
+@cast Дмит | Охранник
+
+Охранник: Ещё раз увижу возле двери — звоню в милицию.
+@next entry-recovery-choice
+::end
+
+::dialogue entry-recovery-choice-option-1-failure
+@cast Дмит | Вадим
+
+Рассказчик: После разговора с охранником руки у Дмита работают хуже, чем рот минуту назад.
+@effect-next flag SMALL_SCHOOL_WINDOW_ATTEMPT_FAILED
+@next entry-window-fail-1
+::end
+
+::dialogue entry-recovery-choice-option-2-failure
+@cast Дмит | Вадим
+
+Рассказчик: Щиток внезапно оказывается сложнее, чем Дмит рассказывал секунду назад.
+@effect-next flag SMALL_SCHOOL_LIGHTS_PLAN_FAILED
+@next entry-lights-fail-1
+::end
+
+::dialogue entry-recovery-choice-option-3-failure
+@cast Дмит | Вадим
+
+Рассказчик: Решётка не уважает харизму Дмита и требует физики.
+@effect-next flag SMALL_SCHOOL_GRATE_NOISE
+@next entry-grate-fail-1
+::end
+
+::choice entry-recovery-choice
+@bg school-yard-night
+@prompt Главный вход умер как идея. Дмит быстро выбирает запасной путь.
+@cast Дмит | Вадим
+
+- [Ловкость 5] Лезем через забор и окно раздевалки.
+  # short-label: Окно раздевалки.
+  ? Ловкость 5
+  +experience 8
+  +flag SMALL_SCHOOL_ENTRY_LOCKER_WINDOW
+  -> entry-window-1
+  !-> entry-recovery-choice-option-1-failure
+
+- [Интеллект 6] Выключим свет снаружи. Охранник сам выйдет к щитку.
+  # short-label: Отвлечь светом.
+  ? Интеллект 6
+  +experience 10
+  +flag SMALL_SCHOOL_ENTRY_LIGHTS_DISTRACTION
+  -> entry-lights-1
+  !-> entry-recovery-choice-option-2-failure
+
+- [Сила 6] Сломаем старую решётку у подсобки.
+  # short-label: Решётка подсобки.
+  ? Сила 6
+  +experience 8
+  +flag SMALL_SCHOOL_ENTRY_STORAGE_GRATE
+  +flag SMALL_SCHOOL_ALARM_RISK
+  -> entry-grate-1
+  !-> entry-recovery-choice-option-3-failure
+
+::end
+
+::dialogue entry-bribe-1
+@bg school-main-entrance-night
+@cast Дмит | Вадим
+
+Вадим: Ты собираешься дать охраннику взятку?
+@next bribe-2
+::end
+
+::dialogue bribe-2
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Не взятку.
+@next bribe-3
+::end
+
+::dialogue bribe-3
+@cast Дмит | Вадим
+
+Вадим: А что?
+@next bribe-4
+::end
+
+::dialogue bribe-4
+@cast Дмит | Вадим
+
+Дмит: Плату за срочное открытие.
+@next bribe-5
+::end
+
+::dialogue bribe-5
+@cast Дмит | Вадим
+
+Вадим: Школа бесплатная.
+@next bribe-6
+::end
+
+::dialogue bribe-6
+@cast Дмит | Кед
+
+Дмит: Ночью тариф другой.
+@next bribe-7
+::end
+
+::dialogue bribe-7
+@cast Дмит | Кед
+
+Кед: А если он деньги возьмёт и не откроет?
+@next bribe-8
+::end
+
+::dialogue bribe-8
+@cast Дмит | Мишган
+
+Дмит: Тогда Мишган проведёт переговоры.
+@next bribe-9
+::end
+
+::dialogue bribe-9
+@cast Мишган | Вадим
+
+Мишган: Уф-уф. Второй этап дипломатии.
+@next bribe-10
+::end
+
+::dialogue bribe-10
+@cast Дмит | Охранник
+
+Вадим: Нет. Никакого второго этапа.
+@next bribe-11
+::end
+
+::dialogue bribe-11
+@cast Дмит | Охранник
+
+Рассказчик: Дмит подходит к двери и показывает охраннику сложенные купюры через стекло.
+@next bribe-12
+::end
+
+::dialogue bribe-12
+@cast Дмит | Охранник
+
+Охранник: Это ещё что?
+@next bribe-13
+::end
+
+::dialogue bribe-13
+@cast Дмит | Охранник
+
+Дмит: Двести рублей. Нам только рюкзак забрать.
+@next bribe-14
+::end
+
+::dialogue bribe-14
+@cast Дмит | Охранник
+
+Охранник: Ты мне деньги предлагаешь?
+@next bribe-15
+::end
+
+::dialogue bribe-15
+@cast Дмит | Охранник
+
+Дмит: Я вам компенсирую неудобства.
+@next bribe-16
+::end
+
+::dialogue bribe-16
+@cast Дмит | Охранник
+
+Охранник: Какие неудобства?
+@next bribe-17
+::end
+
+::dialogue bribe-17
+@cast Дмит | Охранник
+
+Дмит: Встать со стула. Открыть дверь. Пройти немного.
+@next bribe-18
+::end
+
+::dialogue bribe-18
+@cast Дмит | Охранник
+
+Охранник: А если я сейчас директора вызову?
+@next bribe-neutral-choice
+::end
+
+::choice bribe-neutral-choice
+@prompt Ну? Что молчишь?
+@cast Дмит | Охранник
+
+- Берите. Никто не узнает.
+  # short-label: Никто не узнает.
+  -> bribe-result-1
+
+- Это не взятка, мы просто благодарные.
+  # short-label: Мы благодарные.
+  -> bribe-result-1
+
+- Можем дать половину сейчас, половину потом.
+  # short-label: Половина сейчас.
+  -> bribe-result-1
+
+- Не хотите — мы найдём другой вход.
+  # short-label: Ищем другой вход.
+  -> bribe-result-1
+
+::end
+
+::dialogue bribe-result-1
+@cast Дмит | Охранник
+
+Рассказчик: Охранник несколько секунд смотрит на деньги. В школе становится тихо, как в магазине перед словом «сдачи нет».
+@next bribe-result-2
+::end
+
+::dialogue bribe-result-2
+@cast Дмит | Охранник
+
+Охранник: Пять минут. Если что-нибудь сломаете — я вас не видел.
+@next bribe-result-3
+::end
+
+::dialogue bribe-result-3
+@cast Дмит | Охранник
+
+Дмит: Мы аккуратно.
+@next bribe-result-4
+::end
+
+::dialogue bribe-result-4
+@cast Дмит | Вадим
+
+Охранник: Тебе я особенно не верю.
+@next bribe-result-5
+::end
+
+::dialogue bribe-result-5
+@cast Дмит | Вадим
+
+Вадим: Правильно.
+@next bribe-result-6
+::end
+
+::dialogue bribe-result-6
+@cast Дмит | Вадим
+
+Дмит: Ты на чьей стороне?
+@next bribe-result-7
+::end
+
+::dialogue bribe-result-7
+@cast Дмит | Охранник
+
+Вадим: На стороне фактов.
+@next bribe-result-8
+::end
+
+::dialogue bribe-result-8
+@cast Дмит | Вадим
+@sound-next school-entry-creak
+
+Рассказчик: Охранник забирает деньги, открывает боковую дверь и снова возвращается к своему телевизору.
+@next bribe-result-9
+::end
+
+::dialogue bribe-result-9
+@cast Дмит | Вадим
+
+Вадим: Это всё равно была взятка.
+@next bribe-result-10
+::end
+
+::dialogue bribe-result-10
+@cast Дмит | Вадим
+
+Дмит: Зато мы внутри.
+@next bribe-result-11
+::end
+
+::dialogue bribe-result-11
+@cast Дмит | Вадим
+
+Вадим: Я запомню оба факта.
+@effect-next flag GUARD_BRIBED
+@effect-next flag INFILTRATION_MODE_EASY
+@next entry-route-end
+::end
+
+::dialogue entry-window-1
+@bg school-backyard-night
+@cast Дмит | Вадим
+
+Вадим: Это был мой первоначальный план.
+@next window-2
+::end
+
+::dialogue window-2
+@bg school-dark-vaz
+@cast Дмит | Кед
+
+Дмит: Теперь это наш план.
+@next window-3
+::end
+
+::dialogue window-3
+@cast Кед | Данз
+
+Кед: Я вас подсажу.
+@next window-4
+::end
+
+::dialogue window-4
+@cast Кед | Данз
+
+Данз: А меня?
+@next window-5
+::end
+
+::dialogue window-5
+@cast Кед | Данз
+
+Кед: Ты остаёшься снаружи.
+@next window-6
+::end
+
+::dialogue window-6
+@cast Данз | Вадим
+
+Данз: Почему?
+@next window-7
+::end
+
+::dialogue window-7
+@cast Данз | Вадим
+
+Вадим: Проблема не в размере.
+@next window-8
+::end
+
+::dialogue window-8
+@cast Дмит | Данз
+
+Данз: А в чём?
+@next window-9
+::end
+
+::dialogue window-9
+@cast Дмит | Данз
+
+Рассказчик: Все одновременно смотрят на Данза. Ответ висит в воздухе без лишних субтитров.
+@next window-10
+::end
+
+::dialogue window-10
+@cast Дмит | Вадим
+
+Рассказчик: Компания обходит школу со стороны спортивной площадки. За забором темно, а окно раздевалки находится чуть выше человеческого роста.
+@next window-11
+::end
+
+::dialogue window-11
+@cast Мишган | Вадим
+
+Мишган: Я первый.
+@next window-12
+::end
+
+::dialogue window-12
+@cast Мишган | Вадим
+
+Вадим: Ты хромаешь.
+@next window-13
+::end
+
+::dialogue window-13
+@cast Дмит | Мишган
+
+Мишган: Это не мешает рукам.
+@next window-14
+::end
+
+::dialogue window-14
+@cast Дмит | Кед
+
+Дмит: Я полезу.
+@next window-neutral-choice
+::end
+
+::choice window-neutral-choice
+@prompt Перед подъёмом Дмит успевает раздать последние указания. Возможно, последние вообще.
+@cast Дмит | Кед
+
+- Кед, подсади нормально. Не кидай меня.
+  # short-label: Кед, не кидай.
+  -> window-damaged-check
+
+- Мишган, если падаю — ловишь.
+  # short-label: Мишган ловит.
+  -> window-damaged-check
+
+- Вадим, смотри и учись плохим решениям.
+  # short-label: Урок Вадиму.
+  -> window-damaged-check
+
+- Все тихо. Сейчас быстро открою.
+  # short-label: Все тихо.
+  -> window-damaged-check
+
+::end
+
+::dialogue window-damaged-check
+@cast Дмит | Вадим
+
+Рассказчик: Дмит хватается за верх забора и подтягивается.
+@next window-damaged-check-route-hook
+::end
+
+::hook window-damaged-check-route-hook
+@fallback window-climb-check
+@continue window-climb-check
+::end
+
+::extend window-damaged-check-route-hook
+@when DMIT_DAMAGED
+@priority 100
+@start window-damaged-1
+::end
+
+::dialogue window-damaged-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Рассказчик: В виске резко стреляет боль, а земля на секунду уходит в сторону.
+@next window-damaged-2
+::end
+
+::dialogue window-damaged-2
+@cast Дмит | Вадим
+
+Дмит: Бля…
+@next window-damaged-3
+::end
+
+::dialogue window-damaged-3
+@cast Дмит | Вадим
+
+Вадим: Что случилось?
+@next window-damaged-4
+::end
+
+::dialogue window-damaged-4
+@cast Дмит | Вадим
+
+Дмит: Ничего.
+@next window-damaged-5
+::end
+
+::dialogue window-damaged-5
+@cast Дмит | Вадим
+
+Вадим: Ты остановился.
+@next window-damaged-6
+::end
+
+::dialogue window-damaged-6
+@cast Дмит | Вадим
+
+Дмит: Думаю.
+@next window-damaged-7
+::end
+
+::dialogue window-damaged-7
+@cast Дмит | Вадим
+
+Вадим: На заборе?
+@next window-damaged-8
+::end
+
+::dialogue window-damaged-8
+@cast Дмит | Мишган
+
+Дмит: Мне здесь удобно.
+@next window-mishgan-check
+::end
+
+::dialogue window-mishgan-check
+@cast Дмит | Мишган
+
+Рассказчик: Мишган внимательно смотрит на Дмита и решает, помогать ли руками или характером.
+@next window-mishgan-check-route-hook
+::end
+
+::hook window-mishgan-check-route-hook
+@fallback window-climb-check
+@continue window-climb-check
+::end
+
+::extend window-mishgan-check-route-hook
+@when CHAPTER_1_HELPED_MISHGAN
+@priority 200
+@start window-mishgan-good-1
+::end
+
+::extend window-mishgan-check-route-hook
+@when CHAPTER_1_LEFT_MISHGAN
+@priority 100
+@start window-mishgan-bad-1
+::end
+
+::dialogue window-mishgan-good-1
+@bg school-dark-vaz
+@cast Дмит | Мишган
+
+Мишган: Тихо, бля! Я держу.
+@next window-mishgan-good-2
+::end
+
+::dialogue window-mishgan-good-2
+@cast Дмит | Мишган
+
+Рассказчик: Мишган подхватывает Дмита снизу.
+@next window-mishgan-good-3
+::end
+
+::dialogue window-mishgan-good-3
+@cast Дмит | Мишган
+
+Дмит: Отпусти задницу.
+@next window-mishgan-good-4
+::end
+
+::dialogue window-mishgan-good-4
+@cast Дмит | Мишган
+
+Мишган: Тогда падай.
+@next window-mishgan-good-5
+::end
+
+::dialogue window-mishgan-good-5
+@cast Дмит | Мишган
+
+Дмит: Ладно, держи.
+@next window-climb-check
+::end
+
+::dialogue window-mishgan-bad-1
+@bg school-dark-vaz
+@cast Дмит | Мишган
+
+Мишган: Дмит, ты качаешься.
+@next window-mishgan-bad-2
+::end
+
+::dialogue window-mishgan-bad-2
+@cast Дмит | Мишган
+
+Дмит: Я лезу.
+@next window-mishgan-bad-3
+::end
+
+::dialogue window-mishgan-bad-3
+@cast Дмит | Мишган
+
+Мишган: Ты качаешься сильнее, чем лезешь.
+@next window-mishgan-bad-4
+::end
+
+::dialogue window-mishgan-bad-4
+@cast Дмит | Мишган
+
+Дмит: Лучше бы помог.
+@next window-mishgan-bad-5
+::end
+
+::dialogue window-mishgan-bad-5
+@cast Дмит | Мишган
+
+Мишган: Я правила команды не знаю.
+@next window-climb-check
+::end
+
+::dialogue window-climb-check
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Рассказчик: Дмит перебирается через забор, спрыгивает во двор и быстро добирается до окна.
+@next window-success-2
+::end
+
+::dialogue window-success-2
+@cast Дмит | Вадим
+
+Дмит: Вадим, какое?
+@next window-success-3
+::end
+
+::dialogue window-success-3
+@cast Дмит | Вадим
+
+Вадим: Третье слева.
+@next window-success-4
+::end
+
+::dialogue window-success-4
+@cast Дмит | Вадим
+
+Дмит: Они все одинаковые.
+@next window-success-5
+::end
+
+::dialogue window-success-5
+@cast Дмит | Вадим
+
+Вадим: Считай.
+@next window-success-6
+::end
+
+::dialogue window-success-6
+@cast Дмит | Вадим
+
+Дмит: Раз, два… вот это?
+@next window-success-7
+::end
+
+::dialogue window-success-7
+@cast Дмит | Вадим
+
+Вадим: Это второе.
+@next window-success-8
+::end
+
+::dialogue window-success-8
+@cast Дмит | Вадим
+
+Дмит: Теперь третье.
+@next window-success-9
+::end
+
+::dialogue window-success-9
+@cast Дмит | Вадим
+
+Рассказчик: Оконная рама поддаётся после нескольких осторожных движений.
+@next window-success-10
+::end
+
+::dialogue window-success-10
+@cast Дмит | Вадим
+
+Дмит: Открыто.
+@next window-success-11
+::end
+
+::dialogue window-success-11
+@cast Дмит | Вадим
+
+Вадим: Я говорил.
+@next window-success-12
+::end
+
+::dialogue window-success-12
+@cast Дмит | Кед
+
+Дмит: Тише радуйся.
+@next window-success-13
+::end
+
+::dialogue window-success-13
+@cast Дмит | Вадим
+
+Рассказчик: Кед помогает Вадиму перебраться через забор. Через минуту оба оказываются внутри раздевалки.
+@effect-next flag ENTERED_THROUGH_WINDOW
+@effect-next flag INFILTRATION_MODE_NORMAL
+@next entry-route-end
+::end
+
+::dialogue entry-window-fail-1
+@bg school-dark-vaz
+@cast Дмит | Кед
+
+Рассказчик: Дмит почти перебирается через забор, но нога соскальзывает с перекладины.
+@next window-fail-2
+::end
+
+::dialogue window-fail-2
+@cast Дмит | Кед
+@sound-next mishgan-fall
+
+Дмит: Бля!
+@next window-fail-3
+::end
+
+::dialogue window-fail-3
+@cast Дмит | Вадим
+
+Рассказчик: Он падает на школьную сторону и задевает металлическое ведро возле стены. ДЗЫНЬ разносится по двору так торжественно, будто школа сама ударила в гонг.
+@next window-fail-4
+::end
+
+::dialogue window-fail-4
+@cast Дмит | Вадим
+
+Вадим: Это было очень громко.
+@next window-fail-5
+::end
+
+::dialogue window-fail-5
+@cast Дмит | Кед
+
+Дмит: Я заметил.
+@next window-fail-6
+::end
+
+::dialogue window-fail-6
+@cast Дмит | Кед
+
+Кед: Живой?
+@next window-fail-7
+::end
+
+::dialogue window-fail-7
+@cast Дмит | Мишган
+
+Дмит: Да.
+@next window-fail-8
+::end
+
+::dialogue window-fail-8
+@cast Мишган | Данз
+
+Мишган: Вставай! После падения нельзя показывать слабость.
+@next window-fail-9
+::end
+
+::dialogue window-fail-9
+@cast Мишган | Данз
+
+Данз: Кому?
+@next window-fail-10
+::end
+
+::dialogue window-fail-10
+@cast Мишган | Вадим
+
+Мишган: Забору.
+@next window-fail-11
+::end
+
+::dialogue window-fail-11
+@cast Дмит | Вадим
+
+Рассказчик: В коридоре школы загорается дополнительный свет.
+@next window-fail-12
+::end
+
+::dialogue window-fail-12
+@cast Дмит | Вадим
+
+Вадим: Охранник услышал.
+@effect-next flag GUARD_HEARD_NOISE
+@effect-next flag DMIT_DAMAGED
+@effect-next flag INFILTRATION_MODE_SUSPICIOUS
+@next entry-route-end
+::end
+
+::dialogue entry-lights-1
+@bg school-backyard-night
+@cast Дмит | Вадим
+
+Вадим: Ты умеешь отключать электричество?
+@next lights-2
+::end
+
+::dialogue lights-2
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Нет.
+@next lights-3
+::end
+
+::dialogue lights-3
+@cast Дмит | Вадим
+
+Вадим: Тогда почему ты предлагаешь?
+@next lights-4
+::end
+
+::dialogue lights-4
+@cast Дмит | Вадим
+
+Дмит: Потому что ты умеешь.
+@next lights-5
+::end
+
+::dialogue lights-5
+@cast Дмит | Вадим
+
+Вадим: Почему ты так решил?
+@next lights-6
+::end
+
+::dialogue lights-6
+@cast Дмит | Вадим
+
+Дмит: Ты олимпиадник.
+@next lights-7
+::end
+
+::dialogue lights-7
+@cast Данз | Вадим
+
+Вадим: По информатике.
+@next lights-8
+::end
+
+::dialogue lights-8
+@cast Данз | Вадим
+
+Данз: Компьютеры работают от электричества. Всё сходится.
+@next lights-9
+::end
+
+::dialogue lights-9
+@cast Кед | Вадим
+
+Вадим: Это не так работает.
+@next lights-10
+::end
+
+::dialogue lights-10
+@cast Кед | Вадим
+
+Кед: Щиток всё равно снаружи. Можно просто нажать выключатель.
+@next lights-11
+::end
+
+::dialogue lights-11
+@cast Данз | Вадим
+
+Вадим: Не на все подряд.
+@next lights-12
+::end
+
+::dialogue lights-12
+@cast Дмит | Вадим
+
+Данз: Почему?
+@next lights-13
+::end
+
+::dialogue lights-13
+@cast Дмит | Вадим
+
+Вадим: Потому что мы можем отключить половину здания или включить сигнализацию.
+@next lights-14
+::end
+
+::dialogue lights-14
+@cast Дмит | Вадим
+
+Дмит: Тогда выбирай правильный.
+@next lights-success-1
+::end
+
+::dialogue lights-success-1
+@cast Дмит | Вадим
+
+Рассказчик: Вадим находит нужный переключатель. Свет возле вахты гаснет.
+@next lights-success-2
+::end
+
+::dialogue lights-success-2
+@cast Дмит | Охранник
+
+Охранник: Да что за херня…
+@next lights-success-3
+::end
+
+::dialogue lights-success-3
+@cast Дмит | Вадим
+
+Рассказчик: Через несколько секунд боковая дверь открывается. Охранник с фонариком направляется к щитку.
+@next lights-success-4
+::end
+
+::dialogue lights-success-4
+@cast Дмит | Вадим
+
+Дмит: Вот и всё.
+@next lights-success-5
+::end
+
+::dialogue lights-success-5
+@cast Дмит | Вадим
+
+Вадим: У нас будет не больше трёх минут.
+@next lights-success-6
+::end
+
+::dialogue lights-success-6
+@cast Дмит | Вадим
+
+Дмит: Хватит.
+@next lights-success-7
+::end
+
+::dialogue lights-success-7
+@cast Дмит | Вадим
+
+Вадим: Ты не знаешь расстояние до кабинета.
+@next lights-success-8
+::end
+
+::dialogue lights-success-8
+@cast Дмит | Мишган
+
+Дмит: Зато быстро хожу.
+@next lights-success-9
+::end
+
+::dialogue lights-success-9
+@cast Дмит | Мишган
+
+Мишган: Уф-уф. Работа ног.
+@effect-next flag GUARD_DISTRACTED_BY_POWER
+@effect-next flag INFILTRATION_MODE_TIMER_180
+@next entry-route-end
+::end
+
+::dialogue entry-lights-fail-1
+@bg school-backyard-night
+@cast Данз | Вадим
+
+Рассказчик: Вадим нажимает переключатель. Вместо света возле вахты гаснут фонари во всём школьном дворе.
+@next lights-fail-2
+::end
+
+::dialogue lights-fail-2
+@bg school-dark-vaz
+@cast Данз | Вадим
+
+Данз: Красиво.
+@next lights-fail-3
+::end
+
+::dialogue lights-fail-3
+@cast Дмит | Вадим
+
+Вадим: Это не тот переключатель.
+@next lights-fail-4
+::end
+
+::dialogue lights-fail-4
+@cast Дмит | Вадим
+
+Дмит: Зато темно.
+@next lights-fail-5
+::end
+
+::dialogue lights-fail-5
+@cast Дмит | Вадим
+
+Рассказчик: Внутри школы раздаётся короткий сигнал.
+@next lights-fail-6
+::end
+
+::dialogue lights-fail-6
+@cast Дмит | Охранник
+
+Вадим: И, кажется, включилась резервная система.
+@next lights-fail-7
+::end
+
+::dialogue lights-fail-7
+@cast Дмит | Охранник
+
+Охранник: Кто там?!
+@next lights-fail-8
+::end
+
+::dialogue lights-fail-8
+@cast Дмит | Вадим
+
+Дмит: Теперь быстро.
+@effect-next flag POWER_SYSTEM_ALERT
+@effect-next flag INFILTRATION_MODE_HIGH_SUSPICION
+@next entry-route-end
+::end
+
+::dialogue entry-grate-1
+@bg school-backyard-night
+@cast Дмит | Вадим
+
+Вадим: Это самый шумный вариант.
+@next grate-2
+::end
+
+::dialogue grate-2
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Зато простой.
+@next grate-3
+::end
+
+::dialogue grate-3
+@cast Мишган | Вадим
+
+Вадим: Простое решение может быть плохим.
+@next grate-4
+::end
+
+::dialogue grate-4
+@cast Кед | Мишган
+
+Мишган: Но силовое решение всегда честное.
+@next grate-5
+::end
+
+::dialogue grate-5
+@cast Кед | Данз
+
+Кед: Я могу попробовать отогнуть.
+@next grate-6
+::end
+
+::dialogue grate-6
+@cast Кед | Данз
+
+Данз: А я буду руководить.
+@next grate-7
+::end
+
+::dialogue grate-7
+@cast Дмит | Кед
+
+Кед: Ты будешь молчать.
+@next grate-8
+::end
+
+::dialogue grate-8
+@cast Дмит | Мишган
+
+Рассказчик: Кед и Дмит хватаются за старую металлическую решётку.
+@next grate-9
+::end
+
+::dialogue grate-9
+@cast Дмит | Мишган
+
+Мишган: На счёт три. Раз. Два. УФ!
+@next grate-10
+::end
+
+::dialogue grate-10
+@cast Дмит | Мишган
+
+Дмит: Ты три пропустил.
+@next grate-11
+::end
+
+::dialogue grate-11
+@cast Дмит | Кед
+
+Мишган: Элемент неожиданности.
+@next grate-success-1
+::end
+
+::dialogue grate-success-1
+@cast Кед | Вадим
+
+Рассказчик: Металл с неприятным скрипом отходит от стены. За решёткой открывается узкий проход в школьную подсобку.
+@next grate-success-2
+::end
+
+::dialogue grate-success-2
+@cast Кед | Вадим
+
+Кед: Нормально.
+@next grate-success-3
+::end
+
+::dialogue grate-success-3
+@cast Дмит | Вадим
+
+Вадим: Это повреждение школьного имущества.
+@next grate-success-4
+::end
+
+::dialogue grate-success-4
+@cast Дмит | Вадим
+
+Дмит: Потом обратно поставим.
+@next grate-success-5
+::end
+
+::dialogue grate-success-5
+@cast Дмит | Вадим
+
+Вадим: Как?
+@next grate-success-6
+::end
+
+::dialogue grate-success-6
+@cast Дмит | Вадим
+
+Дмит: Прислоним.
+@next grate-success-7
+::end
+
+::dialogue grate-success-7
+@cast Дмит | Вадим
+
+Вадим: Это не ремонт.
+@effect-next flag ENTERED_THROUGH_STORAGE
+@effect-next flag INFILTRATION_MODE_NOISY
+@next entry-route-end
+::end
+
+::dialogue entry-grate-fail-1
+@bg school-backyard-night
+@cast Данз | Вадим
+@sound-next mishgan-fall
+
+Рассказчик: Решётка резко отрывается с одной стороны и падает на асфальт. ГРОХОТ получается такой, будто школа уронила шкаф с секретами.
+@next grate-fail-2
+::end
+
+::dialogue grate-fail-2
+@bg school-dark-vaz
+@cast Данз | Вадим
+
+Данз: Тихо получилось.
+@next grate-fail-3
+::end
+
+::dialogue grate-fail-3
+@cast Дмит | Вадим
+
+Вадим: Нет.
+@next grate-fail-4
+::end
+
+::dialogue grate-fail-4
+@cast Дмит | Вадим
+
+Рассказчик: Внутри школы начинает мигать красный индикатор.
+@next grate-fail-5
+::end
+
+::dialogue grate-fail-5
+@cast Мишган | Вадим
+
+Вадим: Сигнализация.
+@next grate-fail-6
+::end
+
+::dialogue grate-fail-6
+@cast Дмит | Мишган
+
+Мишган: Уф-уф. Теперь бой на время.
+@effect-next flag STORAGE_ALARM_TRIGGERED
+@effect-next flag INFILTRATION_MODE_HARDEST
+@next entry-route-end
+::end
+
+::dialogue entry-safe-window-1
+@bg school-backyard-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит решает не идти к главному входу. Предупреждение неизвестной девчонки делает своё дело: компания уходит к раздевалке, пока возможная засада смотрит не туда.
+@effect-next flag SMALL_SCHOOL_AVOIDED_MAIN_AMBUSH
+@next window-2
+::end
+
+::dialogue entry-route-end
+@bg school-corridor-night
+@cast Дмит | Вадим
+
+Рассказчик: Способ выбран. Теперь начинается самое неприятное: действительно зайти внутрь школы ночью и не превратить это в легенду для педсовета.
+@effect-next experience 6
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_INFILTRATION_ROUTE_SELECTED
+@next infiltration-mode-dispatch
+::end
+
+::hook infiltration-mode-dispatch
+@fallback infiltration-high-suspicion-prelude
+@continue infiltration-high-suspicion-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_ESCORT
+@priority 800
+@start escort-route-start
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_HARDEST
+@priority 700
+@start infiltration-hardest-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_HIGH_SUSPICION
+@priority 600
+@start infiltration-high-suspicion-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_NOISY
+@priority 500
+@start infiltration-noisy-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_SUSPICIOUS
+@priority 400
+@start infiltration-suspicious-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_TIMER_180
+@priority 300
+@start infiltration-timer-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_EASY
+@priority 200
+@start infiltration-easy-prelude
+::end
+
+::extend infiltration-mode-dispatch
+@when INFILTRATION_MODE_NORMAL
+@priority 100
+@start infiltration-normal-prelude
+::end
+
+::dialogue infiltration-easy-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+
+Рассказчик: Охранник убирает деньги в карман и отворачивается к телевизору.
+@next infiltration-easy-prelude__1
+::end
+
+::dialogue infiltration-easy-prelude__1
+@cast Дмит | Вадим
+
+Охранник: Пять минут. Потом дверь закрою.
+@next infiltration-easy-prelude__2
+::end
+
+::dialogue infiltration-easy-prelude__2
+@cast Дмит | Вадим
+
+Дмит: Хватит.
+@next infiltration-easy-prelude__3
+::end
+
+::dialogue infiltration-easy-prelude__3
+@cast Дмит | Вадим
+
+Вадим: На закрытую дверь кабинета тоже?
+@next infiltration-easy-prelude__4
+::end
+
+::dialogue infiltration-easy-prelude__4
+@cast Дмит | Вадим
+
+Дмит: Не начинай.
+@effect-next flag INFILTRATION_EASY_ROUTE_ACTIVE
+@next infiltration-quiet-floor
+::end
+
+::dialogue infiltration-normal-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+
+Рассказчик: Окно раздевалки остаётся позади. Охранник продолжает смотреть телевизор и пока ничего не замечает.
+@next infiltration-normal-prelude__1
+::end
+
+::dialogue infiltration-normal-prelude__1
+@cast Дмит | Вадим
+
+Вадим: Если не шуметь, мы успеем.
+@next infiltration-normal-prelude__2
+::end
+
+::dialogue infiltration-normal-prelude__2
+@cast Дмит | Вадим
+
+Дмит: Тогда не комментируй каждый шаг.
+@effect-next flag SCHOOL_ENTERED_UNDETECTED
+@next infiltration-quiet-floor
+::end
+
+::dialogue infiltration-timer-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+
+Рассказчик: Охранник выходит к щитку. До его возвращения остаётся примерно три минуты.
+@next infiltration-timer-prelude__1
+::end
+
+::dialogue infiltration-timer-prelude__1
+@cast Дмит | Вадим
+
+Вадим: Сто восемьдесят секунд.
+@next infiltration-timer-prelude__2
+::end
+
+::dialogue infiltration-timer-prelude__2
+@cast Дмит | Вадим
+
+Дмит: Не считай вслух.
+@effect-next flag SCHOOL_ENTRY_TIME_LIMIT_ACTIVE
+@next infiltration-quiet-floor
+::end
+
+::dialogue infiltration-quiet-floor
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим без погони добираются до второго этажа.
+@next infiltration-quiet-floor__1
+::end
+
+::dialogue infiltration-quiet-floor__1
+@cast Дмит | Вадим
+
+Вадим: Информатика в конце правого коридора.
+@next infiltration-quiet-floor__2
+::end
+
+::dialogue infiltration-quiet-floor__2
+@cast Дмит | Вадим
+
+Дмит: Знаю.
+@next infiltration-quiet-floor__3
+::end
+
+::dialogue infiltration-quiet-floor__3
+@cast Дмит | Вадим
+
+Вадим: Тогда почему ты смотришь налево?
+@next infiltration-quiet-floor__4
+::end
+
+::dialogue infiltration-quiet-floor__4
+@cast Дмит | Вадим
+
+Дмит: Проверяю, насколько всё спокойно.
+@next next-step-help-choice
+::end
+
+::dialogue infiltration-suspicious-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Шум у окна привлекает охранника. Луч фонарика появляется в коридоре раньше, чем ребята доходят до лестницы.
+@next infiltration-suspicious-prelude__1
+::end
+
+::dialogue infiltration-suspicious-prelude__1
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: КТО ТАМ?!
+@next infiltration-suspicious-prelude__2
+::end
+
+::dialogue infiltration-suspicious-prelude__2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Бежим.
+@effect-next flag GUARD_STARTED_SHORT_CHASE
+@next chase-start-1
+::end
+
+::dialogue infiltration-noisy-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Решётка гремит о стену. Охранник выключает телевизор и выбегает из вахты.
+@next infiltration-noisy-prelude__1
+::end
+
+::dialogue infiltration-noisy-prelude__1
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Он услышал.
+@next infiltration-noisy-prelude__2
+::end
+
+::dialogue infiltration-noisy-prelude__2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Это уже понятно.
+@effect-next flag GUARD_STARTED_SHORT_CHASE
+@effect-next flag SCHOOL_ENTRY_NOISE_CONFIRMED
+@next chase-start-1
+::end
+
+::dialogue infiltration-high-suspicion-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: После сбоя света охранник уже проверяет коридоры с фонариком. Спрятаться до лестницы не получается.
+@next infiltration-high-suspicion-prelude__1
+::end
+
+::dialogue infiltration-high-suspicion-prelude__1
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: СТОЯТЬ!
+@effect-next flag GUARD_STARTED_FULL_CHASE
+@next full-chase-start-0
+::end
+
+::dialogue infiltration-hardest-prelude
+@bg school-corridor-night
+@cast Дмит | Вадим
+@sound-next school-alarm
+# tone: danger
+# music: school-chase
+
+Рассказчик: Сигнализация перекрывает любые тихие звуки. Красный свет мигает по всему коридору.
+@next infiltration-hardest-prelude__1
+::end
+
+::dialogue infiltration-hardest-prelude__1
+@cast Дмит | Вадим
+@sound-next school-alarm
+# tone: danger
+# music: school-chase
+
+Вадим: Теперь он точно знает, что мы внутри.
+@next infiltration-hardest-prelude__2
+::end
+
+::dialogue infiltration-hardest-prelude__2
+@cast Дмит | Вадим
+@sound-next school-alarm
+# tone: danger
+# music: school-chase
+
+Дмит: Зато искать долго не будет.
+@effect-next flag SCHOOL_ALARM_ACTIVE
+@effect-next flag GUARD_STARTED_FULL_CHASE
+@effect-next reputation Авторитет -1
+@next full-chase-start-0
+::end
+
+::dialogue escort-route-start
+@bg school-corridor-night
+@cast Дмит | Вадим | Охранник
+
+Рассказчик: Охранник открывает дверь и идёт вместе с Дмитом и Вадимом.
+@next escort-route-start__1
+::end
+
+::dialogue escort-route-start__1
+@cast Дмит | Вадим | Охранник
+
+Охранник: Забираете таблетки и сразу обратно. Я рядом.
+@next escort-route-start__2
+::end
+
+::dialogue escort-route-start__2
+@cast Дмит | Вадим | Охранник
+
+Дмит: Да поняли.
+@next escort-route-start__3
+::end
+
+::dialogue escort-route-start__3
+@cast Дмит | Вадим | Охранник
+
+Вадим: Там документы, а не таблетки.
+@next escort-route-start__4
+::end
+
+::dialogue escort-route-start__4
+@cast Дмит | Вадим | Охранник
+
+Дмит: Вадим.
+@next escort-route-choice
+::end
+
+::choice escort-route-choice
+@prompt Как вести себя под присмотром охранника?
+@cast Дмит | Вадим | Охранник
+
+- Спокойно дойти до кабинета и взять только рюкзак.
+  +trait Ответственность 1
+  -> escort-reach-room
+
+- [Ловкость 4] Оторваться от охранника у лестницы.
+  ? Ловкость 4
+  +trait Смелость 1
+  +trait Хитрость 1
+  -> escort-breakaway-success
+  !-> escort-breakaway-fail
+
+- [Харизма 4] Заговорить охранника, чтобы он меньше смотрел по сторонам.
+  ? Харизма 4
+  +trait Хитрость 1
+  -> escort-talk-success
+  !-> escort-talk-fail
+
+::end
+
+::dialogue escort-reach-room
+@bg school-second-floor-night
+@cast Дмит | Вадим | Охранник
+
+Рассказчик: Они проходят коридоры без погони. Охранник сам открывает кабинет информатики.
+@next escort-reach-room__1
+::end
+
+::dialogue escort-reach-room__1
+@cast Дмит | Вадим | Охранник
+
+Охранник: Рюкзак взяли — и вниз.
+@effect-next flag GUARD_ESCORT_TO_BACKPACK
+@next next-step-caught-charisma-success-11
+::end
+
+::dialogue escort-breakaway-success
+@cast Дмит | Вадим | Охранник
+# tone: danger
+# music: school-chase
+
+Рассказчик: На лестничной площадке Дмит тянет Вадима за рукав и резко сворачивает за угол.
+@next escort-breakaway-success__1
+::end
+
+::dialogue escort-breakaway-success__1
+@cast Дмит | Вадим | Охранник
+# tone: danger
+# music: school-chase
+
+Охранник: ЭЙ! СТОЯТЬ!
+@effect-next flag GUARD_ESCORT_BROKEN
+@effect-next flag GUARD_STARTED_SHORT_CHASE
+@next chase-start-1
+::end
+
+::dialogue escort-breakaway-fail
+@cast Дмит | Вадим | Охранник
+
+Рассказчик: Охранник замечает движение и перехватывает Дмита за плечо.
+@next escort-breakaway-fail__1
+::end
+
+::dialogue escort-breakaway-fail__1
+@cast Дмит | Вадим | Охранник
+
+Охранник: Я сказал: рядом. Теперь оба на вахту.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next next-step-caught-0
+::end
+
+::dialogue escort-talk-success
+@cast Дмит | Охранник | Вадим
+
+Дмит: А вы каждую ночь один тут сидите?
+@next escort-talk-success__1
+::end
+
+::dialogue escort-talk-success__1
+@cast Дмит | Охранник | Вадим
+
+Охранник: Тебе какая разница?
+@next escort-talk-success__2
+::end
+
+::dialogue escort-talk-success__2
+@cast Дмит | Охранник | Вадим
+
+Рассказчик: Пока охранник отвечает, Вадим первым замечает кабинет и показывает Дмиту дверь.
+@effect-next flag GUARD_DISTRACTED_DURING_ESCORT
+@next escort-reach-room
+::end
+
+::dialogue escort-talk-fail
+@cast Дмит | Охранник | Вадим
+
+Дмит: А вы давно тут работаете?
+@next escort-talk-fail__1
+::end
+
+::dialogue escort-talk-fail__1
+@cast Дмит | Охранник | Вадим
+
+Охранник: Хватит зубы заговаривать. Оба передо мной.
+@next escort-talk-fail__2
+::end
+
+::dialogue escort-talk-fail__2
+@cast Дмит | Охранник | Вадим
+
+Рассказчик: Охранник больше не отводит от них фонарик.
+@effect-next flag GUARD_ESCORT_SUSPICIOUS
+@next escort-reach-room
+::end
+
+::hook quiet-mode-guard-approach
+@fallback next-step-class-door-14
+@continue next-step-class-door-14
+::end
+
+::extend quiet-mode-guard-approach
+@when INFILTRATION_MODE_EASY
+@priority 300
+@start easy-route-time-up
+::end
+
+::extend quiet-mode-guard-approach
+@when INFILTRATION_MODE_TIMER_180
+@priority 200
+@start timer-route-guard-returned
+::end
+
+::extend quiet-mode-guard-approach
+@when INFILTRATION_MODE_NORMAL
+@priority 100
+@start normal-route-guard-noticed
+::end
+
+::dialogue easy-route-time-up
+@bg school-second-floor-night
+@cast Дмит | Вадим | Охранник
+
+Охранник: Пять минут закончились! Вы где там?!
+@next easy-route-time-up__1
+::end
+
+::dialogue easy-route-time-up__1
+@cast Дмит | Вадим | Охранник
+
+Вадим: Он считает точнее, чем ты.
+@next easy-route-time-up__2
+::end
+
+::dialogue easy-route-time-up__2
+@cast Дмит | Вадим | Охранник
+
+Дмит: Сейчас не время.
+@next next-step-class-door-15
+::end
+
+::dialogue timer-route-guard-returned
+@bg school-second-floor-night
+@cast Дмит | Вадим | Охранник
+
+Рассказчик: Снизу хлопает дверь: охранник вернулся от щитка.
+@next timer-route-guard-returned__1
+::end
+
+::dialogue timer-route-guard-returned__1
+@cast Дмит | Вадим | Охранник
+
+Охранник: Я ЗНАЮ, ЧТО ВЫ НАВЕРХУ!
+@next timer-route-guard-returned__2
+::end
+
+::dialogue timer-route-guard-returned__2
+@cast Дмит | Вадим | Охранник
+
+Вадим: Сто восемьдесят секунд закончились.
+@next next-step-class-door-15
+::end
+
+::dialogue normal-route-guard-noticed
+@bg school-second-floor-night
+@cast Дмит | Вадим | Охранник
+
+Рассказчик: Щелчок дверной ручки разносится по пустому этажу. Внизу выключается телевизор.
+@next normal-route-guard-noticed__1
+::end
+
+::dialogue normal-route-guard-noticed__1
+@cast Дмит | Вадим | Охранник
+
+Охранник: КТО ТАМ ХОДИТ?!
+@next normal-route-guard-noticed__2
+::end
+
+::dialogue normal-route-guard-noticed__2
+@cast Дмит | Вадим | Охранник
+
+Дмит: Вот теперь заметил.
+@next next-step-class-door-15
+::end
+
+::extend-choice entry-choice
+@when GIRL_WARNED_ABOUT_MATVEY
+@position 6
+
+- [Внимательность 5] К главному входу не идём. Там нас уже могут ждать.
+  # short-label: Избежать главного входа.
+  ? Внимательность 5
+  +experience 10
+  +flag SMALL_SCHOOL_AVOIDED_MAIN_AMBUSH
+  +flag SMALL_SCHOOL_ENTRY_LOCKER_WINDOW
+  -> entry-safe-window-1
+
+::end
+
+::extend-choice entry-recovery-choice
+@when GIRL_WARNED_ABOUT_MATVEY
+@position 4
+
+- [Внимательность 5] Уходим от главного входа. Там нас уже ждут.
+  # short-label: Обойти засаду.
+  ? Внимательность 5
+  +experience 10
+  +flag SMALL_SCHOOL_AVOIDED_MAIN_AMBUSH
+  +flag SMALL_SCHOOL_ENTRY_LOCKER_WINDOW
+  -> entry-safe-window-1
+
+::end

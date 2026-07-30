@@ -39,6 +39,7 @@ function chapterOneProgress(player: PlayerState, sceneIndex: number) {
 export function ChapterSelect({ chapter, chapterTwo, player, sceneIndex, activeChapterId, debugAvailable, onReplay, onStartChapter, onBack }: ChapterSelectProps) {
   const progress = chapterOneProgress(player, sceneIndex)
   const complete = progress === 100
+  const chapterTwoAvailable = complete || debugAvailable
 
   return (
     <main className="chapter-select-screen">
@@ -66,12 +67,12 @@ export function ChapterSelect({ chapter, chapterTwo, player, sceneIndex, activeC
           </div>
         </article>
 
-        <article className={`chapter-card ${debugAvailable ? 'available' : 'locked'} ${activeChapterId === 'chapter-2' ? 'completed' : ''}`} aria-label={`${chapterTwo.title}: ${debugAvailable ? 'доступна в режиме разработки' : 'пока недоступна'}`}>
+        <article className={`chapter-card ${chapterTwoAvailable ? 'available' : 'locked'} ${activeChapterId === 'chapter-2' ? 'completed' : ''}`} aria-label={`${chapterTwo.title}: ${chapterTwoAvailable ? 'доступна' : 'пока недоступна'}`}>
           <div className="chapter-number">02</div>
-          <span className="chapter-status">{debugAvailable ? 'DEV · доступна' : 'Скоро'}</span>
+          <span className="chapter-status">{debugAvailable && !complete ? 'DEV · доступна' : chapterTwoAvailable ? 'Доступна' : 'Скоро'}</span>
           <h2>{chapterTwo.title}</h2>
           <p>{chapterTwo.subtitle}</p>
-          {debugAvailable ? (
+          {chapterTwoAvailable ? (
             <div className="chapter-card-actions">
               <button className="chapter-primary" onClick={() => onStartChapter('chapter-2')}>{activeChapterId === 'chapter-2' ? 'Продолжить' : 'Запустить главу'}</button>
             </div>

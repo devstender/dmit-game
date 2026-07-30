@@ -3,11 +3,12 @@ import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
-const characters = new Set(['Дмит', 'Мишган', 'Кед', 'Данз', 'Полина', 'Географичка', 'Вероника', 'Охранник', 'Татьяна', 'Игорь', 'Папа', 'Матвей', 'Приятель Матвея', 'Учительница', 'Классная руководительница', 'Мама', 'Вадим', 'Копяр', 'Незнакомка', '???', 'Пацан', 'Пацан Матвея', 'Женщина из окна', 'Женщина с балкона', 'Рассказчик'])
-const relationCharacters = new Set(['Мишган', 'Кед', 'Данз', 'Полина', 'Географичка', 'Вероника', 'Вадим', 'Копяр', 'Мама'])
+const characters = new Set(['Дмит', 'Мишган', 'Кед', 'Данз', 'Полина', 'Географичка', 'Вероника', 'Охранник', 'Татьяна', 'Игорь', 'Папа', 'Матвей', 'Приятель Матвея', 'Учительница', 'Классная руководительница', 'Мама', 'Вадим', 'Копяр', 'Романыч', 'Ваня Ильичёв', 'Даша', 'Неизвестный', 'Незнакомка', '???', 'Пацан', 'Пацан Матвея', 'Женщина из окна', 'Женщина с балкона', 'Рассказчик', 'Все'])
+const relationCharacters = new Set(['Мишган', 'Кед', 'Данз', 'Полина', 'Географичка', 'Вероника', 'Вадим', 'Копяр', 'Мама', 'Романыч', 'Даша'])
 const abilities = new Set(['Сила', 'Внимательность', 'Выносливость', 'Харизма', 'Интеллект', 'Ловкость', 'Удача'])
-const backgrounds = new Set(['school', 'school-dark-vaz', 'classroom', 'home', 'dmit-room', 'minika', 'school-yard-night', 'school-main-entrance-night', 'school-backyard-night', 'school-corridor-night', 'school-corridor-morning', 'school-second-floor-night', 'computer-class-night', 'school-classroom-day', 'school-corridor-day', 'school-yard-day', 'dmit-home-hallway-day', 'dmit-bedroom-day', 'dmit-bedroom-evening', 'dmit-bedroom-night', 'dmit-bedroom-morning'])
-const sounds = new Set(['school-bell', 'mishgan-fall', 'dmit-run', 'guard-run', 'guard-shout', 'phone-vibrate', 'quest-complete', 'beer-open', 'matvey-music', 'skill-success', 'skill-fail', 'school-door-buzz', 'school-entry-creak', 'guard-alert', 'black-phone-vibration', 'igor-mystery-sting', 'bike-chain-rattle', 'alarm-clock'])
+const traits = new Map([['Характер', 'courage'], ['Смелость', 'courage'], ['Самообладание', 'composure'], ['Ответственность', 'responsibility'], ['Товарищество', 'camaraderie'], ['Хитрость', 'cunning'], ['Эмпатия', 'empathy']])
+const backgrounds = new Set(['school', 'school-dark-vaz', 'classroom', 'home', 'dmit-room', 'minika', 'school-yard-night', 'school-main-entrance-night', 'school-backyard-night', 'school-corridor-night', 'school-corridor-morning', 'school-second-floor-night', 'computer-class-night', 'school-storage-night', 'school-classroom-day', 'school-corridor-day', 'school-yard-day', 'dmit-home-hallway-day', 'dmit-bedroom-day', 'dmit-bedroom-evening', 'dmit-bedroom-night', 'dmit-bedroom-morning', 'penza-station-square-morning', 'penza-station-platform-morning', 'electric-train-carriage-day', 'road-to-builder-camp-day', 'builder-camp-gates-day'])
+const sounds = new Set(['school-bell', 'mishgan-fall', 'dmit-run', 'guard-run', 'guard-shout', 'phone-vibrate', 'quest-complete', 'beer-open', 'matvey-music', 'skill-success', 'skill-fail', 'school-door-buzz', 'school-entry-creak', 'guard-alert', 'black-phone-vibration', 'igor-mystery-sting', 'bike-chain-rattle', 'alarm-clock', 'camera-shutter', 'station-announcement', 'metal-rattle', 'security-beep', 'metal-grate', 'metal-crash', 'distant-door', 'school-alarm', 'balls-scatter', 'guard-shout-distant', 'metal-gate-close', 'piano-crash', 'school-bell-short', 'door-creak', 'phone-screen-crack', 'fire-door-rattle', 'station-shoulder-bump', 'train-carriage-entry', 'train-departure', 'train-start-moving', 'acoustic-guitar-strum', 'matvey-head-slap', 'train-brakes', 'camp-gate-close'])
 const phoneOwnershipFlags = new Set(['DMIT_HAS_BLACK_PHONE', 'VADIM_HAS_BLACK_PHONE', 'BLACK_PHONE_LEFT_AT_SCHOOL', 'BLACK_PHONE_DESTROYED', 'BLACK_PHONE_CONFISCATED'])
 
 const fail = (source, line, message) => {
@@ -16,22 +17,42 @@ const fail = (source, line, message) => {
 const clean = (line) => line.trim()
 const parseCast = (value, source, line) => {
   const cast = value.split('|').map(clean).filter(Boolean)
-  if (cast.length < 1 || cast.length > 2 || cast.some((name) => !characters.has(name))) fail(source, line, 'Unknown or invalid @cast.')
+  if (cast.length < 1 || cast.some((name) => !characters.has(name))) fail(source, line, 'Unknown or invalid @cast.')
+  // The authored cast may list the whole group. The generator selects the
+  // current speaker plus Дмит for each dialogue line.
   return cast
 }
 const parseEffect = (line, source, lineNumber) => {
-  const match = line.match(/^\+(flag|relation|money)\s+(.+)$/)
+  const match = line.match(/^([+-])(flag|item|relation|money|experience|ability|trait|suspicion|reputation)\s+(.+)$/)
   if (!match) fail(source, lineNumber, `Unknown effect: ${line}`)
-  const [, type, raw] = match
-  if (type === 'flag') return { type, value: raw.trim() }
-  if (type === 'money') {
-    const value = Number(raw)
-    if (!Number.isFinite(value)) fail(source, lineNumber, 'Money effect must be a number.')
+  const [, sign, type, raw] = match
+  if (type === 'flag') { if (sign === '-') fail(source, lineNumber, 'Flags can only be added.'); return { type, value: raw.trim() } }
+  if (type === 'item') {
+    if (sign === '-') fail(source, lineNumber, 'Items can only be added.')
+    if (!/^[a-z0-9-]+$/.test(raw.trim())) fail(source, lineNumber, 'Item id must use lowercase letters, digits, and hyphens.')
+    return { type, value: raw.trim() }
+  }
+  if (type === 'money' || type === 'experience' || type === 'suspicion' || type === 'reputation') {
+    const normalizedRaw = type === 'reputation' ? raw.replace(/^(?:Авторитет|Подозрение)\s+/, '') : raw
+    const value = Number(normalizedRaw) * (sign === '-' ? -1 : 1)
+    if (!Number.isFinite(value)) fail(source, lineNumber, `${type} effect must be a number.`)
     return { type, value }
+  }
+  if (type === 'ability') {
+    const ability = raw.match(/^(.+?)\s+(-?\d+)$/)
+    if (!ability || !abilities.has(ability[1])) fail(source, lineNumber, 'Ability syntax: +ability Внимательность 1.')
+    return { type, ability: ability[1], value: Number(ability[2]) * (sign === '-' ? -1 : 1) }
+  }
+  if (type === 'trait') {
+    if (raw.match(/^Авторитет\s+(-?\d+)$/)) return { type: 'reputation', value: Number(raw.match(/^Авторитет\s+(-?\d+)$/)[1]) * (sign === '-' ? -1 : 1) }
+    const trait = raw.match(/^(.+?)\s+(-?\d+)$/)
+    if (trait && abilities.has(trait[1])) return { type: 'ability', ability: trait[1], value: Number(trait[2]) * (sign === '-' ? -1 : 1) }
+    if (!trait || !traits.has(trait[1])) fail(source, lineNumber, 'Trait syntax: +trait Смелость 1.')
+    return { type, trait: traits.get(trait[1]), value: Number(trait[2]) * (sign === '-' ? -1 : 1) }
   }
   const relation = raw.match(/^(.+?)\s+(-?\d+)$/)
   if (!relation || !relationCharacters.has(relation[1])) fail(source, lineNumber, 'Unknown relation character or delta.')
-  return { type, character: relation[1], value: Number(relation[2]) }
+  return { type, character: relation[1], value: Number(relation[2]) * (sign === '-' ? -1 : 1) }
 }
 
 function parseScript(input, source = 'quest', shouldValidate = true) {
@@ -42,34 +63,45 @@ function parseScript(input, source = 'quest', shouldValidate = true) {
 
   const addLine = (speaker, text, line) => {
     if (!current || (current.type !== 'dialogue' && current.type !== 'phone' && current.type !== 'cosmetic')) fail(source, line, 'Dialogue line outside a dialogue block.')
+    if (speaker === 'Все') { speaker = 'Рассказчик'; text = `Все: ${text}` }
+    if (speaker === 'Охранник издалека') speaker = 'Охранник'
     if (!characters.has(speaker) && !(current.type === 'phone' && speaker === current.contact)) fail(source, line, `Unknown character "${speaker}".`)
-    if (current.type === 'phone' && speaker === 'Рассказчик') fail(source, line, 'Narrator is not allowed inside ::phone.')
     const meta = { ...pending }
     pending = {}
     current.lines.push({ speaker, text, ...meta, line })
   }
   const addOption = (text, line) => {
     if (!current || (current.type !== 'choice' && current.type !== 'cosmetic' && current.type !== 'extend-choice')) fail(source, line, 'Option outside a choice block.')
-    current.options.push({ text, line, effects: [], requiresAll: [], requiresAny: [] })
+    current.options.push({ text, line, effects: [], requiresAll: [], requiresAny: [], requiresTraits: {}, requiresMoney: undefined })
   }
   const activeOption = (line) => {
     const option = current?.options.at(-1)
     if (!option) fail(source, line, 'Option directive without an option.')
     return option
   }
+  const applyPendingToLastLine = (line) => {
+    if (!Object.keys(pending).length) return
+    const lastLine = current?.lines?.at(-1)
+    if (!lastLine) fail(source, line, 'A *-next directive requires a preceding dialogue line.')
+    if (pending.effects?.length) lastLine.effects = [...(lastLine.effects ?? []), ...pending.effects]
+    if (pending.sound) lastLine.sound = pending.sound
+    if (pending.cast) lastLine.cast = pending.cast
+    if (pending.tone) lastLine.tone = pending.tone
+    pending = {}
+  }
   const finish = (line) => {
     if (!current) fail(source, line, 'Unexpected ::end.')
-    if (Object.keys(pending).length) fail(source, line, 'A *-next directive has no following dialogue line.')
+    applyPendingToLastLine(line)
     if ((current.type === 'dialogue' || current.type === 'phone') && !current.next && !current.end) fail(source, line, 'Dialogue requires @next or @end.')
     if ((current.type === 'choice' || current.type === 'cosmetic' || current.type === 'extend-choice') && current.options.length === 0) fail(source, line, 'Choice requires at least one option.')
-    if (current.type === 'choice') current.options.forEach((option) => { if (!option.next) fail(source, option.line, 'Choice option requires -> target.'); if (option.skill && !option.failNext) fail(source, option.line, 'Skill check requires !-> failure target.') })
+    if (current.type === 'choice') current.options.forEach((option) => { if (!option.next) fail(source, option.line, 'Choice option requires -> target.') })
     if (current.type === 'cosmetic') {
       if (!current.continueTo) fail(source, line, 'Cosmetic choice requires @continue.')
       current.options.forEach((option) => { if (!option.reply?.length) fail(source, option.line, 'Cosmetic option requires at least one reply.') })
     }
     if (current.type === 'hook' && (!current.fallback || !current.continueTo)) fail(source, line, 'Hook requires @fallback and @continue.')
     if (current.type === 'extend' && !current.start) fail(source, line, 'Extension requires @start.')
-    if (current.type === 'extend-choice') current.options.forEach((option) => { if (!option.next) fail(source, option.line, 'Choice option requires -> target.'); if (option.skill && !option.failNext) fail(source, option.line, 'Skill check requires !-> failure target.') })
+    if (current.type === 'extend-choice') current.options.forEach((option) => { if (!option.next) fail(source, option.line, 'Choice option requires -> target.') })
     if (current.type === 'route' && !current.fallback) fail(source, line, 'Route requires * -> fallback.')
     nodes.push(current)
     current = null
@@ -83,7 +115,7 @@ function parseScript(input, source = 'quest', shouldValidate = true) {
     if (block) {
       if (current) fail(source, lineNumber, 'Close the previous block with ::end.')
       const [, type, id] = block
-      current = { type, id, line: lineNumber, lines: [], options: [], effects: [], routes: [], cast: undefined, next: undefined, end: false, whenAll: [], whenAny: [], unless: [] }
+      current = { type, id, line: lineNumber, lines: [], options: [], effects: [], routes: [], cast: undefined, next: undefined, end: false, whenAll: [], whenAny: [], unless: [], whenTraits: {}, whenReputation: undefined }
       return
     }
     if (line === '::end') return finish(lineNumber)
@@ -102,8 +134,8 @@ function parseScript(input, source = 'quest', shouldValidate = true) {
       const value = parts.join(' ').trim()
       if (directive === 'bg') { if (!backgrounds.has(value)) fail(source, lineNumber, `Unknown background "${value}".`); current.background = value; return }
       if (directive === 'cast') { current.cast = parseCast(value, source, lineNumber); return }
-      if (directive === 'next') { current.next = value; return }
-      if (directive === 'end') { current.end = true; return }
+      if (directive === 'next') { applyPendingToLastLine(lineNumber); current.next = value; return }
+      if (directive === 'end') { applyPendingToLastLine(lineNumber); current.end = true; return }
       if (directive === 'prompt') { current.prompt = value; return }
       if (directive === 'continue') { current.continueTo = value; return }
       if (directive === 'fallback') { if (current.type !== 'hook') fail(source, lineNumber, '@fallback is only available inside ::hook.'); current.fallback = value; return }
@@ -111,6 +143,8 @@ function parseScript(input, source = 'quest', shouldValidate = true) {
       if (directive === 'when') { if (current.type !== 'extend' && current.type !== 'extend-choice') fail(source, lineNumber, '@when is only available inside extensions.'); current.whenAll.push(value); return }
       if (directive === 'when-all') { if (current.type !== 'extend' && current.type !== 'extend-choice') fail(source, lineNumber, '@when-all is only available inside extensions.'); current.whenAll.push(...parts); return }
       if (directive === 'when-any') { if (current.type !== 'extend' && current.type !== 'extend-choice') fail(source, lineNumber, '@when-any is only available inside extensions.'); current.whenAny.push(...parts); return }
+      if (directive === 'when-trait') { if (current.type !== 'extend' && current.type !== 'extend-choice') fail(source, lineNumber, '@when-trait is only available inside extensions.'); const match = value.match(/^(.+?)\s+(-?\d+)$/); if (!match || !traits.has(match[1])) fail(source, lineNumber, '@when-trait syntax: @when-trait Смелость 4.'); current.whenTraits[traits.get(match[1])] = Number(match[2]); return }
+      if (directive === 'when-reputation') { if (current.type !== 'extend-choice') fail(source, lineNumber, '@when-reputation is only available inside ::extend-choice.'); const match = value.match(/^(?:Авторитет\s+)?(-?\d+)$/); if (!match) fail(source, lineNumber, '@when-reputation syntax: @when-reputation Авторитет 3.'); current.whenReputation = Number(match[1]); return }
       if (directive === 'unless') { if (current.type !== 'extend' && current.type !== 'extend-choice') fail(source, lineNumber, '@unless is only available inside extensions.'); current.unless.push(...parts); return }
       if (directive === 'priority') { if (current.type !== 'extend') fail(source, lineNumber, '@priority is only available inside ::extend.'); const priority = Number(value); if (!Number.isFinite(priority)) fail(source, lineNumber, '@priority must be a number.'); current.priority = priority; return }
       if (directive === 'position') { if (current.type !== 'extend-choice') fail(source, lineNumber, '@position is only available inside ::extend-choice.'); const position = Number(value); if (!Number.isInteger(position) || position < 0) fail(source, lineNumber, '@position must be a non-negative integer.'); current.position = position; return }
@@ -127,23 +161,25 @@ function parseScript(input, source = 'quest', shouldValidate = true) {
       if (directive === 'requires') { activeOption(lineNumber).requiresAll.push(value); return }
       if (directive === 'requires-all') { activeOption(lineNumber).requiresAll.push(...parts); return }
       if (directive === 'requires-any') { activeOption(lineNumber).requiresAny.push(...parts); return }
+      if (directive === 'requires-trait') { const match = value.match(/^(.+?)\s+(-?\d+)$/); if (!match || !traits.has(match[1])) fail(source, lineNumber, '@requires-trait syntax: @requires-trait Смелость 4.'); activeOption(lineNumber).requiresTraits[traits.get(match[1])] = Number(match[2]); return }
+      if (directive === 'requires-money') { const amount = Number(value); if (!Number.isFinite(amount) || amount < 0) fail(source, lineNumber, '@requires-money must be a non-negative number.'); activeOption(lineNumber).requiresMoney = amount; return }
       fail(source, lineNumber, `Unknown directive @${directive}.`)
     }
 
-    if (line.startsWith('+')) { activeOption(lineNumber).effects.push(parseEffect(line, source, lineNumber)); return }
+    if (line.startsWith('+') || line.startsWith('-trait ') || line.startsWith('-suspicion ') || line.startsWith('-reputation ')) { activeOption(lineNumber).effects.push(parseEffect(line, source, lineNumber)); return }
     if (line.startsWith('- ')) { addOption(line.slice(2).trim(), lineNumber); return }
     if (line.startsWith('->')) { activeOption(lineNumber).next = line.slice(2).trim(); return }
     if (line.startsWith('!->')) { activeOption(lineNumber).failNext = line.slice(3).trim(); return }
     if (line.startsWith('? ')) {
       const match = line.slice(2).match(/^(.+?)\s+(\d+)$/)
-      if (!match || !abilities.has(match[1])) fail(source, lineNumber, 'Skill syntax: ? Харизма 3.')
+        if (!match || (!abilities.has(match[1]) && !traits.has(match[1]))) fail(source, lineNumber, 'Skill syntax: ? Харизма 3. or ? Смелость 3.')
       activeOption(lineNumber).skill = { stat: match[1], value: Number(match[2]) }
       return
     }
 
     const speech = line.match(/^([^:]+):\s*(.+)$/)
     if (!speech) fail(source, lineNumber, 'Expected a dialogue line, option, directive, or transition.')
-    if (current.type === 'cosmetic' && current.options.length) {
+      if (current.type === 'cosmetic' && current.options.length) {
       const option = activeOption(lineNumber)
       option.reply ??= []
       const meta = { ...pending }
@@ -183,11 +219,11 @@ function prepareNodes(nodes, source) {
         ...(extension.whenAll.length ? { allFlags: extension.whenAll } : {}),
         ...(extension.whenAny.length ? { anyFlags: extension.whenAny } : {}),
         ...(extension.unless.length ? { unlessFlags: extension.unless } : {}),
+        ...(Object.keys(extension.whenTraits).length ? { traits: extension.whenTraits } : {}),
         ...(extension.priority !== undefined ? { priority: extension.priority } : {}),
       }))
       .sort((left, right) => (right.priority ?? 0) - (left.priority ?? 0))
     target.branches = branches
-    prepared.push({ type: 'route', id: `${hook.id}-exit`, line: hook.line, routes: [], fallback: hook.continueTo })
   }
 
   for (const extension of extensions) {
@@ -202,6 +238,8 @@ function prepareNodes(nodes, source) {
       ...(extension.whenAll.length ? { allFlags: extension.whenAll } : {}),
       ...(extension.whenAny.length ? { anyFlags: extension.whenAny } : {}),
       ...(extension.unless.length ? { unlessFlags: extension.unless } : {}),
+      ...(Object.keys(extension.whenTraits).length ? { traits: extension.whenTraits } : {}),
+      ...(extension.whenReputation !== undefined ? { reputation: extension.whenReputation } : {}),
     }
     const options = extension.options.map((option) => ({ ...option, ...(Object.keys(visibleWhen).length ? { visibleWhen } : {}) }))
     const position = Math.min(extension.position ?? target.options.length, target.options.length)
@@ -221,9 +259,11 @@ function validate(nodes, source) {
     if (ids.has(node.id)) errors.push(`${source}:${node.line}: Duplicate node id "${node.id}" (first at line ${ids.get(node.id)}).`)
     ids.set(node.id, node.line)
     if (node.type === 'phone' && !node.contact) errors.push(`${source}:${node.line}: ::phone requires @contact.`)
-    if (node.type === 'phone' && node.lines.some((line) => line.speaker === 'Рассказчик')) errors.push(`${source}:${node.line}: Narrator is not allowed inside ::phone.`)
-    const ownership = allEffects(node).filter((effect) => effect.type === 'flag' && phoneOwnershipFlags.has(effect.value))
-    if (new Set(ownership.map((effect) => effect.value)).size > 1) errors.push(`${source}:${node.line}: Conflicting black-phone ownership effects in one node.`)
+    const effectGroups = node.options?.length ? node.options.map((option) => option.effects ?? []) : [allEffects(node)]
+    effectGroups.forEach((effects) => {
+      const ownership = effects.filter((effect) => effect.type === 'flag' && phoneOwnershipFlags.has(effect.value))
+      if (new Set(ownership.map((effect) => effect.value)).size > 1) errors.push(`${source}:${node.line}: Conflicting black-phone ownership effects in one node.`)
+    })
   }
   for (const node of nodes) for (const target of targets(node)) if (target && !ids.has(target)) errors.push(`${source}:${node.line}: Unknown target "${target}" from "${node.id}".`)
   if (nodes.length) {
@@ -241,15 +281,23 @@ function validate(nodes, source) {
 }
 
 const quote = (value) => JSON.stringify(value)
-const effectCode = (effect) => effect.type === 'flag' ? `flag(${quote(effect.value)})` : effect.type === 'money' ? `money(${effect.value})` : `relation(${quote(effect.character)}, ${effect.value})`
-const contextCode = (node) => [
+  const effectCode = (effect) => effect.type === 'flag' ? `flag(${quote(effect.value)})` : effect.type === 'item' ? `item(${quote(effect.value)})` : effect.type === 'ability' ? `ability(${quote(effect.ability)}, ${effect.value})` : effect.type === 'money' ? `money(${effect.value})` : effect.type === 'experience' ? `experience(${effect.value})` : effect.type === 'trait' ? `trait(${quote(effect.trait)}, ${effect.value})` : effect.type === 'suspicion' ? `suspicion(${effect.value})` : effect.type === 'reputation' ? `reputation(${effect.value})` : `relation(${quote(effect.character)}, ${effect.value})`
+const runtimeCastFor = (cast, speaker) => {
+  if (!cast?.length || speaker === 'Рассказчик' || speaker === 'Все') return []
+  const members = [...new Set(cast.filter((character) => character !== 'Рассказчик' && character !== 'Все'))]
+  const dmit = members.includes('Дмит') ? 'Дмит' : members[0]
+  if (speaker === dmit) return [dmit, members.find((character) => character !== dmit)].filter(Boolean)
+  return dmit ? [dmit, speaker] : [speaker]
+}
+const contextCode = (node, includeCast = true) => [
   node.background ? `...setBackground(${quote(node.background)})` : '',
-  node.cast?.length ? `cast: [${node.cast.map(quote).join(', ')}]` : '',
+  includeCast && node.cast?.length ? `cast: [${node.cast.slice(0, 2).map(quote).join(', ')}]` : '',
   node.tone ? `tone: ${quote(node.tone)}` : '',
 ].filter(Boolean).join(',\n    ')
-const lineCode = (line, phone) => {
+const lineCode = (line, phone, nodeCast) => {
   const extras = []
-  if (line.cast) extras.push(`cast: [${line.cast.map(quote).join(', ')}]`)
+  const cast = phone ? [] : runtimeCastFor(line.cast ?? nodeCast, line.speaker)
+  if (cast.length) extras.push(`cast: [${cast.map(quote).join(', ')}]`)
   if (line.tone) extras.push(`tone: ${quote(line.tone)}`)
   if (line.sound) extras.push(`sound: ${quote(line.sound)}`)
   if (line.effects?.length) extras.push(`effects: [${line.effects.map(effectCode).join(', ')}]`)
@@ -260,6 +308,8 @@ const requirementsCode = (option) => {
   const requirements = []
   if (option.requiresAll.length) requirements.push(`requiresAllFlags(${option.requiresAll.map(quote).join(', ')})`)
   if (option.requiresAny.length) requirements.push(`requiresAnyFlag(${option.requiresAny.map(quote).join(', ')})`)
+  if (Object.keys(option.requiresTraits ?? {}).length) requirements.push(...Object.entries(option.requiresTraits).map(([trait, value]) => `requiresTrait(${quote(trait)}, ${value})`))
+  if (option.requiresMoney !== undefined) requirements.push(`requiresMoney(${option.requiresMoney})`)
   if (!requirements.length) return ''
   return `, require: ${requirements.length === 1 ? requirements[0] : `[${requirements.join(', ')}]`}`
 }
@@ -278,34 +328,36 @@ function generate(nodes, options) {
     if (node.type === 'hook') imported.add('hook')
     if (node.background) imported.add('setBackground')
     node.options?.forEach((option) => {
-      if (option.skill) imported.add('skill')
+      if (option.skill && option.failNext) imported.add('skill')
       if (option.requiresAll?.length) imported.add('requiresAllFlags')
       if (option.requiresAny?.length) imported.add('requiresAnyFlag')
+      if (Object.keys(option.requiresTraits ?? {}).length) imported.add('requiresTrait')
+      if (option.requiresMoney !== undefined) imported.add('requiresMoney')
     })
     allEffects(node).forEach((effect) => imported.add(effect.type))
   })
   const nodeCode = nodes.map((node) => {
     if (node.type === 'route') return `route({\n    id: ${quote(node.id)},\n    routes: [${node.routes.map((item) => `[${quote(item.flag)}, ${quote(item.next)}]`).join(', ')}],\n    fallback: ${quote(node.fallback)},\n  })`
-    if (node.type === 'hook') return `hook({\n    id: ${quote(node.id)},\n    fallback: ${quote(node.fallback)},\n    branches: [${node.branches.map((branch) => `{ start: ${quote(branch.start)}${branch.allFlags?.length ? `, allFlags: [${branch.allFlags.map(quote).join(', ')}]` : ''}${branch.anyFlags?.length ? `, anyFlags: [${branch.anyFlags.map(quote).join(', ')}]` : ''}${branch.unlessFlags?.length ? `, unlessFlags: [${branch.unlessFlags.map(quote).join(', ')}]` : ''}${branch.priority !== undefined ? `, priority: ${branch.priority}` : ''} }`).join(', ')}],\n  })`
+    if (node.type === 'hook') return `hook({\n    id: ${quote(node.id)},\n    fallback: ${quote(node.fallback)},\n    branches: [${node.branches.map((branch) => `{ start: ${quote(branch.start)}${branch.allFlags?.length ? `, allFlags: [${branch.allFlags.map(quote).join(', ')}]` : ''}${branch.anyFlags?.length ? `, anyFlags: [${branch.anyFlags.map(quote).join(', ')}]` : ''}${branch.unlessFlags?.length ? `, unlessFlags: [${branch.unlessFlags.map(quote).join(', ')}]` : ''}${branch.traits ? `, traits: ${JSON.stringify(branch.traits)}` : ''}${branch.priority !== undefined ? `, priority: ${branch.priority}` : ''} }`).join(', ')}],\n  })`
     if (node.type === 'dialogue' || node.type === 'phone') {
       const phone = node.type === 'phone' ? { contact: node.contact, time: node.time } : null
-      const context = contextCode(node)
+      const context = contextCode(node, false)
       let notified = false
       const lines = node.lines.map((line) => {
         const phoneLine = phone && line.speaker !== 'Дмит' ? { ...phone } : phone
         const withNotify = node.type === 'phone' && !notified && line.speaker !== 'Дмит' && node.notify ? { ...line, sound: node.notify } : line
         if (node.type === 'phone' && line.speaker !== 'Дмит') notified = true
-        return lineCode(withNotify, phoneLine)
+        return lineCode(withNotify, phoneLine, node.cast)
       })
       return `dialogue({\n    id: ${quote(node.id)},\n${context ? `    ${context},\n` : ''}    lines: [\n      ${lines.join(',\n      ')},\n    ],${node.next ? `\n    next: ${quote(node.next)},` : ''}${node.end ? '\n    end: true,' : ''}\n  })`
     }
     if (node.type === 'choice') {
       const context = contextCode(node)
-      const optionsCode = node.options.map((option) => `      { text: ${quote(option.text)}${option.say ? `, say: ${quote(option.say)}` : ''}${option.narration ? `, narration: ${quote(option.narration)}` : ''}, next: ${quote(option.next)}${option.failNext ? `, failNext: ${quote(option.failNext)}` : ''}${option.skill ? `, check: skill(${quote(option.skill.stat)}, ${option.skill.value})` : ''}${requirementsCode(option)}${option.visibleWhen ? `, visibleWhen: ${JSON.stringify(option.visibleWhen)}` : ''}${option.effects.length ? `, effects: [${option.effects.map(effectCode).join(', ')}]` : ''} }`).join(',\n')
+      const optionsCode = node.options.map((option) => `      { text: ${quote(option.text)}${option.say ? `, say: ${quote(option.say)}` : ''}${option.narration ? `, narration: ${quote(option.narration)}` : ''}, next: ${quote(option.next)}${option.failNext ? `, failNext: ${quote(option.failNext)}` : ''}${option.skill && option.failNext ? `, check: skill(${quote(option.skill.stat)}, ${option.skill.value})` : ''}${requirementsCode(option)}${option.visibleWhen ? `, visibleWhen: ${JSON.stringify(option.visibleWhen)}` : ''}${option.effects.length ? `, effects: [${option.effects.map(effectCode).join(', ')}]` : ''} }`).join(',\n')
       return `choice({\n    id: ${quote(node.id)},\n    speaker: 'Дмит',\n    prompt: ${quote(node.prompt)},\n${context ? `    ${context},\n` : ''}    options: [\n${optionsCode}\n    ],\n  })`
     }
     const context = contextCode(node)
-    const optionCode = node.options.map((option) => `      { text: ${quote(option.text)}, reply: [${option.reply.map((line) => lineCode(line)).join(', ')}]${option.effects.length ? `, effects: [${option.effects.map(effectCode).join(', ')}]` : ''} }`).join(',\n')
+    const optionCode = node.options.map((option) => `      { text: ${quote(option.text)}, reply: [${option.reply.map((line) => lineCode(line, null, node.cast)).join(', ')}]${option.effects.length ? `, effects: [${option.effects.map(effectCode).join(', ')}]` : ''} }`).join(',\n')
     return `cosmeticChoice({\n    id: ${quote(node.id)},\n    speaker: 'Дмит',\n    prompt: ${quote(node.prompt)},\n${context ? `    ${context},\n` : ''}    continueTo: ${quote(node.continueTo)},\n    options: [\n${optionCode}\n    ],\n  })`
   }).join(',\n  ')
   return `/* This file is generated by scripts/quest-script.mjs. Do not edit manually. */\nimport { ${[...imported].sort().join(', ')} } from ${quote(importPath)}\n\nexport const ${exportName} = defineQuest({\n  id: ${quote(questId)},\n  start: ${quote(start)},\n  nodes: [\n  ${nodeCode}\n  ],\n})\n`

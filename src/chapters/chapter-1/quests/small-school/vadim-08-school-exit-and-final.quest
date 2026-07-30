@@ -1,0 +1,3024 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — ВЫХОД ИЗ ШКОЛЫ И НАСТОЯЩЕЕ ЗАВЕРШЕНИЕ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::hook school-exit-entry
+@fallback exit-together-start
+@continue exit-together-start
+::end
+
+::extend school-exit-entry
+@when DMIT_DOUBLE_ABANDONMENT
+@priority 500
+@start exit-alone-start
+::end
+
+::extend school-exit-entry
+@when GUARD_RECOGNIZED_BLACK_PHONE
+@priority 400
+@start guard-recognized-phone
+::end
+
+::extend school-exit-entry
+@when DMIT_TOOK_BLAME_FOR_VADIM
+@priority 300
+@start guard-controlled-exit
+::end
+
+::extend school-exit-entry
+@when DMIT_BLAMED_VADIM
+@priority 200
+@start guard-controlled-exit
+::end
+
+::extend school-exit-entry
+@when DMIT_RETURNED_FOR_VADIM
+@priority 100
+@start exit-returned-vadim
+::end
+
+::dialogue guard-recognized-phone
+@bg computer-class-night
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник смотрит на чёрный телефон и резко перестаёт ругаться.
+@next guard-recognized-phone__1
+::end
+
+::dialogue guard-recognized-phone__1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Где вы это взяли?
+@next guard-recognized-phone__2
+::end
+
+::dialogue guard-recognized-phone__2
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: На столе лежал.
+@next guard-recognized-phone__3
+::end
+
+::dialogue guard-recognized-phone__3
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Телефон сюда. Быстро.
+@next guard-recognized-phone__4
+::end
+
+::dialogue guard-recognized-phone__4
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: А он чей?
+@next guard-recognized-phone__5
+::end
+
+::dialogue guard-recognized-phone__5
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Не твоё дело.
+@next guard-recognized-phone__6
+::end
+
+::dialogue guard-recognized-phone__6
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник говорит тише обычного и постоянно поглядывает в сторону коридора.
+@next guard-phone-holder-route
+::end
+
+::hook guard-phone-holder-route
+@fallback guard-phone-left
+@continue guard-phone-left
+::end
+
+::extend guard-phone-holder-route
+@when BLACK_PHONE_DESTROYED
+@priority 400
+@start guard-phone-destroyed
+::end
+
+::extend guard-phone-holder-route
+@when BLACK_PHONE_CONFISCATED
+@priority 300
+@start guard-release-warning
+::end
+
+::extend guard-phone-holder-route
+@when BLACK_PHONE_LEFT_AT_SCHOOL
+@priority 200
+@start guard-phone-left
+::end
+
+::extend guard-phone-holder-route
+@when DMIT_HAS_BLACK_PHONE
+@priority 100
+@start guard-phone-dmit
+::end
+
+::dialogue guard-phone-dmit
+@bg school-dark-vaz
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Чёрный телефон лежит в кармане Дмита. Даже через ткань чувствуется его тяжёлый корпус.
+@next guard-phone-dmit__1
+::end
+
+::dialogue guard-phone-dmit__1
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Я видел, как ты его убрал. Доставай.
+@next guard-phone-dmit__2
+::end
+
+::dialogue guard-phone-dmit__2
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Может, сначала объясните, чё с ним не так?
+@next guard-phone-dmit__3
+::end
+
+::dialogue guard-phone-dmit__3
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Сейчас же.
+@next guard-phone-dmit-choice
+::end
+
+::choice guard-phone-dmit-choice
+@prompt Что сделать с чёрным телефоном?
+@cast Дмит | Охранник
+# tone: danger
+
+- Отдать телефон охраннику.
+  -> guard-takes-phone
+
+- Сказать, что телефон остался на столе.
+  -> guard-phone-hidden
+  !-> guard-finds-phone
+
+- Спросить, знает ли он Игоря.
+  -> guard-igor-question
+
+- Молча отойти к Вадиму.
+  -> guard-finds-phone
+
+::end
+
+::dialogue guard-takes-phone
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник выхватывает телефон и сразу убирает его во внутренний карман.
+@next guard-takes-phone__1
+::end
+
+::dialogue guard-takes-phone__1
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Вы хоть владельца знаете?
+@next guard-takes-phone__2
+::end
+
+::dialogue guard-takes-phone__2
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Забудь, что видел его.
+@next guard-takes-phone__3
+::end
+
+::dialogue guard-takes-phone__3
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Так не получится.
+@next guard-takes-phone__4
+::end
+
+::dialogue guard-takes-phone__4
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Получится, если голова на плечах дорога.
+@next guard-takes-phone__5
+::end
+
+::dialogue guard-takes-phone__5
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Впервые за весь вечер в его голосе нет злости. Только страх.
+@next guard-release-warning
+::end
+
+::dialogue guard-phone-hidden
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Он на столе остался. Мы ничего не брали.
+@next guard-phone-hidden__1
+::end
+
+::dialogue guard-phone-hidden__1
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Точно?
+@next guard-phone-hidden__2
+::end
+
+::dialogue guard-phone-hidden__2
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Можете проверить.
+@next guard-phone-hidden__3
+::end
+
+::dialogue guard-phone-hidden__3
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник смотрит в сторону учительского стола, но не подходит ближе.
+@next guard-phone-hidden__4
+::end
+
+::dialogue guard-phone-hidden__4
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Всё. На выход.
+@next guard-phone-hidden__5
+::end
+
+::dialogue guard-phone-hidden__5
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: А телефон?
+@next guard-phone-hidden__6
+::end
+
+::dialogue guard-phone-hidden__6
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Забудь про него.
+@effect-next flag DMIT_KEPT_BLACK_PHONE_HIDDEN
+@next guard-release-warning
+::end
+
+::dialogue guard-finds-phone
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Телефон на столе остался.
+@next guard-finds-phone__1
+::end
+
+::dialogue guard-finds-phone__1
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Тогда почему у тебя карман вибрирует?
+@next guard-finds-phone__2
+::end
+
+::dialogue guard-finds-phone__2
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Чёрный телефон снова коротко гудит в кармане Дмита.
+@next guard-finds-phone__3
+::end
+
+::dialogue guard-finds-phone__3
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Бля.
+@next guard-finds-phone__4
+::end
+
+::dialogue guard-finds-phone__4
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Достал.
+@next guard-finds-phone__5
+::end
+
+::dialogue guard-finds-phone__5
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник забирает телефон, не дожидаясь ответа.
+@effect-next flag BLACK_PHONE_CONFISCATED
+@next guard-release-warning
+::end
+
+::dialogue guard-igor-question
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: А вы Игоря знаете?
+@next guard-igor-question__1
+::end
+
+::dialogue guard-igor-question__1
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник застывает. Его взгляд на секунду становится совершенно пустым.
+@next guard-igor-question__2
+::end
+
+::dialogue guard-igor-question__2
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Какого Игоря?
+@next guard-igor-question__3
+::end
+
+::dialogue guard-igor-question__3
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Который деньги должен передать.
+@next guard-igor-question__4
+::end
+
+::dialogue guard-igor-question__4
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Телефон сюда.
+@next guard-igor-question__5
+::end
+
+::dialogue guard-igor-question__5
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Значит, знаете.
+@next guard-igor-question__6
+::end
+
+::dialogue guard-igor-question__6
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Я сказал — телефон сюда!
+@next guard-igor-choice
+::end
+
+::choice guard-igor-choice
+@prompt Как ответить охраннику?
+@cast Дмит | Охранник
+# tone: danger
+
+- Отдать телефон.
+  -> guard-takes-phone
+
+- Спрятать телефон и отступить.
+  -> guard-phone-hidden
+  !-> guard-finds-phone
+
+- Мы уже прочитали сообщения.
+  -> guard-read-messages-reaction
+
+::end
+
+::dialogue guard-read-messages-reaction
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Поздно. Мы уже прочитали сообщения.
+@next guard-read-messages-reaction__1
+::end
+
+::dialogue guard-read-messages-reaction__1
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Кто ещё видел?
+@next guard-read-messages-reaction__2
+::end
+
+::dialogue guard-read-messages-reaction__2
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: А чё там такого?
+@next guard-read-messages-reaction__3
+::end
+
+::dialogue guard-read-messages-reaction__3
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Кто ещё видел?!
+@next guard-read-messages-reaction__4
+::end
+
+::dialogue guard-read-messages-reaction__4
+@cast Вадим | Охранник
+# tone: danger
+
+Вадим: Я.
+@next guard-read-messages-reaction__5
+::end
+
+::dialogue guard-read-messages-reaction__5
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Охранник проводит ладонью по лицу и тихо ругается.
+@next guard-read-messages-reaction__6
+::end
+
+::dialogue guard-read-messages-reaction__6
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Уходите через боковой выход. И никому ничего не рассказывайте.
+@next guard-read-messages-reaction__7
+::end
+
+::dialogue guard-read-messages-reaction__7
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Почему через боковой?
+@next guard-read-messages-reaction__8
+::end
+
+::dialogue guard-read-messages-reaction__8
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Потому что у главного вам сейчас находиться не надо.
+@effect-next flag GUARD_SENT_GROUP_TO_SIDE_EXIT
+@next guard-side-exit
+::end
+
+::dialogue guard-phone-destroyed
+@bg school-dark-vaz
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Где телефон?
+@next guard-phone-destroyed__1
+::end
+
+::dialogue guard-phone-destroyed__1
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Разбился.
+@next guard-phone-destroyed__2
+::end
+
+::dialogue guard-phone-destroyed__2
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Что значит «разбился»?
+@next guard-phone-destroyed__3
+::end
+
+::dialogue guard-phone-destroyed__3
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Упал. Потом я на него наступил.
+@next guard-phone-destroyed__4
+::end
+
+::dialogue guard-phone-destroyed__4
+@cast Вадим | Охранник
+# tone: danger
+
+Вадим: Он сделал это специально.
+@next guard-phone-destroyed__5
+::end
+
+::dialogue guard-phone-destroyed__5
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Вадим.
+@next guard-phone-destroyed__6
+::end
+
+::dialogue guard-phone-destroyed__6
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Вы вообще понимаете, что натворили?
+@next guard-phone-destroyed__7
+::end
+
+::dialogue guard-phone-destroyed__7
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Пока не очень.
+@next guard-phone-destroyed__8
+::end
+
+::dialogue guard-phone-destroyed__8
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: На выход. Быстро.
+@effect-next flag GUARD_KNOWS_BLACK_PHONE_DESTROYED
+@next guard-release-warning
+::end
+
+::dialogue guard-phone-left
+@bg school-dark-vaz
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Телефон оставили на месте?
+@next guard-phone-left__1
+::end
+
+::dialogue guard-phone-left__1
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Да.
+@next guard-phone-left__2
+::end
+
+::dialogue guard-phone-left__2
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Ничего не трогали?
+@next guard-phone-left__3
+::end
+
+::dialogue guard-phone-left__3
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Рюкзак взяли. За ним пришли.
+@next guard-phone-left__4
+::end
+
+::dialogue guard-phone-left__4
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Хорошо. Теперь уходите.
+@next guard-phone-left__5
+::end
+
+::dialogue guard-phone-left__5
+@cast Вадим | Охранник
+# tone: danger
+
+Вадим: Вы знаете, чей он?
+@next guard-phone-left__6
+::end
+
+::dialogue guard-phone-left__6
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Нет. И вы тоже не знаете.
+@next guard-release-warning
+::end
+
+::dialogue guard-controlled-exit
+@bg computer-class-night
+@cast Дмит | Охранник
+
+Охранник: Рюкзак забрали. Теперь оба вниз.
+@next guard-controlled-exit__1
+::end
+
+::dialogue guard-controlled-exit__1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Дмит: А можно просто выйти?
+@next guard-controlled-exit__2
+::end
+
+::dialogue guard-controlled-exit__2
+@cast Дмит | Охранник
+
+Охранник: Я вас и веду выходить.
+@next guard-controlled-exit__3
+::end
+
+::dialogue guard-controlled-exit__3
+@cast Дмит | Охранник
+
+Дмит: Без директора?
+@next guard-controlled-exit__4
+::end
+
+::dialogue guard-controlled-exit__4
+@cast Дмит | Охранник
+
+Охранник: Не радуйся раньше времени.
+@next guard-blame-route
+::end
+
+::hook guard-blame-route
+@fallback guard-neutral-reaction
+@continue guard-neutral-reaction
+::end
+
+::extend guard-blame-route
+@when DMIT_TOOK_BLAME_FOR_VADIM
+@priority 200
+@start guard-took-blame-reaction
+::end
+
+::extend guard-blame-route
+@when DMIT_BLAMED_VADIM
+@priority 100
+@start guard-blamed-vadim-reaction
+::end
+
+::dialogue guard-took-blame-reaction
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Ты не обязан был брать всё на себя.
+@next guard-took-blame-reaction__1
+::end
+
+::dialogue guard-took-blame-reaction__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Ты утром на олимпиаду едешь.
+@next guard-took-blame-reaction__2
+::end
+
+::dialogue guard-took-blame-reaction__2
+@cast Дмит | Вадим
+
+Вадим: Это не отменяет твоих проблем.
+@next guard-took-blame-reaction__3
+::end
+
+::dialogue guard-took-blame-reaction__3
+@cast Дмит | Вадим
+
+Дмит: Зато добавляет твоих умных разговоров.
+@next guard-took-blame-reaction__4
+::end
+
+::dialogue guard-took-blame-reaction__4
+@cast Дмит | Вадим
+
+Вадим: Спасибо.
+@next guard-took-blame-reaction__5
+::end
+
+::dialogue guard-took-blame-reaction__5
+@cast Дмит | Вадим
+
+Дмит: Вот так лучше. Коротко.
+@next guard-release-warning
+::end
+
+::dialogue guard-blamed-vadim-reaction
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Дмит: Ты долго ещё молчать будешь?
+@next guard-blamed-vadim-reaction__1
+::end
+
+::dialogue guard-blamed-vadim-reaction__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: Пока не появится что-то, что я хочу тебе сказать.
+@next guard-blamed-vadim-reaction__2
+::end
+
+::dialogue guard-blamed-vadim-reaction__2
+@cast Дмит | Вадим
+
+Дмит: Я же не соврал. Ты рюкзак забыл.
+@next guard-blamed-vadim-reaction__3
+::end
+
+::dialogue guard-blamed-vadim-reaction__3
+@cast Дмит | Вадим
+
+Вадим: А ты решил помочь. Потом переложил всё на меня.
+@next guard-blamed-vadim-reaction__4
+::end
+
+::dialogue guard-blamed-vadim-reaction__4
+@cast Дмит | Вадим
+
+Дмит: Нас поймали. Я затупил.
+@next guard-blamed-vadim-reaction__5
+::end
+
+::dialogue guard-blamed-vadim-reaction__5
+@cast Дмит | Вадим
+
+Вадим: Я заметил.
+@next guard-release-warning
+::end
+
+::dialogue guard-neutral-reaction
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: По крайней мере, рюкзак мы забрали.
+@next guard-neutral-reaction__1
+::end
+
+::dialogue guard-neutral-reaction__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Я же говорил, план работает.
+@next guard-neutral-reaction__2
+::end
+
+::dialogue guard-neutral-reaction__2
+@cast Дмит | Вадим
+
+Вадим: Нас поймали.
+@next guard-neutral-reaction__3
+::end
+
+::dialogue guard-neutral-reaction__3
+@cast Дмит | Вадим
+
+Дмит: Не весь план. Основная часть.
+@next guard-release-warning
+::end
+
+::dialogue guard-release-warning
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Рассказчик: Охранник ведёт ребят по лестнице к первому этажу.
+@next guard-release-warning__1
+::end
+
+::dialogue guard-release-warning__1
+@cast Дмит | Охранник
+
+Охранник: Сейчас выйдете и сразу пойдёте домой.
+@next guard-release-warning__2
+::end
+
+::dialogue guard-release-warning__2
+@cast Дмит | Охранник
+
+Дмит: А родителям?
+@next guard-release-warning__3
+::end
+
+::dialogue guard-release-warning__3
+@cast Дмит | Охранник
+
+Охранник: Утром школа сама решит.
+@next guard-release-warning__4
+::end
+
+::dialogue guard-release-warning__4
+@cast Вадим | Охранник
+
+Вадим: То есть вы нас отпускаете?
+@next guard-release-warning__5
+::end
+
+::dialogue guard-release-warning__5
+@cast Дмит | Охранник
+
+Охранник: Я вас больше видеть не хочу.
+@next guard-release-warning__6
+::end
+
+::dialogue guard-release-warning__6
+@cast Дмит | Охранник
+
+Дмит: Взаимно.
+@next guard-release-warning__7
+::end
+
+::dialogue guard-release-warning__7
+@cast Дмит | Охранник
+
+Охранник: Что?
+@next guard-release-warning__8
+::end
+
+::dialogue guard-release-warning__8
+@cast Дмит | Охранник
+
+Дмит: Говорю, спасибо.
+@next guard-main-exit
+::end
+
+::dialogue guard-main-exit
+@bg school-main-entrance-night
+@cast Дмит | Вадим
+@sound-next school-entry-creak
+
+Рассказчик: Охранник открывает главную дверь и почти выталкивает ребят на улицу.
+@next guard-main-exit__1
+::end
+
+::dialogue guard-main-exit__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Охранник: Идите.
+@next guard-main-exit__2
+::end
+
+::dialogue guard-main-exit__2
+@cast Дмит | Вадим
+
+Дмит: Да идём уже.
+@next guard-main-exit__3
+::end
+
+::dialogue guard-main-exit__3
+@cast Дмит | Вадим
+
+Вадим: До свидания.
+@next guard-main-exit__4
+::end
+
+::dialogue guard-main-exit__4
+@cast Дмит | Вадим
+
+Охранник: Надеюсь, нет.
+@effect-next flag SCHOOL_EXITED_WITH_GUARD
+@next main-exit-consequence-route
+::end
+
+::dialogue guard-side-exit
+@bg school-backyard-night
+@cast Дмит | Вадим
+@sound-next school-entry-creak
+
+Рассказчик: Охранник проводит ребят к боковой двери и быстро открывает замок.
+@next guard-side-exit__1
+::end
+
+::dialogue guard-side-exit__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Охранник: Вышли и не стойте возле школы.
+@next guard-side-exit__2
+::end
+
+::dialogue guard-side-exit__2
+@cast Дмит | Вадим
+
+Дмит: А там что?
+@next guard-side-exit__3
+::end
+
+::dialogue guard-side-exit__3
+@cast Дмит | Вадим
+
+Охранник: Я ясно сказал?
+@next guard-side-exit__4
+::end
+
+::dialogue guard-side-exit__4
+@cast Дмит | Вадим
+
+Вадим: Вполне.
+@next guard-side-exit__5
+::end
+
+::dialogue guard-side-exit__5
+@cast Дмит | Вадим
+
+Рассказчик: Дверь захлопывается за их спинами.
+@effect-next flag SCHOOL_EXITED_WITH_GUARD
+@effect-next flag SCHOOL_EXITED_THROUGH_BACKYARD
+@next dark-exit-consequence-route
+::end
+
+::dialogue exit-returned-vadim
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим выходят из кабинета информатики. Снизу доносятся шаги охранника.
+@next exit-returned-vadim__1
+::end
+
+::dialogue exit-returned-vadim__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: Ты мог оставить меня у него.
+@next exit-returned-vadim__2
+::end
+
+::dialogue exit-returned-vadim__2
+@cast Дмит | Вадим
+
+Дмит: Мог.
+@next exit-returned-vadim__3
+::end
+
+::dialogue exit-returned-vadim__3
+@cast Дмит | Вадим
+
+Вадим: Но вернулся.
+@next exit-returned-vadim__4
+::end
+
+::dialogue exit-returned-vadim__4
+@cast Дмит | Вадим
+
+Дмит: Не начинай.
+@next exit-returned-vadim__5
+::end
+
+::dialogue exit-returned-vadim__5
+@cast Дмит | Вадим
+
+Вадим: Я просто фиксирую факт.
+@next exit-returned-vadim__6
+::end
+
+::dialogue exit-returned-vadim__6
+@cast Дмит | Вадим
+
+Дмит: Фиксируй потише.
+@next exit-phone-alert-route
+::end
+
+::dialogue exit-together-start
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим выходят из кабинета информатики. Рюкзак найден, но путь назад всё ещё перекрыт охранником.
+@next exit-together-start__1
+::end
+
+::dialogue exit-together-start__1
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Теперь нужно выбраться.
+@next exit-together-start__2
+::end
+
+::dialogue exit-together-start__2
+@cast Дмит | Вадим
+
+Дмит: Самая простая часть.
+@next exit-together-start__3
+::end
+
+::dialogue exit-together-start__3
+@cast Дмит | Вадим
+
+Вадим: Ты говорил это перед тем, как нас заметили.
+@next exit-together-start__4
+::end
+
+::dialogue exit-together-start__4
+@cast Дмит | Вадим
+
+Дмит: Теперь у меня больше опыта.
+@next exit-together-start__5
+::end
+
+::dialogue exit-together-start__5
+@cast Дмит | Вадим
+
+Вадим: И меньше времени.
+@next exit-phone-alert-route
+::end
+
+::dialogue exit-alone-start
+@bg school-second-floor-night
+@cast Дмит
+
+Рассказчик: Дмит выходит из кабинета один. Рюкзак Вадима висит у него на плече.
+@next exit-alone-start__1
+::end
+
+::dialogue exit-alone-start__1
+@bg school-second-floor-night
+@cast Дмит
+
+Рассказчик: Снизу больше не слышно голоса Вадима. Только шаги охранника и скрип дверей.
+@next exit-alone-start__2
+::end
+
+::dialogue exit-alone-start__2
+@cast Дмит
+
+Дмит: Бля…
+@next mishgan-abandonment-chat
+::end
+
+::phone mishgan-abandonment-chat
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Мишган: Где Вадим?
+@next mishgan-abandonment-chat__1
+::end
+
+::phone mishgan-abandonment-chat__1
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Дмит: У охранника.
+@next mishgan-abandonment-chat__2
+::end
+
+::phone mishgan-abandonment-chat__2
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Мишган: А ты где?
+@next mishgan-abandonment-chat__3
+::end
+
+::phone mishgan-abandonment-chat__3
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Дмит: На втором этаже. Рюкзак забрал.
+@next mishgan-abandonment-chat__4
+::end
+
+::phone mishgan-abandonment-chat__4
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Мишган: Ты опять человека бросил?
+@next mishgan-abandonment-chat__5
+::end
+
+::phone mishgan-abandonment-chat__5
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Дмит: Я потом за ним вернусь.
+@next mishgan-abandonment-chat__6
+::end
+
+::phone mishgan-abandonment-chat__6
+@cast Дмит | Мишган
+@contact Мишган
+@time 22:47
+
+Мишган: Уф-уф. Я это уже слышал.
+@next exit-phone-alert-route
+::end
+
+::hook exit-phone-alert-route
+@fallback exit-party-route
+@continue exit-party-route
+::end
+
+::extend exit-phone-alert-route
+@when MAFIA_CONTACT_ALERTED
+@priority 100
+@start exit-alert-holder-route
+::end
+
+::hook exit-alert-holder-route
+@fallback exit-party-route
+@continue exit-party-route
+::end
+
+::extend exit-alert-holder-route
+@when BLACK_PHONE_DESTROYED
+@priority 400
+@start exit-party-route
+::end
+
+::extend exit-alert-holder-route
+@when BLACK_PHONE_CONFISCATED
+@priority 300
+@start exit-party-route
+::end
+
+::extend exit-alert-holder-route
+@when BLACK_PHONE_LEFT_AT_SCHOOL
+@priority 200
+@start exit-party-route
+::end
+
+::extend exit-alert-holder-route
+@when DMIT_HAS_BLACK_PHONE
+@unless BLACK_PHONE_CONFISCATED
+@unless BLACK_PHONE_DESTROYED
+@unless BLACK_PHONE_LEFT_AT_SCHOOL
+@priority 100
+@start black-phone-warning-dmit
+::end
+
+::phone black-phone-warning-dmit
+@bg school-dark-vaz
+@cast Дмит
+@contact Неизвестный номер
+@time 22:48
+@notify black-phone-vibration
+
+Неизвестный номер: Не выходи через главный вход.
+@next black-phone-warning-dmit__1
+::end
+
+::phone black-phone-warning-dmit__1
+@cast Дмит
+@contact Неизвестный номер
+@time 22:48
+
+Дмит: Ты кто?
+@next black-phone-warning-dmit__2
+::end
+
+::phone black-phone-warning-dmit__2
+@cast Дмит
+@contact Неизвестный номер
+@time 22:48
+
+Неизвестный номер: У тебя две минуты.
+@effect-next flag BLACK_PHONE_WARNED_ABOUT_MAIN_EXIT
+@next exit-party-route
+::end
+
+::hook exit-party-route
+@fallback exit-junction-together
+@continue exit-junction-together
+::end
+
+::extend exit-party-route
+@when DMIT_RETURNED_FOR_VADIM
+@priority 300
+@start exit-junction-together
+::end
+
+::extend exit-party-route
+@when DMIT_DOUBLE_ABANDONMENT
+@priority 200
+@start exit-junction-alone
+::end
+
+::extend exit-party-route
+@when DMIT_ABANDONED_VADIM
+@priority 100
+@start exit-junction-alone
+::end
+
+::dialogue exit-junction-together
+@bg school-dark-vaz
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: У лестничной площадки коридор разделяется надвое.
+@next exit-junction-together__1
+::end
+
+::dialogue exit-junction-together__1
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Слева слышны звон ключей, тяжёлые шаги и раздражённое бормотание охранника.
+@next exit-junction-together__2
+::end
+
+::dialogue exit-junction-together__2
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Справа не горит ни одна лампа. Коридор полностью растворяется в темноте.
+@next exit-junction-together__3
+::end
+
+::dialogue exit-junction-together__3
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Слева охранник.
+@next exit-junction-together__4
+::end
+
+::dialogue exit-junction-together__4
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Спасибо, я по звуку понял.
+@next exit-junction-together__5
+::end
+
+::dialogue exit-junction-together__5
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Справа должна быть старая пожарная лестница.
+@next exit-junction-together__6
+::end
+
+::dialogue exit-junction-together__6
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Должна быть?
+@next exit-junction-together__7
+::end
+
+::dialogue exit-junction-together__7
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Я не пользовался ей ночью.
+@next exit-junction-together-choice
+::end
+
+::choice exit-junction-together-choice
+@prompt Какой путь выбрать?
+@cast Дмит | Вадим
+# tone: danger
+
+- Пойти на шум и попробовать договориться с охранником.
+  -> noise-route-together
+
+- Пойти в тёмный коридор.
+  -> dark-route-together
+
+- Подождать и прислушаться.
+  -> junction-listen-together
+
+::end
+
+::dialogue junction-listen-together
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Ребята замирают. Шаги слева становятся громче.
+@next junction-listen-together__1
+::end
+
+::dialogue junction-listen-together__1
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Я знаю, что вы наверху!
+@next junction-listen-together__2
+::end
+
+::dialogue junction-listen-together__2
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Теперь у нас меньше времени.
+@next junction-listen-together__3
+::end
+
+::dialogue junction-listen-together__3
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Зато точно знаем, где он.
+@next exit-junction-together-choice
+::end
+
+::dialogue exit-junction-alone
+@bg school-dark-vaz
+@cast Дмит
+# tone: danger
+
+Рассказчик: У лестничной площадки Дмит останавливается перед развилкой.
+@next exit-junction-alone__1
+::end
+
+::dialogue exit-junction-alone__1
+@cast Дмит
+# tone: danger
+
+Рассказчик: Слева слышны ключи и шаги охранника. Возможно, там же остался Вадим.
+@next exit-junction-alone__2
+::end
+
+::dialogue exit-junction-alone__2
+@cast Дмит
+# tone: danger
+
+Рассказчик: Справа начинается совершенно тёмный коридор, ведущий к старой пожарной лестнице.
+@next exit-junction-alone__3
+::end
+
+::dialogue exit-junction-alone__3
+@cast Дмит
+# tone: danger
+
+Дмит: Направо — не видно нихуя. Налево — охранник. Отлично.
+@next exit-junction-alone-choice
+::end
+
+::choice exit-junction-alone-choice
+@prompt Какой путь выбрать?
+@cast Дмит
+# tone: danger
+
+- Пойти на шум и вернуться к охраннику.
+  -> noise-route-alone
+
+- Пойти в тёмный коридор и выбраться одному.
+  -> dark-route-alone
+
+- Крикнуть Вадиму.
+  -> dmit-calls-vadim
+
+::end
+
+::dialogue dmit-calls-vadim
+@cast Дмит
+# tone: danger
+
+Дмит: Вадим!
+@next dmit-calls-vadim__1
+::end
+
+::dialogue dmit-calls-vadim__1
+@cast Дмит
+# tone: danger
+
+Рассказчик: Из левой части коридора доносится голос охранника.
+@next dmit-calls-vadim__2
+::end
+
+::dialogue dmit-calls-vadim__2
+@cast Дмит
+# tone: danger
+
+Охранник: СЮДА ИДИ, ГЕРОЙ!
+@next dmit-calls-vadim__3
+::end
+
+::dialogue dmit-calls-vadim__3
+@cast Дмит
+# tone: danger
+
+Дмит: Бля.
+@next exit-junction-alone-choice
+::end
+
+::dialogue noise-route-together
+@bg school-corridor-night
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Дмит и Вадим выходят навстречу шуму. Луч фонарика сразу бьёт им в лица.
+@next noise-route-together__1
+::end
+
+::dialogue noise-route-together__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+# tone: danger
+
+Охранник: Вот вы где!
+@next noise-route-together__2
+::end
+
+::dialogue noise-route-together__2
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Мы сами к вам идём.
+@next noise-route-together__3
+::end
+
+::dialogue noise-route-together__3
+@cast Дмит | Вадим
+# tone: danger
+
+Охранник: Это должно меня обрадовать?
+@next noise-route-together-choice
+::end
+
+::choice noise-route-together-choice
+@prompt Как объясниться с охранником?
+@cast Дмит | Охранник
+
+- Сказать правду про рюкзак и олимпиаду.
+  -> noise-truth-success
+  !-> noise-talk-fail
+
+- Сказать, что путь назад оказался закрыт.
+  -> noise-practical-success
+  !-> noise-talk-fail
+
+- Молча отдать охраннику рюкзак и сдаться.
+  -> noise-surrender-together
+
+- Мы уже уходим. Просто покажите выход.
+  -> noise-direct-together
+
+::end
+
+::dialogue noise-truth-success
+@cast Дмит | Охранник
+
+Дмит: Рюкзак забрали. Там документы на олимпиаду. Больше нам ничего не надо.
+@next noise-truth-success__1
+::end
+
+::dialogue noise-truth-success__1
+@cast Вадим | Охранник
+
+Вадим: Утром я должен передать их учителю.
+@next noise-truth-success__2
+::end
+
+::dialogue noise-truth-success__2
+@cast Дмит | Охранник
+
+Охранник: И ради этого вы устроили погоню по школе?
+@next noise-truth-success__3
+::end
+
+::dialogue noise-truth-success__3
+@cast Дмит | Охранник
+
+Дмит: Если так говорить, звучит хуёво.
+@next noise-truth-success__4
+::end
+
+::dialogue noise-truth-success__4
+@cast Дмит | Охранник
+
+Охранник: Потому что это хуёво.
+@next noise-truth-success__5
+::end
+
+::dialogue noise-truth-success__5
+@cast Дмит | Охранник
+
+Дмит: Но документы у него. Давайте просто выйдем.
+@next noise-truth-success__6
+::end
+
+::dialogue noise-truth-success__6
+@cast Дмит | Охранник
+
+Рассказчик: Охранник тяжело вздыхает и опускает фонарик.
+@next noise-truth-success__7
+::end
+
+::dialogue noise-truth-success__7
+@cast Дмит | Охранник
+
+Охранник: Вниз. Оба.
+@effect-next flag GUARD_ACCEPTED_BACKPACK_EXPLANATION
+@effect-next relation Вадим 1
+@next guard-main-exit
+::end
+
+::dialogue noise-practical-success
+@cast Дмит | Охранник
+
+Дмит: Путь назад перекрыт. Мы можем дальше бегать и ломать двери.
+@next noise-practical-success__1
+::end
+
+::dialogue noise-practical-success__1
+@cast Дмит | Охранник
+
+Охранник: Это угроза?
+@next noise-practical-success__2
+::end
+
+::dialogue noise-practical-success__2
+@cast Дмит | Охранник
+
+Дмит: Нет. Я предлагаю самый простой вариант: вы открываете выход, мы уходим.
+@next noise-practical-success__3
+::end
+
+::dialogue noise-practical-success__3
+@cast Вадим | Охранник
+
+Вадим: Это действительно сократит ущерб.
+@next noise-practical-success__4
+::end
+
+::dialogue noise-practical-success__4
+@cast Дмит | Охранник
+
+Охранник: Умные нашлись.
+@next noise-practical-success__5
+::end
+
+::dialogue noise-practical-success__5
+@cast Дмит | Охранник
+
+Дмит: Один умный. Я просто рядом.
+@next noise-practical-success__6
+::end
+
+::dialogue noise-practical-success__6
+@cast Дмит | Охранник
+
+Охранник: Ладно. Вниз.
+@effect-next flag GUARD_CHOSE_SIMPLE_EXIT
+@next guard-main-exit
+::end
+
+::dialogue noise-talk-fail
+@cast Дмит | Охранник
+
+Дмит: Мы просто хотели спокойно выйти.
+@next noise-talk-fail__1
+::end
+
+::dialogue noise-talk-fail__1
+@cast Дмит | Охранник
+
+Охранник: Спокойно? После того, что вы устроили?
+@next noise-talk-fail__2
+::end
+
+::dialogue noise-talk-fail__2
+@cast Дмит | Охранник
+
+Дмит: Ну уже устроили. Назад не вернёшь.
+@next noise-talk-fail__3
+::end
+
+::dialogue noise-talk-fail__3
+@cast Дмит | Охранник
+
+Охранник: Телефоны и рюкзак на стол. Потом звонок родителям.
+@next noise-talk-fail__4
+::end
+
+::dialogue noise-talk-fail__4
+@cast Вадим | Охранник
+
+Вадим: Можно сначала выйти?
+@next noise-talk-fail__5
+::end
+
+::dialogue noise-talk-fail__5
+@cast Дмит | Охранник
+
+Охранник: Выйдете. Со мной.
+@effect-next flag GUARD_RECORDED_STUDENT_NAMES
+@next guard-main-exit
+::end
+
+::dialogue noise-surrender-together
+@cast Дмит | Охранник
+
+Рассказчик: Дмит снимает рюкзак с плеча и протягивает его охраннику.
+@next noise-surrender-together__1
+::end
+
+::dialogue noise-surrender-together__1
+@cast Дмит | Охранник
+
+Дмит: На. Только не забирайте документы.
+@next noise-surrender-together__2
+::end
+
+::dialogue noise-surrender-together__2
+@cast Дмит | Охранник
+
+Охранник: Вниз пошли. Там разберёмся.
+@next noise-surrender-together__3
+::end
+
+::dialogue noise-surrender-together__3
+@cast Вадим | Охранник
+
+Вадим: Рюкзак мой.
+@next noise-surrender-together__4
+::end
+
+::dialogue noise-surrender-together__4
+@cast Дмит | Охранник
+
+Охранник: Значит, понесёшь сам. Но пойдёшь передо мной.
+@effect-next flag SCHOOL_EXIT_SURRENDERED
+@next guard-main-exit
+::end
+
+::dialogue noise-direct-together
+@cast Дмит | Охранник
+
+Дмит: Мы уже уходим. Просто покажите выход.
+@next noise-direct-together__1
+::end
+
+::dialogue noise-direct-together__1
+@cast Дмит | Охранник
+
+Охранник: Главный выход находится там же, где был всегда.
+@next noise-direct-together__2
+::end
+
+::dialogue noise-direct-together__2
+@cast Дмит | Охранник
+
+Дмит: Там, где вы за нами бегали?
+@next noise-direct-together__3
+::end
+
+::dialogue noise-direct-together__3
+@cast Дмит | Охранник
+
+Охранник: Да.
+@next noise-direct-together__4
+::end
+
+::dialogue noise-direct-together__4
+@cast Дмит | Охранник
+
+Дмит: Тогда идём вместе.
+@next noise-direct-together__5
+::end
+
+::dialogue noise-direct-together__5
+@cast Дмит | Охранник
+
+Охранник: Я это и собирался сделать.
+@next guard-main-exit
+::end
+
+::dialogue noise-route-alone
+@bg school-corridor-night
+@cast Дмит | Охранник
+# tone: danger
+
+Рассказчик: Дмит идёт навстречу шагам. Охранник появляется из-за угла и направляет на него фонарик.
+@next noise-route-alone__1
+::end
+
+::dialogue noise-route-alone__1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Набегался?
+@next noise-route-alone__2
+::end
+
+::dialogue noise-route-alone__2
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: Типа того.
+@next noise-route-alone__3
+::end
+
+::dialogue noise-route-alone__3
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: А второй где?
+@next noise-route-alone__4
+::end
+
+::dialogue noise-route-alone__4
+@cast Дмит | Охранник
+# tone: danger
+
+Дмит: У вас был.
+@next noise-route-alone__5
+::end
+
+::dialogue noise-route-alone__5
+@cast Дмит | Охранник
+# tone: danger
+
+Охранник: Я про того мелкого и спрашиваю.
+@next noise-route-alone-choice
+::end
+
+::choice noise-route-alone-choice
+@prompt Что ответить про Вадима?
+@cast Дмит | Охранник
+
+- Я вернулся за ним.
+  -> alone-returns-for-vadim
+  !-> alone-guard-catches
+
+- Сначала выведите меня, потом найдём его.
+  -> alone-practical-guard
+  !-> alone-guard-catches
+
+- Он сам разберётся.
+  -> alone-confirms-abandonment
+
+- Молча отдать рюкзак.
+  -> alone-guard-catches
+
+::end
+
+::dialogue alone-returns-for-vadim
+@cast Дмит | Охранник
+
+Дмит: Я за ним вернулся. Где он?
+@next alone-returns-for-vadim__1
+::end
+
+::dialogue alone-returns-for-vadim__1
+@cast Дмит | Охранник
+
+Охранник: На вахте сидит.
+@next alone-returns-for-vadim__2
+::end
+
+::dialogue alone-returns-for-vadim__2
+@cast Дмит | Охранник
+
+Дмит: Тогда ведите.
+@next alone-returns-for-vadim__3
+::end
+
+::dialogue alone-returns-for-vadim__3
+@cast Дмит | Охранник
+
+Охранник: Решил совесть найти?
+@next alone-returns-for-vadim__4
+::end
+
+::dialogue alone-returns-for-vadim__4
+@cast Дмит | Охранник
+
+Дмит: Нашёл уже. Теперь Вадима найти надо.
+@effect-next flag DMIT_RETURNED_FOR_VADIM_SECOND_TIME
+@effect-next relation Вадим 1
+@next guard-main-exit
+::end
+
+::dialogue alone-practical-guard
+@cast Дмит | Охранник
+
+Дмит: Если он сбежал, мы вдвоём быстрее его найдём.
+@next alone-practical-guard__1
+::end
+
+::dialogue alone-practical-guard__1
+@cast Дмит | Охранник
+
+Охранник: Ты меня ещё учить будешь?
+@next alone-practical-guard__2
+::end
+
+::dialogue alone-practical-guard__2
+@cast Дмит | Охранник
+
+Дмит: Нет. Просто предлагаю не стоять.
+@next alone-practical-guard__3
+::end
+
+::dialogue alone-practical-guard__3
+@cast Дмит | Охранник
+
+Охранник: Вниз. Рюкзак неси.
+@effect-next flag DMIT_EXITED_WITH_GUARD_ALONE
+@next guard-main-exit
+::end
+
+::dialogue alone-confirms-abandonment
+@cast Дмит | Охранник
+
+Дмит: Он сам разберётся.
+@next alone-confirms-abandonment__1
+::end
+
+::dialogue alone-confirms-abandonment__1
+@cast Дмит | Охранник
+
+Охранник: А рюкзак его у тебя?
+@next alone-confirms-abandonment__2
+::end
+
+::dialogue alone-confirms-abandonment__2
+@cast Дмит | Охранник
+
+Дмит: Ну да.
+@next alone-confirms-abandonment__3
+::end
+
+::dialogue alone-confirms-abandonment__3
+@cast Дмит | Охранник
+
+Охранник: Хороший ты друг.
+@next alone-confirms-abandonment__4
+::end
+
+::dialogue alone-confirms-abandonment__4
+@cast Дмит | Охранник
+
+Дмит: Без лекций давайте.
+@next alone-confirms-abandonment__5
+::end
+
+::dialogue alone-confirms-abandonment__5
+@cast Дмит | Охранник
+
+Охранник: Вниз пошёл.
+@effect-next flag DMIT_CONFIRMED_ABANDONMENT
+@effect-next relation Вадим -1
+@next guard-main-exit
+::end
+
+::dialogue alone-guard-catches
+@cast Дмит | Охранник
+
+Охранник: Хватит мне зубы заговаривать.
+@next alone-guard-catches__1
+::end
+
+::dialogue alone-guard-catches__1
+@cast Дмит | Охранник
+
+Рассказчик: Охранник забирает рюкзак и указывает фонариком в сторону лестницы.
+@next alone-guard-catches__2
+::end
+
+::dialogue alone-guard-catches__2
+@cast Дмит | Охранник
+
+Охранник: Вниз. Медленно.
+@next alone-guard-catches__3
+::end
+
+::dialogue alone-guard-catches__3
+@cast Дмит | Охранник
+
+Дмит: Да иду я.
+@effect-next flag DMIT_CAUGHT_DURING_EXIT
+@next guard-main-exit
+::end
+
+::dialogue dark-route-together
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Дмит и Вадим сворачивают в тёмный коридор. Через несколько шагов свет с лестничной площадки остаётся позади.
+@next dark-route-together__1
+::end
+
+::dialogue dark-route-together__1
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Не видно вообще ничего.
+@next dark-route-together__2
+::end
+
+::dialogue dark-route-together__2
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Не отходи от стены.
+@next dark-route-together__3
+::end
+
+::dialogue dark-route-together__3
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Ты где?
+@next dark-route-together__4
+::end
+
+::dialogue dark-route-together__4
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Рядом.
+@next dark-route-together__5
+::end
+
+::dialogue dark-route-together__5
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Тогда не дыши мне в ухо.
+@next dark-route-together__6
+::end
+
+::dialogue dark-route-together__6
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Это не я.
+@next dark-route-together__7
+::end
+
+::dialogue dark-route-together__7
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Бля.
+@next dark-route-together-choice
+::end
+
+::choice dark-route-together-choice
+@prompt Как пройти тёмный коридор?
+@cast Дмит | Вадим
+# tone: danger
+
+- Искать аварийные указатели и сквозняк.
+  -> dark-perception-success
+  !-> dark-route-noisy
+
+- Быстро пройти вдоль стены.
+  -> dark-agility-success
+  !-> dark-route-noisy
+
+- Попросить Вадима вести.
+  -> dark-vadim-leads
+
+- Идти вперёд на ощупь.
+  -> dark-route-noisy
+
+::end
+
+::dialogue dark-perception-success
+@cast Дмит | Вадим
+
+Рассказчик: Дмит замечает слабый зелёный отблеск возле пола и чувствует холодный воздух.
+@next dark-perception-success__1
+::end
+
+::dialogue dark-perception-success__1
+@cast Дмит | Вадим
+
+Дмит: Вон там что-то светится.
+@next dark-perception-success__2
+::end
+
+::dialogue dark-perception-success__2
+@cast Дмит | Вадим
+
+Вадим: Указатель выхода.
+@next dark-perception-success__3
+::end
+
+::dialogue dark-perception-success__3
+@cast Дмит | Вадим
+
+Дмит: Я сам понял.
+@next dark-perception-success__4
+::end
+
+::dialogue dark-perception-success__4
+@cast Дмит | Вадим
+
+Вадим: Ты спросил взглядом.
+@next dark-perception-success__5
+::end
+
+::dialogue dark-perception-success__5
+@cast Дмит | Вадим
+
+Рассказчик: За поворотом обнаруживается дверь пожарной лестницы.
+@next dark-fire-exit-together
+::end
+
+::dialogue dark-agility-success
+@cast Дмит | Вадим
+
+Рассказчик: Дмит одной рукой ведёт по стене, другой держит Вадима за рукав.
+@next dark-agility-success__1
+::end
+
+::dialogue dark-agility-success__1
+@cast Дмит | Вадим
+
+Вадим: Можно не тянуть меня так сильно.
+@next dark-agility-success__2
+::end
+
+::dialogue dark-agility-success__2
+@cast Дмит | Вадим
+
+Дмит: Можно отстать и остаться здесь.
+@next dark-agility-success__3
+::end
+
+::dialogue dark-agility-success__3
+@cast Дмит | Вадим
+
+Вадим: Продолжай тянуть.
+@next dark-agility-success__4
+::end
+
+::dialogue dark-agility-success__4
+@cast Дмит | Вадим
+
+Рассказчик: Через несколько секунд они упираются в дверь пожарной лестницы.
+@next dark-fire-exit-together
+::end
+
+::dialogue dark-vadim-leads
+@cast Дмит | Вадим
+
+Дмит: Ты школу лучше знаешь. Веди.
+@next dark-vadim-leads__1
+::end
+
+::dialogue dark-vadim-leads__1
+@cast Дмит | Вадим
+
+Вадим: Только не отпускай плечо.
+@next dark-vadim-leads__2
+::end
+
+::dialogue dark-vadim-leads__2
+@cast Дмит | Вадим
+
+Дмит: Я тебе не Данз.
+@next dark-vadim-leads__3
+::end
+
+::dialogue dark-vadim-leads__3
+@cast Дмит | Вадим
+
+Вадим: Я не понимаю сравнение.
+@next dark-vadim-leads__4
+::end
+
+::dialogue dark-vadim-leads__4
+@cast Дмит | Вадим
+
+Дмит: И хорошо.
+@next dark-vadim-leads__5
+::end
+
+::dialogue dark-vadim-leads__5
+@cast Дмит | Вадим
+
+Рассказчик: Вадим медленно проводит Дмита вдоль стены и находит дверь пожарной лестницы.
+@effect-next relation Вадим 1
+@next dark-fire-exit-together
+::end
+
+::dialogue dark-route-noisy
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Дмит задевает металлический шкаф. По коридору прокатывается громкий грохот.
+@next dark-route-noisy__1
+::end
+
+::dialogue dark-route-noisy__1
+@cast Дмит | Вадим
+# tone: danger
+
+Охранник издалека: СТОЯТЬ!
+@next dark-route-noisy__2
+::end
+
+::dialogue dark-route-noisy__2
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Он ещё далеко.
+@next dark-route-noisy__3
+::end
+
+::dialogue dark-route-noisy__3
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Ты определил это по громкости?
+@next dark-route-noisy__4
+::end
+
+::dialogue dark-route-noisy__4
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Нет. Я надеюсь.
+@next dark-route-noisy__5
+::end
+
+::dialogue dark-route-noisy__5
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Вадим находит ручку пожарной двери и дёргает её на себя.
+@effect-next flag GUARD_HEARD_DARK_EXIT
+@next dark-fire-exit-together
+::end
+
+::dialogue dark-fire-exit-together
+@bg school-backyard-night
+@cast Дмит | Вадим
+@sound-next school-entry-creak
+
+Рассказчик: Пожарная лестница выводит ребят к тяжёлой двери на заднем дворе школы.
+@next dark-fire-exit-together__1
+::end
+
+::dialogue dark-fire-exit-together__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: Она может быть заперта.
+@next dark-fire-exit-together__2
+::end
+
+::dialogue dark-fire-exit-together__2
+@cast Дмит | Вадим
+
+Дмит: Тогда выбьем.
+@next dark-fire-exit-together__3
+::end
+
+::dialogue dark-fire-exit-together__3
+@cast Дмит | Вадим
+
+Вадим: Подожди.
+@next dark-fire-exit-together__4
+::end
+
+::dialogue dark-fire-exit-together__4
+@cast Дмит | Вадим
+
+Рассказчик: Вадим нажимает маленький рычаг возле замка. Дверь открывается.
+@next dark-fire-exit-together__5
+::end
+
+::dialogue dark-fire-exit-together__5
+@cast Дмит | Вадим
+
+Дмит: Я тоже это видел.
+@next dark-fire-exit-together__6
+::end
+
+::dialogue dark-fire-exit-together__6
+@cast Дмит | Вадим
+
+Вадим: Конечно.
+@next dark-fire-exit-together__7
+::end
+
+::dialogue dark-fire-exit-together__7
+@cast Дмит | Вадим
+
+Рассказчик: Они выходят во двор и осторожно закрывают дверь за собой.
+@effect-next flag SCHOOL_EXITED_THROUGH_BACKYARD
+@next dark-exit-consequence-route
+::end
+
+::dialogue dark-route-alone
+@cast Дмит
+# tone: danger
+
+Рассказчик: Дмит сворачивает в тёмный коридор. Через несколько шагов он перестаёт видеть даже собственные руки.
+@next dark-route-alone__1
+::end
+
+::dialogue dark-route-alone__1
+@cast Дмит
+# tone: danger
+
+Дмит: Нормально. Просто прямо.
+@next dark-route-alone__2
+::end
+
+::dialogue dark-route-alone__2
+@cast Дмит
+# tone: danger
+
+Рассказчик: Где-то впереди капает вода. Позади становятся громче шаги охранника.
+@next dark-route-alone-choice
+::end
+
+::choice dark-route-alone-choice
+@prompt Как найти выход в темноте?
+@cast Дмит
+# tone: danger
+
+- Искать зелёный свет и сквозняк.
+  -> dark-alone-success
+  !-> dark-alone-fail
+
+- Быстро двигаться вдоль стены.
+  -> dark-alone-success
+  !-> dark-alone-fail
+
+- Включить фонарик на телефоне.
+  -> dark-alone-phone-light
+
+- Идти на ощупь.
+  -> dark-alone-fail
+
+::end
+
+::dialogue dark-alone-success
+@cast Дмит
+
+Рассказчик: Дмит замечает слабое зелёное свечение возле двери.
+@next dark-alone-success__1
+::end
+
+::dialogue dark-alone-success__1
+@cast Дмит
+
+Дмит: Ага. Попался.
+@next dark-alone-success__2
+::end
+
+::dialogue dark-alone-success__2
+@cast Дмит
+
+Рассказчик: За дверью находится старая пожарная лестница.
+@next dark-fire-exit-alone
+::end
+
+::dialogue dark-alone-phone-light
+@cast Дмит
+
+Рассказчик: Дмит включает фонарик. Узкий луч освещает стену и зелёный указатель выхода.
+@next dark-alone-phone-light__1
+::end
+
+::dialogue dark-alone-phone-light__1
+@cast Дмит
+
+Дмит: Вот и вся ваша темнота.
+@next dark-alone-phone-light__2
+::end
+
+::dialogue dark-alone-phone-light__2
+@cast Дмит
+
+Рассказчик: В этот момент из-за поворота появляется свет фонаря охранника.
+@next dark-alone-phone-light__3
+::end
+
+::dialogue dark-alone-phone-light__3
+@cast Дмит
+
+Охранник: ВИЖУ ТЕБЯ!
+@next dark-alone-phone-light__4
+::end
+
+::dialogue dark-alone-phone-light__4
+@cast Дмит
+
+Дмит: Бля.
+@next dark-alone-phone-light__5
+::end
+
+::dialogue dark-alone-phone-light__5
+@cast Дмит
+
+Рассказчик: Дмит бросается к пожарной двери.
+@effect-next flag GUARD_SAW_DMIT_PHONE_LIGHT
+@next dark-fire-exit-alone
+::end
+
+::dialogue dark-alone-fail
+@cast Дмит
+# tone: danger
+
+Рассказчик: Дмит врезается коленом в низкий шкаф.
+@next dark-alone-fail__1
+::end
+
+::dialogue dark-alone-fail__1
+@cast Дмит
+# tone: danger
+
+Дмит: Сука!
+@next dark-alone-fail__2
+::end
+
+::dialogue dark-alone-fail__2
+@cast Дмит
+# tone: danger
+
+Охранник издалека: ВОТ ТЫ ГДЕ!
+@next dark-alone-fail__3
+::end
+
+::dialogue dark-alone-fail__3
+@cast Дмит
+# tone: danger
+
+Рассказчик: Дмит ощупывает стену и находит холодную металлическую ручку.
+@next dark-alone-fail__4
+::end
+
+::dialogue dark-alone-fail__4
+@cast Дмит
+# tone: danger
+
+Дмит: Давай, открывайся.
+@effect-next flag GUARD_HEARD_DARK_EXIT
+@next dark-fire-exit-alone
+::end
+
+::dialogue dark-fire-exit-alone
+@bg school-backyard-night
+@cast Дмит
+@sound-next school-entry-creak
+
+Рассказчик: Дмит спускается по пожарной лестнице и вываливается на задний двор школы.
+@next dark-fire-exit-alone__1
+::end
+
+::dialogue dark-fire-exit-alone__1
+@bg school-dark-vaz
+@cast Дмит
+
+Рассказчик: За дверью уже слышны шаги охранника.
+@next dark-fire-exit-alone__2
+::end
+
+::dialogue dark-fire-exit-alone__2
+@cast Дмит
+
+Дмит: Поздно.
+@next dark-fire-exit-alone__3
+::end
+
+::dialogue dark-fire-exit-alone__3
+@cast Дмит
+
+Рассказчик: Он закрывает дверь снаружи и отходит к мусорным контейнерам.
+@effect-next flag SCHOOL_EXITED_THROUGH_BACKYARD
+@effect-next flag DMIT_ESCAPED_SCHOOL_ALONE
+@next dark-exit-consequence-route
+::end
+
+::hook main-exit-consequence-route
+@fallback outside-normal
+@continue outside-normal
+::end
+
+::extend main-exit-consequence-route
+@when MAFIA_CONTACT_ALERTED
+@priority 200
+@start main-exit-unknown-car
+::end
+
+::extend main-exit-consequence-route
+@when BUILDER_CAMP_CONNECTION_NOTICED
+@priority 100
+@start outside-builder-talk
+::end
+
+::dialogue main-exit-unknown-car
+@bg school-main-entrance-night
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: На другой стороне дороги стоит чёрная машина с выключенными фарами.
+@next main-exit-unknown-car__1
+::end
+
+::dialogue main-exit-unknown-car__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Она была здесь раньше?
+@next main-exit-unknown-car__2
+::end
+
+::dialogue main-exit-unknown-car__2
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Не помню.
+@next main-exit-unknown-car__3
+::end
+
+::dialogue main-exit-unknown-car__3
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: В салоне загорается экран телефона. Машина медленно трогается с места.
+@next main-exit-unknown-car__4
+::end
+
+::dialogue main-exit-unknown-car__4
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Нам писали не выходить через главный вход.
+@next main-exit-unknown-car__5
+::end
+
+::dialogue main-exit-unknown-car__5
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Теперь понятно почему.
+@effect-next flag UNKNOWN_CAR_SAW_GROUP
+@next outside-friends
+::end
+
+::hook dark-exit-consequence-route
+@fallback outside-normal
+@continue outside-normal
+::end
+
+::extend dark-exit-consequence-route
+@when MAFIA_CONTACT_ALERTED
+@priority 200
+@start dark-exit-unknown-car
+::end
+
+::extend dark-exit-consequence-route
+@when BUILDER_CAMP_CONNECTION_NOTICED
+@priority 100
+@start outside-builder-talk
+::end
+
+::dialogue dark-exit-unknown-car
+@bg school-dark-vaz
+@cast Дмит | Вадим
+# tone: danger
+
+Рассказчик: Через щель между школьными корпусами видны фары машины возле главного входа.
+@next dark-exit-unknown-car__1
+::end
+
+::dialogue dark-exit-unknown-car__1
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Кажется, сообщение было настоящим предупреждением.
+@next dark-exit-unknown-car__2
+::end
+
+::dialogue dark-exit-unknown-car__2
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Или нас специально сюда направили.
+@next dark-exit-unknown-car__3
+::end
+
+::dialogue dark-exit-unknown-car__3
+@cast Дмит | Вадим
+# tone: danger
+
+Вадим: Это менее приятный вариант.
+@next dark-exit-unknown-car__4
+::end
+
+::dialogue dark-exit-unknown-car__4
+@cast Дмит | Вадим
+# tone: danger
+
+Дмит: Поэтому пошли быстрее.
+@effect-next flag UNKNOWN_CAR_DID_NOT_SEE_GROUP
+@next outside-friends
+::end
+
+::dialogue outside-builder-talk
+@bg school-yard-night
+@cast Дмит | Вадим
+
+Рассказчик: Ребята отходят от школы и только тогда замедляют шаг.
+@next outside-builder-talk__1
+::end
+
+::dialogue outside-builder-talk__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: В сообщениях упоминался «Строитель».
+@next outside-builder-talk__2
+::end
+
+::dialogue outside-builder-talk__2
+@cast Дмит | Вадим
+
+Дмит: Я летом еду в лагерь с таким названием.
+@next outside-builder-talk__3
+::end
+
+::dialogue outside-builder-talk__3
+@cast Дмит | Вадим
+
+Вадим: Ты считаешь это совпадением?
+@next outside-builder-talk__4
+::end
+
+::dialogue outside-builder-talk__4
+@cast Дмит | Вадим
+
+Дмит: Пока да.
+@next outside-builder-talk__5
+::end
+
+::dialogue outside-builder-talk__5
+@cast Дмит | Вадим
+
+Вадим: А потом?
+@next outside-builder-talk__6
+::end
+
+::dialogue outside-builder-talk__6
+@cast Дмит | Вадим
+
+Дмит: Потом постараюсь не думать.
+@next outside-builder-talk__7
+::end
+
+::dialogue outside-builder-talk__7
+@cast Дмит | Вадим
+
+Вадим: Это не лучший способ решать проблемы.
+@next outside-builder-talk__8
+::end
+
+::dialogue outside-builder-talk__8
+@cast Дмит | Вадим
+
+Дмит: Зато мой.
+@effect-next flag DMIT_DISCUSSSED_BUILDER_WITH_VADIM
+@next outside-friends
+::end
+
+::dialogue outside-normal
+@bg school-yard-night
+@cast Дмит | Вадим
+
+Рассказчик: Ребята отходят от школы. Ночной воздух после душных коридоров кажется особенно холодным.
+@next outside-normal__1
+::end
+
+::dialogue outside-normal__1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: Мы выбрались.
+@next outside-normal__2
+::end
+
+::dialogue outside-normal__2
+@cast Дмит | Вадим
+
+Дмит: Я же говорил.
+@next outside-normal__3
+::end
+
+::dialogue outside-normal__3
+@cast Дмит | Вадим
+
+Вадим: Ты несколько раз говорил обратное.
+@next outside-normal__4
+::end
+
+::dialogue outside-normal__4
+@cast Дмит | Вадим
+
+Дмит: Главное — последняя версия.
+@next outside-friends
+::end
+
+::hook outside-friends
+@fallback outside-friends-together
+@continue outside-friends-together
+::end
+
+::extend outside-friends
+@when DMIT_RETURNED_FOR_VADIM
+@priority 300
+@start outside-friends-returned
+::end
+
+::extend outside-friends
+@when DMIT_DOUBLE_ABANDONMENT
+@priority 200
+@start outside-friends-alone
+::end
+
+::extend outside-friends
+@when DMIT_ABANDONED_VADIM
+@priority 100
+@start outside-friends-alone
+::end
+
+::dialogue outside-friends-returned
+@bg school-yard-night
+@cast Дмит | Мишган
+
+Рассказчик: За школьным забором ждут Кед, Данз и Мишган.
+@next outside-friends-returned__1
+::end
+
+::dialogue outside-friends-returned__1
+@bg school-dark-vaz
+@cast Дмит | Мишган
+
+Мишган: Уф-уф, бля! Оба вышли!
+@next outside-friends-returned__2
+::end
+
+::dialogue outside-friends-returned__2
+@cast Дмит | Мишган
+
+Кед: Рюкзак забрали?
+@next outside-friends-returned__3
+::end
+
+::dialogue outside-friends-returned__3
+@cast Вадим | Кед
+
+Вадим: Да.
+@next outside-friends-returned__4
+::end
+
+::dialogue outside-friends-returned__4
+@cast Дмит | Мишган
+
+Данз: А компьютеры не вынесли?
+@next outside-friends-returned__5
+::end
+
+::dialogue outside-friends-returned__5
+@cast Дмит | Мишган
+
+Дмит: Нет.
+@next outside-friends-returned__6
+::end
+
+::dialogue outside-friends-returned__6
+@cast Дмит | Мишган
+
+Данз: Зря ходили.
+@next outside-friends-returned__7
+::end
+
+::dialogue outside-friends-returned__7
+@cast Дмит | Мишган
+
+Кед: Данз, заткнись.
+@next outside-friends-returned__8
+::end
+
+::dialogue outside-friends-returned__8
+@cast Дмит | Мишган
+
+Мишган: Дмит обратно за ним вернулся?
+@next outside-friends-returned__9
+::end
+
+::dialogue outside-friends-returned__9
+@cast Дмит | Мишган
+
+Вадим: Вернулся.
+@next outside-friends-returned__10
+::end
+
+::dialogue outside-friends-returned__10
+@cast Дмит | Мишган
+
+Мишган: Обновление работает.
+@next outside-friends-returned__11
+::end
+
+::dialogue outside-friends-returned__11
+@cast Дмит | Мишган
+
+Дмит: Сейчас удалю тебя нахуй.
+@effect-next relation Мишган 1
+@effect-next relation Вадим 1
+@next school-exit-finish
+::end
+
+::dialogue outside-friends-together
+@bg school-yard-night
+@cast Дмит | Кед
+
+Рассказчик: Возле забора ребят встречают Кед, Данз и Мишган.
+@next outside-friends-together__1
+::end
+
+::dialogue outside-friends-together__1
+@bg school-dark-vaz
+@cast Дмит | Кед
+
+Кед: Наконец-то.
+@next outside-friends-together__2
+::end
+
+::dialogue outside-friends-together__2
+@cast Дмит | Кед
+
+Данз: Мы уже думали, вас там в пионеры приняли.
+@next outside-friends-together__3
+::end
+
+::dialogue outside-friends-together__3
+@cast Дмит | Кед
+
+Мишган: Рюкзак у вас?
+@next outside-friends-together__4
+::end
+
+::dialogue outside-friends-together__4
+@cast Вадим | Мишган
+
+Вадим: У нас.
+@next outside-friends-together__5
+::end
+
+::dialogue outside-friends-together__5
+@cast Дмит | Кед
+
+Дмит: Значит, всё нормально.
+@next outside-friends-together__6
+::end
+
+::dialogue outside-friends-together__6
+@cast Дмит | Кед
+
+Вадим: Я бы не использовал слово «нормально».
+@next outside-friends-together__7
+::end
+
+::dialogue outside-friends-together__7
+@cast Дмит | Кед
+
+Дмит: Зато закончилось.
+@next school-exit-finish
+::end
+
+::dialogue outside-friends-alone
+@bg school-yard-night
+@cast Дмит | Кед
+
+Рассказчик: Дмит выходит к остальным один. Рюкзак Вадима остаётся у него на плече.
+@next outside-friends-alone__1
+::end
+
+::dialogue outside-friends-alone__1
+@bg school-dark-vaz
+@cast Дмит | Кед
+
+Кед: А Вадим?
+@next outside-friends-alone__2
+::end
+
+::dialogue outside-friends-alone__2
+@cast Дмит | Кед
+
+Дмит: Охранник его поймал.
+@next outside-friends-alone__3
+::end
+
+::dialogue outside-friends-alone__3
+@cast Дмит | Мишган
+
+Мишган: А ты ушёл?
+@next outside-friends-alone__4
+::end
+
+::dialogue outside-friends-alone__4
+@cast Дмит | Кед
+
+Дмит: Я рюкзак забрал.
+@next outside-friends-alone__5
+::end
+
+::dialogue outside-friends-alone__5
+@cast Дмит | Кед
+
+Мишган: Я не про рюкзак спрашивал.
+@next outside-friends-alone__6
+::end
+
+::dialogue outside-friends-alone__6
+@cast Кед | Данз
+
+Данз: Может, его сейчас отпустят.
+@next outside-friends-alone__7
+::end
+
+::dialogue outside-friends-alone__7
+@cast Дмит | Кед
+
+Кед: А может, родителям позвонят.
+@next outside-friends-alone__8
+::end
+
+::dialogue outside-friends-alone__8
+@cast Дмит | Кед
+
+Дмит: Утром разберёмся.
+@next outside-friends-alone__9
+::end
+
+::dialogue outside-friends-alone__9
+@cast Дмит | Кед
+
+Мишган: Нет, Дмит. Это ты утром разберёшься.
+@effect-next flag FRIENDS_KNOW_DMIT_ABANDONED_VADIM
+@effect-next relation Мишган -2
+@effect-next relation Кед -1
+@next school-exit-finish
+::end
+
+::hook school-exit-finish
+@fallback school-exit-standard-ending
+@continue school-exit-standard-ending
+::end
+
+::extend school-exit-finish
+@when DMIT_DOUBLE_ABANDONMENT
+@priority 500
+@start school-exit-bad-ending
+::end
+
+::extend school-exit-finish
+@when BLACK_PHONE_DESTROYED
+@priority 400
+@start school-exit-standard-ending
+::end
+
+::extend school-exit-finish
+@when BLACK_PHONE_CONFISCATED
+@priority 300
+@start school-exit-standard-ending
+::end
+
+::extend school-exit-finish
+@when BLACK_PHONE_LEFT_AT_SCHOOL
+@priority 200
+@start school-exit-standard-ending
+::end
+
+::extend school-exit-finish
+@when DMIT_HAS_BLACK_PHONE
+@unless BLACK_PHONE_CONFISCATED
+@unless BLACK_PHONE_DESTROYED
+@unless BLACK_PHONE_LEFT_AT_SCHOOL
+@priority 100
+@start school-exit-phone-ending
+::end
+
+::dialogue school-exit-standard-ending
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Рассказчик: Компания покидает территорию школы. Позади остаются тёмные окна, разозлённый охранник и открытая утром дверь кабинета информатики.
+@next school-exit-standard-ending__1
+::end
+
+::dialogue school-exit-standard-ending__1
+@cast Дмит | Вадим
+
+Рассказчик: Рюкзак Вадима найден. Но ночные события ещё обязательно напомнят о себе.
+@effect-next flag SCHOOL_EXIT_STAGE_COMPLETE
+@next small-school-quest-finish
+::end
+
+::dialogue school-exit-phone-ending
+@bg school-dark-vaz
+@cast Дмит | Вадим
+@sound-next black-phone-vibration
+
+Рассказчик: Компания отходит от школы. Чёрный телефон снова коротко вибрирует.
+@next school-exit-phone-ending__1
+::end
+
+::dialogue school-exit-phone-ending__1
+@cast Дмит | Вадим
+
+Дмит: Только не открывай пока.
+@next school-exit-phone-ending__2
+::end
+
+::dialogue school-exit-phone-ending__2
+@cast Дмит | Вадим
+
+Вадим: Почему?
+@next school-exit-phone-ending__3
+::end
+
+::dialogue school-exit-phone-ending__3
+@cast Дмит | Вадим
+
+Дмит: Потому что я сегодня уже достаточно узнал.
+@next school-exit-phone-ending__4
+::end
+
+::dialogue school-exit-phone-ending__4
+@cast Дмит | Вадим
+
+Вадим: Это не значит, что сообщения исчезнут.
+@next school-exit-phone-ending__5
+::end
+
+::dialogue school-exit-phone-ending__5
+@cast Дмит | Вадим
+
+Дмит: Зато хотя бы пять минут будет тихо.
+@effect-next flag SCHOOL_EXIT_STAGE_COMPLETE
+@next small-school-quest-finish
+::end
+
+::dialogue school-exit-bad-ending
+@bg school-dark-vaz
+@cast Дмит | Мишган
+
+Рассказчик: Компания уходит от школы без Вадима. Никто не шутит, даже Данз.
+@next school-exit-bad-ending__1
+::end
+
+::dialogue school-exit-bad-ending__1
+@cast Дмит | Мишган
+
+Мишган: Утром ты к нему пойдёшь.
+@next school-exit-bad-ending__2
+::end
+
+::dialogue school-exit-bad-ending__2
+@cast Дмит | Мишган
+
+Дмит: Посмотрим.
+@next school-exit-bad-ending__3
+::end
+
+::dialogue school-exit-bad-ending__3
+@cast Дмит | Мишган
+
+Мишган: Нет. Пойдёшь.
+@next school-exit-bad-ending__4
+::end
+
+::dialogue school-exit-bad-ending__4
+@cast Дмит | Мишган
+
+Дмит: Ладно.
+@next school-exit-bad-ending__5
+::end
+
+::dialogue school-exit-bad-ending__5
+@cast Дмит | Мишган
+
+Рассказчик: Дмит отвечает слишком быстро. Даже он сам пока не знает, выполнит ли обещание.
+@effect-next flag SCHOOL_EXIT_STAGE_COMPLETE
+@effect-next flag VADIM_REMAINS_WITH_GUARD
+@next small-school-quest-finish
+::end
+
+::dialogue small-school-quest-finish
+@bg school-yard-night
+@cast Дмит | Вадим
+@sound-next quest-complete
+
+Рассказчик: Ночной выход из школы остаётся позади. Рюкзак найден, охранник запомнил лица, а чёрный телефон ещё обязательно напомнит о себе.
+@effect-next experience 12
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+@effect-next flag SCHOOL_EXIT_STAGE_COMPLETE
+@end
+::end

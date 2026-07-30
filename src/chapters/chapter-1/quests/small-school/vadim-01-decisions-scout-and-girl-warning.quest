@@ -1,0 +1,1339 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — РЕШЕНИЕ, РАЗВЕДЧИК МАТВЕЯ И ПРЕДУПРЕЖДЕНИЕ ДЕВУШКИ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue main-choice-option-4-failure
+@cast Дмит | Вадим
+
+Рассказчик: Дмит пытается составить нормальный план звонка учителю, но слова расползаются: получается что-то между официальной просьбой и угрозой районного масштаба.
+@effect-next experience 3
+@effect-next flag VADIM_TEACHER_CALL_FAILED
+@next teacher-call-fail-1
+::end
+
+::choice main-choice
+@bg school-dark-vaz
+@prompt План Вадима звучит одновременно безумно и слишком продуманно для человека, который сидит у забора с застрявшей отвёрткой. Дмит должен решить, что делать дальше.
+@cast Дмит | Вадим
+
+- Ладно. Полезем в школу и заберём твой рюкзак.
+  # short-label: Помочь Вадиму.
+  +experience 8
+  +flag VADIM_HELP_ACCEPTED
+  +trait Ответственность 1
+  +trait Товарищество 1
+  -> accept-help-1
+
+- Это не моя проблема. Сам рюкзак забыл — сам и разбирайся.
+  # short-label: Отказать Вадиму.
+  +flag DMIT_REFUSED_VADIM
+  +relation Кед -1
+  +relation Мишган -1
+  +reputation Авторитет -4
+  +trait Ответственность -1
+  +trait Эмпатия -1
+  -> refuse-1
+
+- Забей на рюкзак. Пошли с нами гулять.
+  # short-label: Забрать гулять.
+  +experience 4
+  +flag VADIM_JOINED_NIGHT_WALK
+  +trait Эмпатия 1
+  +trait Ответственность -1
+  -> night-walk-1
+
+- [Интеллект 5] Сначала позвоним учителю. Может, он ещё не уехал и откроет школу.
+  # short-label: Позвонить учителю.
+  ? Интеллект 5
+  +experience 10
+  +flag VADIM_TEACHER_CALLED_SUCCESS
+  +trait Ответственность 1
+  -> teacher-call-success-1
+  !-> main-choice-option-4-failure
+
+- Починим велосипед и проводим тебя домой.
+  # short-label: Проводить Вадима домой.
+  +experience 4
+  +flag CHAPTER_1_SMALL_SCHOOL_SAFE_HOME_PLAN
+  +trait Эмпатия 1
+  +trait Самообладание 1
+  -> stage-end-home
+
+::end
+
+::dialogue accept-help-1
+@cast Дмит | Вадим
+
+Дмит: Ладно. Полезем в школу и заберём твой рюкзак.
+@next accept-help-2
+::end
+
+::dialogue accept-help-2
+@cast Дмит | Вадим
+
+Вадим: Ты уверен?
+@next accept-help-3
+::end
+
+::dialogue accept-help-3
+@cast Дмит | Вадим
+
+Дмит: Нет.
+@next accept-help-4
+::end
+
+::dialogue accept-help-4
+@cast Дмит | Вадим
+
+Вадим: Тогда почему согласился?
+@next accept-help-5
+::end
+
+::dialogue accept-help-5
+@cast Дмит | Вадим
+
+Дмит: Потому что если ты полезешь один, тебя поймают через две минуты.
+@next accept-help-6
+::end
+
+::dialogue accept-help-6
+@cast Дмит | Вадим
+
+Вадим: Почему через две?
+@next accept-help-7
+::end
+
+::dialogue accept-help-7
+@cast Дмит | Кед
+
+Дмит: Через одну тебе будет обидно.
+@next accept-help-8
+::end
+
+::dialogue accept-help-8
+@cast Кед | Данз
+
+Кед: Я с вами.
+@next accept-help-9
+::end
+
+::dialogue accept-help-9
+@cast Дмит | Данз
+
+Данз: Я тоже.
+@next accept-help-10
+::end
+
+::dialogue accept-help-10
+@cast Дмит | Данз
+
+Дмит: Ты останешься снаружи.
+@next accept-help-11
+::end
+
+::dialogue accept-help-11
+@cast Кед | Данз
+
+Данз: Почему?
+@next accept-help-12
+::end
+
+::dialogue accept-help-12
+@cast Кед | Мишган
+
+Кед: Потому что ты при обычном входе в школу умудряешься что-нибудь сломать.
+@next accept-help-13
+::end
+
+::dialogue accept-help-13
+@cast Мишган | Вадим
+
+Мишган: Я прикрою отход. Уф-уф, бля.
+@next accept-help-14
+::end
+
+::dialogue accept-help-14
+@cast Мишган | Вадим
+
+Вадим: Только без ударов по охраннику.
+@next accept-help-15
+::end
+
+::dialogue accept-help-15
+@cast Мишган | Вадим
+
+Мишган: Посмотрим на его поведение.
+@next accept-help-16
+::end
+
+::dialogue accept-help-16
+@cast Дмит | Вадим
+
+Вадим: Нет. Не посмотрим.
+@next accept-help-17
+::end
+
+::dialogue accept-help-17
+@cast Дмит | Вадим
+
+Дмит: Так. Сначала решаем, как входим.
+@next stage-end-infiltration
+::end
+
+::dialogue refuse-1
+@cast Дмит | Вадим
+
+Дмит: Это не моя проблема. Сам рюкзак забыл — сам и разбирайся.
+@next refuse-2
+::end
+
+::dialogue refuse-2
+@cast Дмит | Вадим
+
+Вадим: Понятно.
+@next refuse-3
+::end
+
+::dialogue refuse-3
+@cast Дмит | Кед
+
+Кед: Дмит.
+@next refuse-4
+::end
+
+::dialogue refuse-4
+@cast Дмит | Кед
+
+Дмит: Чё?
+@next refuse-5
+::end
+
+::dialogue refuse-5
+@cast Дмит | Кед
+
+Кед: Он мелкий.
+@next refuse-6
+::end
+
+::dialogue refuse-6
+@cast Дмит | Мишган
+
+Дмит: И чё? Мы теперь всех по району спасаем?
+@next refuse-7
+::end
+
+::dialogue refuse-7
+@cast Дмит | Мишган
+
+Мишган: Не всех. Только тех, кто рядом.
+@next refuse-8
+::end
+
+::dialogue refuse-8
+@cast Мишган | Вадим
+
+Дмит: Сам помогай.
+@next refuse-9
+::end
+
+::dialogue refuse-9
+@cast Мишган | Вадим
+
+Мишган: Помогу.
+@next refuse-10
+::end
+
+::dialogue refuse-10
+@cast Данз | Вадим
+
+Вадим: Не надо спорить. Я сам.
+@next refuse-11
+::end
+
+::dialogue refuse-11
+@cast Дмит | Вадим
+
+Данз: Ты реально полезешь?
+@next refuse-12
+::end
+
+::dialogue refuse-12
+@cast Дмит | Вадим
+
+Вадим: Да.
+@next refuse-13
+::end
+
+::dialogue refuse-13
+@cast Дмит | Вадим
+
+Дмит: Ну вот. Разобрались.
+@next refuse-14
+::end
+
+::dialogue refuse-14
+@cast Дмит | Вадим
+
+Рассказчик: Вадим отворачивается к велосипеду. Кед и Мишган смотрят на Дмита уже не так весело, как несколько минут назад.
+@next stage-end-refuse
+::end
+
+::dialogue night-walk-1
+@cast Дмит | Вадим
+
+Дмит: Забей на рюкзак. Пошли с нами гулять.
+@next night-walk-2
+::end
+
+::dialogue night-walk-2
+@cast Дмит | Вадим
+
+Вадим: Куда?
+@next night-walk-3
+::end
+
+::dialogue night-walk-3
+@cast Дмит | Вадим
+
+Дмит: По району.
+@next night-walk-4
+::end
+
+::dialogue night-walk-4
+@cast Данз | Вадим
+
+Вадим: Сейчас почти десять.
+@next night-walk-5
+::end
+
+::dialogue night-walk-5
+@cast Данз | Вадим
+
+Данз: Самое время.
+@next night-walk-6
+::end
+
+::dialogue night-walk-6
+@cast Данз | Вадим
+
+Вадим: Для чего?
+@next night-walk-7
+::end
+
+::dialogue night-walk-7
+@cast Кед | Данз
+
+Данз: Для района.
+@next night-walk-8
+::end
+
+::dialogue night-walk-8
+@cast Дмит | Вадим
+
+Кед: Не слушай его.
+@next night-walk-9
+::end
+
+::dialogue night-walk-9
+@cast Дмит | Вадим
+
+Вадим: А документы?
+@next night-walk-10
+::end
+
+::dialogue night-walk-10
+@cast Дмит | Вадим
+
+Дмит: Утром заберёшь.
+@next night-walk-11
+::end
+
+::dialogue night-walk-11
+@cast Дмит | Вадим
+
+Вадим: Я объяснил, почему не смогу.
+@next night-walk-12
+::end
+
+::dialogue night-walk-12
+@cast Дмит | Вадим
+
+Дмит: Ну один раз олимпиаду пропустишь.
+@next night-walk-13
+::end
+
+::dialogue night-walk-13
+@cast Данз | Вадим
+
+Вадим: Я готовился три месяца.
+@next night-walk-14
+::end
+
+::dialogue night-walk-14
+@cast Данз | Вадим
+
+Данз: Я к выборам мэра тоже долго готовился.
+@next night-walk-15
+::end
+
+::dialogue night-walk-15
+@cast Данз | Вадим
+
+Вадим: Ты подкупил игроков.
+@next night-walk-16
+::end
+
+::dialogue night-walk-16
+@cast Дмит | Вадим
+
+Данз: Это политика.
+@next night-walk-17
+::end
+
+::dialogue night-walk-17
+@cast Дмит | Вадим
+
+Дмит: Короче, решай. Один здесь останешься или с нами пойдёшь.
+@next night-walk-18
+::end
+
+::dialogue night-walk-18
+@cast Дмит | Вадим
+
+Рассказчик: Вадим смотрит на тёмную школу, сломанный велосипед и компанию старших ребят.
+@next night-walk-19
+::end
+
+::dialogue night-walk-19
+@cast Дмит | Вадим
+
+Вадим: Только ненадолго.
+@next night-walk-20
+::end
+
+::dialogue night-walk-20
+@cast Дмит | Вадим
+
+Дмит: Конечно.
+@next night-walk-21
+::end
+
+::dialogue night-walk-21
+@cast Дмит | Вадим
+
+Рассказчик: Вадим делает шаг за компанией. Школа остаётся за спиной, но рюкзак всё ещё лежит внутри, как маленькая мина замедленного действия.
+@next stage-end-walk
+::end
+
+::dialogue teacher-call-success-1
+@bg school-main-entrance-night
+@cast Дмит | Вадим
+
+Рассказчик: Учитель неожиданно отвечает. Голос сонный, злой, но живой. Вадим быстро объясняет ситуацию, а Дмит впервые за вечер молчит так полезно, что это почти взрослая позиция.
+@next teacher-call-success-2
+::end
+
+::dialogue teacher-call-success-2
+@cast Дмит | Вадим
+
+Вадим: Он сказал, что подъедет к школе через двадцать минут.
+@next teacher-call-success-3
+::end
+
+::dialogue teacher-call-success-3
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Вот. Законно, скучно, зато без забора.
+@next stage-end-teacher
+::end
+
+::dialogue teacher-call-fail-1
+@bg school-main-entrance-night
+@cast Дмит | Вадим
+
+Вадим: Учитель не отвечает.
+@next teacher-call-fail-2
+::end
+
+::dialogue teacher-call-fail-2
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Значит, законный путь умер первым.
+@next main-choice
+::end
+
+::dialogue bike-sabotage-sidequest-1
+@cast Дмит | Вадим
+
+Дмит: Сначала разберёмся, кто трогал твой велосипед.
+@next bike-sabotage-sidequest-2
+::end
+
+::dialogue bike-sabotage-sidequest-2
+@cast Дмит | Вадим
+
+Вадим: Ты думаешь, это важно?
+@next bike-sabotage-sidequest-3
+::end
+
+::dialogue bike-sabotage-sidequest-3
+@cast Кед | Вадим
+
+Дмит: Если кто-то сорвал цепь специально, он мог ждать, что ты вернёшься к школе.
+@next bike-sabotage-sidequest-4
+::end
+
+::dialogue bike-sabotage-sidequest-4
+@cast Кед | Вадим
+
+Кед: И вот это уже пахнет не велосипедом, а засадой.
+@next stage-end-sabotage
+::end
+
+::dialogue stage-end-infiltration
+@cast Дмит | Вадим
+
+Рассказчик: Компания подходит ближе к школе. Теперь это уже не разговор у забора, а почти план — просто пока без той части, где кто-нибудь понимает, что делает.
+@effect-next experience 5
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_PLAN_CREATED
+@next infiltration-1
+::end
+
+::dialogue entry-neutral-smart-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Ты умный — ты и говори, куда лезть.
+@next entry-neutral-smart-2
+::end
+
+::dialogue entry-neutral-smart-2
+@cast Дмит | Вадим
+
+Вадим: Умный человек предложил бы пойти домой.
+@next entry-neutral-smart-3
+::end
+
+::dialogue entry-neutral-smart-3
+@cast Дмит | Вадим
+
+Дмит: Не настолько умный.
+@next entry-neutral-smart-4
+::end
+
+::dialogue entry-neutral-smart-4
+@cast Мишган | Вадим
+
+Вадим: Тогда окно раздевалки.
+@next entry-neutral-smart-5
+::end
+
+::dialogue entry-neutral-smart-5
+@cast Дмит | Вадим
+
+Мишган: Хорошая корректировка плана.
+@next risk-route
+::end
+
+::dialogue entry-neutral-fast-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Без лекций. Покажи самый быстрый вход.
+@next entry-neutral-fast-2
+::end
+
+::dialogue entry-neutral-fast-2
+@cast Дмит | Вадим
+
+Вадим: Самый быстрый не обязательно самый безопасный.
+@next entry-neutral-fast-3
+::end
+
+::dialogue entry-neutral-fast-3
+@cast Дмит | Вадим
+
+Дмит: Вадим.
+@next entry-neutral-fast-4
+::end
+
+::dialogue entry-neutral-fast-4
+@cast Данз | Вадим
+
+Вадим: Хорошо. Самый быстрый — через окно раздевалки.
+@next entry-neutral-fast-5
+::end
+
+::dialogue entry-neutral-fast-5
+@cast Дмит | Вадим
+
+Данз: Вот. Мог же коротко.
+@next risk-route
+::end
+
+::dialogue entry-neutral-older-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Сейчас сами разберёмся. Мы тут старшие.
+@next entry-neutral-older-2
+::end
+
+::dialogue entry-neutral-older-2
+@cast Дмит | Вадим
+
+Вадим: Возраст не гарантирует правильных решений.
+@next entry-neutral-older-3
+::end
+
+::dialogue entry-neutral-older-3
+@cast Дмит | Кед
+
+Дмит: Зато даёт право уверенно ошибаться.
+@next entry-neutral-older-4
+::end
+
+::dialogue entry-neutral-older-4
+@cast Кед | Вадим
+
+Кед: Сильная взрослая позиция.
+@next entry-neutral-older-5
+::end
+
+::dialogue entry-neutral-older-5
+@cast Дмит | Вадим
+
+Вадим: Я начинаю беспокоиться.
+@next risk-route
+::end
+
+::dialogue entry-neutral-calm-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Дмит: Давайте сначала спокойно всё проверим.
+@next entry-neutral-calm-2
+::end
+
+::dialogue entry-neutral-calm-2
+@cast Дмит | Данз
+
+Вадим: Это разумно.
+@next entry-neutral-calm-3
+::end
+
+::dialogue entry-neutral-calm-3
+@cast Дмит | Данз
+
+Данз: Дмит, ты точно пил?
+@next entry-neutral-calm-4
+::end
+
+::dialogue entry-neutral-calm-4
+@cast Дмит | Кед
+
+Дмит: Ещё слово — будешь проверять забор головой.
+@next entry-neutral-calm-5
+::end
+
+::dialogue entry-neutral-calm-5
+@cast Дмит | Вадим
+
+Кед: Всё, снова он.
+@next risk-route
+::end
+
+::dialogue risk-route
+@cast Дмит | Вадим
+
+Рассказчик: Компания замирает у школьной территории и ещё раз осматривается.
+@next risk-route-route-hook
+::end
+
+::hook risk-route-route-hook
+@fallback entry-main-talk-1
+@continue entry-main-talk-1
+::end
+
+::extend risk-route-route-hook
+@when MATVEY_CREW_MAY_FIND_SCHOOL
+@priority 200
+@start matvey-scout-1
+::end
+
+::extend risk-route-route-hook
+@when UNKNOWN_GIRL_INTEREST
+@priority 100
+@start unknown-phone-1
+::end
+
+::dialogue matvey-scout-1
+@bg school-dark-vaz
+@cast Дмит | Кед
+
+Рассказчик: На другой стороне дороги появляется силуэт. Парень останавливается возле автобусной остановки и некоторое время смотрит в сторону школы.
+@next matvey-scout-2
+::end
+
+::dialogue matvey-scout-2
+@cast Дмит | Кед
+
+Кед: Вон тот на нас смотрит.
+@next matvey-scout-3
+::end
+
+::dialogue matvey-scout-3
+@cast Дмит | Кед
+
+Дмит: Который?
+@next matvey-scout-4
+::end
+
+::dialogue matvey-scout-4
+@cast Кед | Мишган
+
+Кед: У остановки.
+@next matvey-scout-5
+::end
+
+::dialogue matvey-scout-5
+@cast Дмит | Мишган
+
+Мишган: Он был с Матвеем.
+@next matvey-scout-6
+::end
+
+::dialogue matvey-scout-6
+@cast Дмит | Мишган
+
+Дмит: Точно?
+@next matvey-scout-7
+::end
+
+::dialogue matvey-scout-7
+@cast Данз | Мишган
+
+Мишган: Я лица противников запоминаю.
+@next matvey-scout-8
+::end
+
+::dialogue matvey-scout-8
+@cast Данз | Мишган
+
+Данз: А девушек?
+@next matvey-scout-9
+::end
+
+::dialogue matvey-scout-9
+@cast Данз | Мишган
+
+Мишган: Тоже.
+@next matvey-scout-10
+::end
+
+::dialogue matvey-scout-10
+@cast Данз | Вадим
+
+Данз: Это уже не бокс.
+@next matvey-scout-11
+::end
+
+::dialogue matvey-scout-11
+@cast Дмит | Вадим
+
+Вадим: Он достал телефон.
+@next matvey-scout-12
+::end
+
+::dialogue matvey-scout-12
+@cast Дмит | Вадим
+
+Дмит: Может, просто кому-то звонит.
+@next matvey-scout-13
+::end
+
+::dialogue matvey-scout-13
+@cast Данз | Вадим
+
+Вадим: Он направил камеру на школу.
+@next matvey-scout-14
+::end
+
+::dialogue matvey-scout-14
+@cast Кед | Данз
+
+Данз: Может, фотографирует архитектуру.
+@next matvey-scout-15
+::end
+
+::dialogue matvey-scout-15
+@cast Кед | Данз
+
+Кед: Ночью?
+@next matvey-scout-16
+::end
+
+::dialogue matvey-scout-16
+@cast Мишган | Данз
+
+Данз: Творческие люди странные.
+@next matvey-scout-17
+::end
+
+::dialogue matvey-scout-17
+@cast Дмит | Мишган
+
+Мишган: Это разведчик, бля.
+@next matvey-scout-18
+::end
+
+::dialogue matvey-scout-18
+@cast Дмит | Вадим
+
+Дмит: Пусть смотрит.
+@next matvey-scout-19
+::end
+
+::dialogue matvey-scout-19
+@cast Дмит | Вадим
+
+Вадим: Если он сообщит охраннику, что мы собираемся проникнуть в школу, тот будет смотреть внимательнее.
+@next matvey-scout-20
+::end
+
+::dialogue matvey-scout-20
+@cast Дмит | Вадим
+
+Дмит: Тогда заходим быстрее.
+@next matvey-scout-21
+::end
+
+::dialogue matvey-scout-21
+@cast Дмит | Вадим
+
+Вадим: Это не решает проблему.
+@next matvey-scout-22
+::end
+
+::dialogue matvey-scout-22
+@cast Дмит | Вадим
+
+Дмит: Зато звучит как план.
+@next matvey-scout-23
+::end
+
+::dialogue matvey-scout-23
+@cast Дмит | Вадим
+
+Рассказчик: Парень что-то говорит по телефону, после чего медленно уходит за остановку.
+@effect-next flag MATVEY_SCOUT_SAW_GROUP
+@next after-scout-route
+::end
+
+::dialogue after-scout-route
+@cast Дмит | Вадим
+
+Рассказчик: После силуэта у остановки школьный двор кажется ещё тише.
+@next after-scout-route-route-hook
+::end
+
+::hook after-scout-route-route-hook
+@fallback entry-main-talk-1
+@continue entry-main-talk-1
+::end
+
+::extend after-scout-route-route-hook
+@when UNKNOWN_GIRL_INTEREST
+@priority 100
+@start unknown-phone-1
+::end
+
+::phone unknown-phone-1
+@bg school-dark-vaz
+@cast Дмит
+@contact Неизвестный номер
+@time 21:54
+@notify phone-vibrate
+
+???: Матвей ищет вас. Один из его друзей пошёл к школе.
+@next unknown-after-1
+::end
+
+::dialogue unknown-after-1
+@cast Дмит | Кед
+
+Дмит: Охуеть.
+@next unknown-after-2
+::end
+
+::dialogue unknown-after-2
+@cast Дмит | Кед
+
+Кед: Чё там?
+@next unknown-after-3
+::end
+
+::dialogue unknown-after-3
+@cast Дмит | Данз
+
+Дмит: Девчонка с Миньки.
+@next unknown-after-4
+::end
+
+::dialogue unknown-after-4
+@cast Дмит | Данз
+
+Данз: Она уже пишет?!
+@next unknown-after-5
+::end
+
+::dialogue unknown-after-5
+@cast Дмит | Данз
+
+Дмит: Не ори.
+@next unknown-after-6
+::end
+
+::dialogue unknown-after-6
+@cast Дмит | Данз
+
+Данз: А чё она написала?
+@next unknown-after-7
+::end
+
+::dialogue unknown-after-7
+@cast Дмит | Мишган
+
+Дмит: Матвей нас ищет.
+@next unknown-after-8
+::end
+
+::dialogue unknown-after-8
+@cast Дмит | Мишган
+
+Мишган: А про меня что-нибудь?
+@next unknown-after-9
+::end
+
+::dialogue unknown-after-9
+@cast Дмит | Мишган
+
+Дмит: Нет.
+@next unknown-after-10
+::end
+
+::dialogue unknown-after-10
+@cast Мишган | Вадим
+
+Мишган: Странно. Я там лучше всех работал.
+@next unknown-after-11
+::end
+
+::dialogue unknown-after-11
+@cast Кед | Вадим
+
+Вадим: Почему Матвей вас ищет?
+@next unknown-after-12
+::end
+
+::dialogue unknown-after-12
+@cast Данз | Вадим
+
+Кед: У них был конфликт.
+@next unknown-after-13
+::end
+
+::dialogue unknown-after-13
+@cast Дмит | Данз
+
+Данз: Территориальный спор между двумя влиятельными группировками.
+@next unknown-after-14
+::end
+
+::dialogue unknown-after-14
+@cast Мишган | Вадим
+
+Дмит: Не слушай его.
+@next unknown-after-15
+::end
+
+::dialogue unknown-after-15
+@cast Мишган | Вадим
+
+Вадим: Кто победил?
+@next unknown-after-16
+::end
+
+::dialogue unknown-after-16
+@cast Кед | Вадим
+
+Мишган: Мы.
+@next unknown-after-17
+::end
+
+::dialogue unknown-after-17
+@cast Дмит | Вадим
+
+Кед: Смотря какой исход считать победой.
+@next unknown-after-18
+::end
+
+::dialogue unknown-after-18
+@cast Дмит | Вадим
+
+Дмит: Короче, за нами могут прийти.
+@next unknown-after-19
+::end
+
+::dialogue unknown-after-19
+@cast Дмит | Вадим
+
+Вадим: Тогда нам точно не стоит стоять возле главного входа.
+@next unknown-after-20
+::end
+
+::dialogue unknown-after-20
+@cast Дмит
+
+Рассказчик: Дмит быстро печатает ответ.
+@next unknown-phone-2
+::end
+
+::phone unknown-phone-2
+@cast Дмит
+@contact Неизвестный номер
+@time 21:55
+
+Дмит: Спасибо. Ты где?
+@next unknown-phone-3
+::end
+
+::phone unknown-phone-3
+@cast Дмит
+@contact Неизвестный номер
+@time 21:55
+
+???: Неважно. Не стойте у главного входа.
+@next unknown-phone-4
+::end
+
+::phone unknown-phone-4
+@cast Дмит
+@contact Неизвестный номер
+@time 21:55
+
+Дмит: Почему?
+@next unknown-phone-read
+::end
+
+::phone unknown-phone-read
+@cast Дмит
+@contact Неизвестный номер
+@time 21:55
+
+Рассказчик: Сообщение прочитано, но девушка больше не отвечает.
+@next unknown-after-21
+::end
+
+::dialogue unknown-after-21
+@cast Данз | Мишган
+
+Данз: Таинственная.
+@next unknown-after-22
+::end
+
+::dialogue unknown-after-22
+@cast Кед | Мишган
+
+Мишган: Работает из тени.
+@next unknown-after-23
+::end
+
+::dialogue unknown-after-23
+@cast Дмит | Кед
+
+Кед: Или просто не хочет с Дмитом разговаривать.
+@next unknown-after-24
+::end
+
+::dialogue unknown-after-24
+@cast Дмит | Вадим
+
+Дмит: Завали.
+@effect-next flag GIRL_WARNED_ABOUT_MATVEY
+@next entry-main-talk-1
+::end
+
+::dialogue entry-main-talk-1
+@bg school-dark-vaz
+@cast Дмит | Вадим
+
+Вадим: Главный вход закрыт. Охранник находится возле вахты.
+@next entry-main-talk-2
+::end
+
+::dialogue entry-main-talk-2
+@cast Дмит | Кед
+
+Дмит: Можно с ним поговорить.
+@next entry-main-talk-3
+::end
+
+::dialogue entry-main-talk-3
+@cast Кед | Мишган
+
+Кед: Можно не разговаривать и залезть с другой стороны.
+@next entry-main-talk-4
+::end
+
+::dialogue entry-main-talk-4
+@cast Мишган | Вадим
+
+Мишган: Можно вызвать его на честный поединок.
+@next entry-main-talk-5
+::end
+
+::dialogue entry-main-talk-5
+@cast Мишган | Вадим
+
+Вадим: Нельзя.
+@next entry-main-talk-6
+::end
+
+::dialogue entry-main-talk-6
+@cast Мишган | Вадим
+
+Мишган: Почему?
+@next entry-main-talk-7
+::end
+
+::dialogue entry-main-talk-7
+@cast Данз | Вадим
+
+Вадим: Потому что нам нужен рюкзак, а не новый разговор с директором.
+@next entry-main-talk-8
+::end
+
+::dialogue entry-main-talk-8
+@cast Данз | Вадим
+
+Данз: Я могу отвлечь охранника.
+@next entry-main-talk-9
+::end
+
+::dialogue entry-main-talk-9
+@cast Кед | Данз
+
+Рассказчик: Все: Нет.
+@next entry-main-talk-10
+::end
+
+::dialogue entry-main-talk-10
+@cast Кед | Данз
+
+Данз: Вы даже не знаете как.
+@next entry-main-talk-11
+::end
+
+::dialogue entry-main-talk-11
+@cast Кед | Данз
+
+Кед: Именно поэтому нет.
+@next entry-main-talk-12
+::end
+
+::dialogue entry-main-talk-12
+@cast Дмит | Данз
+
+Данз: Я мог бы притвориться потерявшимся ребёнком.
+@next entry-main-talk-13
+::end
+
+::dialogue entry-main-talk-13
+@cast Дмит | Данз
+
+Дмит: Ты выше половины учителей.
+@next entry-main-talk-14
+::end
+
+::dialogue entry-main-talk-14
+@cast Дмит | Вадим
+
+Данз: Поздно развился.
+@next pre-entry-choice
+::end
+
+::choice pre-entry-choice
+@prompt Перед главным решением Дмит может раздать роли. Или хотя бы попытаться сделать вид, что роли тут вообще есть.
+@cast Дмит | Вадим
+
+- Данз, твоя задача — вообще ничего не делать.
+  # short-label: Данз ничего не делает.
+  -> pre-entry-danz-1
+
+- Кед, следи за Данзом. Это важнее охранника.
+  # short-label: Кед следит за Данзом.
+  -> pre-entry-ked-1
+
+- Мишган, руками никого не трогаем.
+  # short-label: Мишган без ударов.
+  -> pre-entry-mishgan-1
+
+- Вадим, последний шанс передумать.
+  # short-label: Последний шанс Вадиму.
+  -> pre-entry-vadim-1
+
+::end
+
+::dialogue pre-entry-danz-1
+@cast Дмит | Данз
+
+Дмит: Данз, твоя задача — вообще ничего не делать.
+@next pre-entry-danz-2
+::end
+
+::dialogue pre-entry-danz-2
+@cast Кед | Данз
+
+Данз: Я умею.
+@next pre-entry-danz-3
+::end
+
+::dialogue pre-entry-danz-3
+@cast Кед | Данз
+
+Кед: Нет.
+@next pre-entry-danz-4
+::end
+
+::dialogue pre-entry-danz-4
+@cast Данз | Вадим
+
+Данз: Я каждый урок так делаю.
+@next pre-entry-danz-5
+::end
+
+::dialogue pre-entry-danz-5
+@cast Дмит | Вадим
+
+Вадим: Это правда.
+@next entry-choice
+::end
+
+::dialogue pre-entry-ked-1
+@cast Кед | Данз
+
+Дмит: Кед, следи за Данзом. Это важнее охранника.
+@next pre-entry-ked-2
+::end
+
+::dialogue pre-entry-ked-2
+@cast Кед | Данз
+
+Кед: Я не нянька.
+@next pre-entry-ked-3
+::end
+
+::dialogue pre-entry-ked-3
+@cast Кед | Данз
+
+Данз: А на руках понесёшь?
+@next pre-entry-ked-4
+::end
+
+::dialogue pre-entry-ked-4
+@cast Дмит | Вадим
+
+Кед: Могу. До мусорки.
+@next entry-choice
+::end
+
+::dialogue pre-entry-mishgan-1
+@cast Дмит | Мишган
+
+Дмит: Мишган, руками никого не трогаем.
+@next pre-entry-mishgan-2
+::end
+
+::dialogue pre-entry-mishgan-2
+@cast Дмит | Мишган
+
+Мишган: А если он первый?
+@next pre-entry-mishgan-3
+::end
+
+::dialogue pre-entry-mishgan-3
+@cast Мишган | Вадим
+
+Дмит: Тоже.
+@next pre-entry-mishgan-4
+::end
+
+::dialogue pre-entry-mishgan-4
+@cast Мишган | Вадим
+
+Мишган: Сложные правила.
+@next pre-entry-mishgan-5
+::end
+
+::dialogue pre-entry-mishgan-5
+@cast Дмит | Вадим
+
+Вадим: На самом деле довольно простые.
+@next entry-choice
+::end
+
+::dialogue pre-entry-vadim-1
+@cast Дмит | Вадим
+
+Дмит: Вадим, последний шанс передумать.
+@next pre-entry-vadim-2
+::end
+
+::dialogue pre-entry-vadim-2
+@cast Дмит | Вадим
+
+Вадим: Я уже сорок минут пытаюсь попасть внутрь.
+@next pre-entry-vadim-3
+::end
+
+::dialogue pre-entry-vadim-3
+@cast Дмит | Вадим
+
+Дмит: Это не ответ.
+@next pre-entry-vadim-4
+::end
+
+::dialogue pre-entry-vadim-4
+@cast Дмит | Вадим
+
+Вадим: Не передумал.
+@next pre-entry-vadim-5
+::end
+
+::dialogue pre-entry-vadim-5
+@cast Дмит | Вадим
+
+Дмит: Ну тогда погнали.
+@next entry-choice
+::end
+
+::extend-choice main-choice
+@when VADIM_BIKE_SABOTAGE_NOTICED
+@position 5
+
+- [Внимательность 4] Сначала разберёмся, кто трогал твой велосипед.
+  # short-label: Проверить саботаж велосипеда.
+  ? Внимательность 4
+  +experience 6
+  +flag VADIM_CHAIN_SIDEQUEST_STARTED
+  +trait Хитрость 1
+  -> bike-sabotage-sidequest-1
+
+::end

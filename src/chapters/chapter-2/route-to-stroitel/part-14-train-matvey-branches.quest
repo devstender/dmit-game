@@ -1,0 +1,297 @@
+# ГЛАВА 2 — «ПУТЁВКА»
+# PART 14 — УСЛОВНЫЕ ВЕТКИ КОНФЛИКТА С МАТВЕЕМ
+#
+# Подключать после:
+# part-14-train-matvey-main.quest
+#
+# Учитываются:
+# - исход конфликта на Миньке;
+# - Самообладание;
+# - перк «Железный хребет»;
+# - разные реакции Даши на результат.
+
+
+# =========================================================
+# ИСТОРИЯ КОНФЛИКТА НА МИНЬКЕ
+# =========================================================
+
+::extend train-matvey-history-hook
+@when-any CHAPTER_1_MATVEY_DEFEATED MATVEY_DEFEATED
+@priority 200
+@start train-matvey-history-defeated
+::end
+
+
+::extend train-matvey-history-hook
+@when-any CHAPTER_1_MATVEY_HUMILIATED_DMIT MATVEY_HUMILIATED_DMIT
+@priority 100
+@start train-matvey-history-humiliated-dmit
+::end
+
+
+::dialogue train-matvey-history-defeated
+@cast Дмит | Матвей | Даша | Мишган
+
+Матвей: Думаешь, если на Миньке толпой полезли, ты теперь крутой?
+
+Дмит: Ты сам не один был.
+
+Матвей: Тогда тебе просто повезло.
+
+Мишган: Уф-уф. Победа решением судей не отменяется.
+
+Матвей: Завали ебало.
+
+@next train-matvey-choice
+::end
+
+
+::dialogue train-matvey-history-humiliated-dmit
+@cast Дмит | Матвей | Даша
+
+Матвей: Чё, Дмит? Здесь тоже скажешь, что Минька моя?
+
+Рассказчик: Даша посмотрела на Дмита внимательнее.
+
+Дмит: Ты ради этого через весь поезд припёрся, ебанат?
+
+Матвей: Хотел проверить, не забыл ли ты своё место.
+
+Дмит: Своё сначала найди.
+
+@next train-matvey-choice
+::end
+# =========================================================
+# ВЫСОКОЕ САМООБЛАДАНИЕ
+# =========================================================
+
+::extend-choice train-matvey-choice
+@when-trait Самообладание 3
+@position 2
+
+- Не вставать и спокойно сказать Матвею идти дальше.
+  -> train-matvey-calm-boundary
+
+::end
+
+
+::dialogue train-matvey-calm-boundary
+@cast Дмит | Матвей | Даша | Мишган | Ваня Ильичёв
+
+Рассказчик: Дмит остался сидеть и посмотрел Матвею прямо в глаза.
+
+Дмит: Мне с тобой сейчас не о чем разговаривать. Иди уже.
+
+Матвей: Чё, боишься встать?
+
+Дмит: Нет. Просто ты пришёл устраивать ебаный цирк, а я не обязан в нём участвовать.
+
+Рассказчик: Матвей ждал злости, оправданий или попытки полезть в драку. Спокойный ответ сбил его сильнее.
+
+Матвей: Да больно надо.
+
+Даша: Вот и пойдём.
+
+Рассказчик: Матвей отвернулся первым.
+
+@effect-next flag CHAPTER_2_DMIT_KEPT_CONTROL_WITH_MATVEY
+@effect-next trait Самообладание 2
+@effect-next trait Смелость 1
+@effect-next trait Авторитет 1
+@effect-next relation Даша 2
+@next train-matvey-outcome-hook
+::end
+# =========================================================
+# ПЕРК «ЖЕЛЕЗНЫЙ ХРЕБЕТ»
+# =========================================================
+
+::extend-choice train-matvey-choice
+@when PERK_BACKBONE
+@position 1
+
+- Не вставать. Спокойно предложить Матвею сказать всё прямо.
+  ? Характер 4
+  -> train-matvey-backbone-success
+  !-> train-matvey-backbone-fail
+
+::end
+
+
+::dialogue train-matvey-backbone-success
+@cast Дмит | Матвей | Даша | Мишган | Ваня Ильичёв
+
+Рассказчик: Дмит не встал и не отвёл взгляд.
+
+Дмит: Ты сюда припёрся — говори прямо. Чё тебе, бля, надо?
+
+Матвей: Думаешь, самый уверенный?
+
+Дмит: Я думаю, ты уже третий раз начинаешь и никак не скажешь.
+
+Рассказчик: Матвей сжал челюсть. Теперь именно он выглядел человеком, который не подготовил ответ.
+
+Даша: Всё?
+
+Матвей: С ним всё давно понятно.
+
+Дмит: Тогда мог не приходить и не выёбываться.
+
+@effect-next flag CHAPTER_2_MATVEY_HUMILIATED_ON_TRAIN
+@effect-next flag CAMP_REPUTATION_DMIT_STRONG
+@effect-next flag PERK_BACKBONE_USED_ON_TRAIN
+@effect-next trait Смелость 2
+@effect-next trait Самообладание 2
+@effect-next trait Авторитет 2
+@effect-next relation Даша 2
+@next train-matvey-outcome-hook
+::end
+::dialogue train-matvey-backbone-fail
+@cast Дмит | Матвей | Даша | Мишган | Ваня Ильичёв
+
+Дмит: Говори прямо. Чё надо?
+
+Матвей: Хочу понять, почему ты опять строишь из себя кого-то.
+
+Дмит: Я не строю.
+
+Матвей: Вот и сиди тогда тихо.
+
+Рассказчик: Дмит не нашёлся с ответом, но и не вскочил на провокацию.
+
+Рассказчик: Матвей остался доволен собой, однако ударить Дмита или окончательно выставить его трусом не смог.
+
+Даша: Всё, Матвей. Пошли.
+
+@effect-next flag CHAPTER_2_BACKBONE_CHECK_FAILED_WITHOUT_HIT
+@effect-next flag PERK_BACKBONE_USED_ON_TRAIN
+@effect-next trait Смелость 1
+@effect-next trait Самообладание 1
+@effect-next trait Авторитет -1
+@next train-matvey-outcome-hook
+::end
+
+
+# =========================================================
+# РЕАКЦИИ ДАШИ НА РЕЗУЛЬТАТ
+# =========================================================
+
+::extend train-matvey-outcome-hook
+@when CHAPTER_2_DMIT_KEPT_CONTROL_WITH_MATVEY
+@priority 500
+@start train-dasha-reaction-calm
+::end
+
+
+::extend train-matvey-outcome-hook
+@when CHAPTER_2_MATVEY_HUMILIATED_ON_TRAIN
+@priority 400
+@start train-dasha-reaction-strong
+::end
+
+
+::extend train-matvey-outcome-hook
+@when CHAPTER_2_DMIT_JOKED_OFF_MATVEY
+@priority 300
+@start train-dasha-reaction-joke
+::end
+
+
+::extend train-matvey-outcome-hook
+@when CHAPTER_2_MATVEY_HIT_DMIT_ON_TRAIN
+@priority 200
+@start train-dasha-reaction-defeat
+::end
+
+
+::extend train-matvey-outcome-hook
+@when-any CHAPTER_2_DMIT_IGNORED_MATVEY CHAPTER_2_DMIT_HID_BEHIND_MISHGAN CHAPTER_2_DMIT_FAILED_TO_JOKE_OFF_MATVEY
+@priority 100
+@start train-dasha-reaction-weak
+::end
+
+
+::dialogue train-dasha-reaction-calm
+@cast Дмит | Даша | Матвей
+
+Даша: Нормально ты его.
+
+Дмит: Я ничего не сделал.
+
+Даша: Вот именно.
+
+Матвей: Даш, ты идёшь?
+
+Даша: Иду.
+
+@next train-matvey-kopyar-observation
+::end
+
+
+::dialogue train-dasha-reaction-strong
+@cast Дмит | Даша | Матвей
+
+Даша: Ты всегда так разговариваешь?
+
+Дмит: Только когда ко мне приходят специально.
+
+Даша: Понятно.
+
+Матвей: Даша.
+
+Даша: Сейчас.
+
+Рассказчик: Она задержалась ещё на секунду, после чего пошла за Матвеем.
+
+@next train-matvey-kopyar-observation
+::end
+
+
+::dialogue train-dasha-reaction-joke
+@cast Дмит | Даша | Матвей
+
+Даша: Ты его сейчас специально ещё сильнее разозлил?
+
+Дмит: Я пытался сделать поездку веселее.
+
+Даша: Получилось.
+
+Матвей: Очень смешно.
+
+Даша: Я не тебе сказала.
+
+@next train-matvey-kopyar-observation
+::end
+
+
+::dialogue train-dasha-reaction-defeat
+@cast Дмит | Даша | Матвей
+
+Даша: Не надо было на него вестись.
+
+Дмит: Я не вёлся.
+
+Даша: Со стороны было похоже.
+
+Матвей: Пойдём уже.
+
+Даша: Иду.
+
+@next train-matvey-kopyar-observation
+::end
+
+
+::dialogue train-dasha-reaction-weak
+@cast Дмит | Даша | Матвей
+
+Даша: Ты мог хотя бы сам ему ответить.
+
+Дмит: Мог.
+
+Даша: Ну вот.
+
+Матвей: Всё, пошли.
+
+Рассказчик: Даша ничего больше не сказала и ушла вместе с Матвеем.
+
+@next train-matvey-kopyar-observation
+::end

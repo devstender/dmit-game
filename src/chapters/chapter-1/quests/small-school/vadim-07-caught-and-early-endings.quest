@@ -1,0 +1,600 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — ПОИМКА ОХРАННИКОМ И РАННИЕ ФИНАЛЫ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue next-step-caught-0
+@bg school-main-entrance-night
+@cast Дмит | Охранник
+
+Рассказчик: Охранник усаживает Дмита и Вадима на стулья возле вахты. Дверь наружу заперта, а телефон уже лежит у него в руке.
+@next next-step-caught-4
+::end
+
+::dialogue next-step-caught-4
+@cast Дмит | Охранник
+
+Вадим: Мне действительно нужно забрать рюкзак.
+@next next-step-caught-5
+::end
+
+::dialogue next-step-caught-5
+@cast Дмит | Охранник
+
+Охранник: Утром заберёшь.
+@next next-step-caught-6
+::end
+
+::dialogue next-step-caught-6
+@cast Дмит | Охранник
+
+Вадим: Утром я не попаду на олимпиаду.
+@next next-step-caught-7
+::end
+
+::dialogue next-step-caught-7
+@cast Дмит | Охранник
+
+Охранник: Надо было раньше думать.
+@next next-step-caught-8
+::end
+
+::dialogue next-step-caught-8
+@cast Дмит | Охранник
+
+Дмит: Он из-за меня полез.
+@next next-step-caught-9
+::end
+
+::dialogue next-step-caught-9
+@cast Дмит | Охранник
+
+Вадим: Это неправда.
+@next next-step-caught-10
+::end
+
+::dialogue next-step-caught-10
+@cast Дмит | Охранник
+
+Дмит: Тихо.
+@next next-step-caught-11
+::end
+
+::dialogue next-step-caught-11
+@cast Дмит | Охранник
+
+Охранник: Ну? Кто всё придумал?
+@next next-step-caught-choice
+::end
+
+::choice next-step-caught-choice
+@prompt Охранник ждёт ответа.
+@cast Дмит | Охранник
+# tone: danger
+
+- Я придумал. Вадим вообще не виноват.
+  +trait Ответственность 2
+  +trait Товарищество 1
+  -> next-step-caught-blame-0
+
+- Вадим сам попросил. Я только помогал.
+  +trait Ответственность -2
+  +trait Товарищество -1
+  -> next-step-caught-shift-0
+
+- Никто не придумал. Мы просто хотели забрать вещи.
+  +trait Самообладание 1
+  -> next-step-caught-neutral-0
+
+- [Харизма 6] Сначала дайте забрать рюкзак, потом звоните кому хотите.
+  ? Харизма 6
+  +trait Хитрость 1
+  -> next-step-caught-charisma-success-0
+  !-> next-step-caught-charisma-fail-0
+
+- [Удача 6] Потянуть время до появления директора или учителя информатики.
+  ? Удача 6
+  -> next-step-caught-luck-success-0
+  !-> next-step-caught-luck-fail-0
+
+::end
+
+::dialogue next-step-caught-blame-0
+@cast Дмит | Охранник
+
+Дмит: Я придумал. Вадим вообще не виноват.
+@next next-step-caught-blame-1
+::end
+
+::dialogue next-step-caught-blame-1
+@cast Дмит | Охранник
+
+Вадим: Дмит.
+@next next-step-caught-blame-2
+::end
+
+::dialogue next-step-caught-blame-2
+@cast Дмит | Охранник
+
+Дмит: Чё?
+@next next-step-caught-blame-3
+::end
+
+::dialogue next-step-caught-blame-3
+@cast Дмит | Охранник
+
+Вадим: Это тоже неправда.
+@next next-step-caught-blame-4
+::end
+
+::dialogue next-step-caught-blame-4
+@cast Дмит | Охранник
+
+Дмит: Зато тебе утром ехать.
+@next next-step-caught-blame-5
+::end
+
+::dialogue next-step-caught-blame-5
+@cast Дмит | Охранник
+
+Охранник: Герой, что ли?
+@next next-step-caught-blame-6
+::end
+
+::dialogue next-step-caught-blame-6
+@cast Дмит | Охранник
+
+Дмит: Нет.
+@next next-step-caught-blame-9
+::end
+
+::dialogue next-step-caught-blame-9
+@cast Дмит | Охранник
+
+Охранник: Сам решу.
+@effect-next flag DMIT_TOOK_BLAME_FOR_VADIM
+@effect-next flag VADIM_TRUST_IMPROVED
+@next next-step-caught-finish-0
+::end
+
+::dialogue next-step-caught-shift-0
+@cast Дмит | Вадим
+
+Дмит: Вадим сам попросил. Я только помогал.
+@next next-step-caught-shift-1
+::end
+
+::dialogue next-step-caught-shift-1
+@cast Дмит | Вадим
+
+Вадим: Ты сам сказал, что знаешь, что делать.
+@next next-step-caught-shift-2
+::end
+
+::dialogue next-step-caught-shift-2
+@cast Дмит | Вадим
+
+Дмит: Ну ты же рюкзак забыл.
+@next next-step-caught-shift-3
+::end
+
+::dialogue next-step-caught-shift-3
+@cast Дмит | Вадим
+
+Вадим: А ты предложил способы проникновения.
+@next next-step-caught-shift-4
+::end
+
+::dialogue next-step-caught-shift-4
+@cast Дмит | Вадим
+
+Охранник: Понятно. Два идиота.
+@next next-step-caught-shift-5
+::end
+
+::dialogue next-step-caught-shift-5
+@cast Дмит | Вадим
+
+Вадим: Один из нас хотя бы признаёт свою часть.
+@next next-step-caught-shift-6
+::end
+
+::dialogue next-step-caught-shift-6
+@cast Дмит | Вадим
+
+Рассказчик: Вадим отворачивается.
+@effect-next flag DMIT_BLAMED_VADIM
+@effect-next flag VADIM_TRUST_REDUCED
+@next next-step-caught-finish-0
+::end
+
+::dialogue next-step-caught-neutral-0
+@cast Дмит | Вадим
+
+Дмит: Никто не придумал. Мы просто хотели забрать вещи.
+@next next-step-caught-neutral-1
+::end
+
+::dialogue next-step-caught-neutral-1
+@cast Дмит | Вадим
+
+Охранник: Через окно?
+@next next-step-caught-neutral-2
+::end
+
+::dialogue next-step-caught-neutral-2
+@cast Дмит | Вадим
+
+Дмит: Дверь была закрыта.
+@next next-step-caught-neutral-3
+::end
+
+::dialogue next-step-caught-neutral-3
+@cast Дмит | Вадим
+
+Охранник: И это вас не остановило?
+@next next-step-caught-neutral-4
+::end
+
+::dialogue next-step-caught-neutral-4
+@cast Дмит | Вадим
+
+Вадим: Остановило. Ненадолго.
+@next next-step-caught-neutral-5
+::end
+
+::dialogue next-step-caught-neutral-5
+@cast Дмит | Вадим
+
+Дмит: Вадим.
+@next next-step-caught-neutral-6
+::end
+
+::dialogue next-step-caught-neutral-6
+@cast Дмит | Вадим
+
+Вадим: Я просто ответил.
+@next next-step-caught-finish-0
+::end
+
+::dialogue next-step-caught-charisma-success-0
+@cast Дмит | Охранник
+
+Дмит: Позвоните кому хотите. Но сначала дайте ему забрать документы. Он из-за них сюда полез. Если он пропустит олимпиаду, вам потом учитель будет объяснять, почему вы не дали пройти двадцать метров.
+@next next-step-caught-charisma-success-1
+::end
+
+::dialogue next-step-caught-charisma-success-1
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Охранник: Мне никто ничего не будет объяснять.
+@next next-step-caught-charisma-success-2
+::end
+
+::dialogue next-step-caught-charisma-success-2
+@cast Дмит | Охранник
+
+Вадим: Учитель действительно может подтвердить.
+@next next-step-caught-charisma-success-3
+::end
+
+::dialogue next-step-caught-charisma-success-3
+@cast Дмит | Охранник
+
+Дмит: Пойдёмте вместе. Мы уже никуда не убежим.
+@next next-step-caught-charisma-success-4
+::end
+
+::dialogue next-step-caught-charisma-success-4
+@cast Дмит | Охранник
+
+Охранник: Ты особенно.
+@next next-step-caught-charisma-success-5
+::end
+
+::dialogue next-step-caught-charisma-success-5
+@cast Дмит | Охранник
+
+Дмит: Ну вот.
+@next next-step-caught-charisma-success-6
+::end
+
+::dialogue next-step-caught-charisma-success-6
+@cast Дмит | Охранник
+
+Охранник: Ладно. Быстро.
+@next next-step-caught-charisma-success-7
+::end
+
+::dialogue next-step-caught-charisma-success-7
+@cast Дмит | Охранник
+
+Охранник: Забрали рюкзак — и сразу вниз.
+@next next-step-caught-charisma-success-8
+::end
+
+::dialogue next-step-caught-charisma-success-8
+@cast Дмит | Охранник
+
+Дмит: А телефон?
+@next next-step-caught-charisma-success-9
+::end
+
+::dialogue next-step-caught-charisma-success-9
+@cast Дмит | Охранник
+
+Охранник: Какой телефон?
+@next next-step-caught-charisma-success-10
+::end
+
+::dialogue next-step-caught-charisma-success-10
+@cast Дмит | Охранник
+
+Рассказчик: Охранник ведёт их к кабинету информатики.
+@next next-step-caught-charisma-success-11
+::end
+
+::dialogue next-step-caught-charisma-success-11
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Рассказчик: Охранник замечает чёрный аппарат на столе и резко меняется в лице.
+@next next-step-caught-charisma-success-12
+::end
+
+::dialogue next-step-caught-charisma-success-12
+@cast Дмит | Охранник
+
+Охранник: Это не ваше.
+@next next-step-caught-charisma-success-13
+::end
+
+::dialogue next-step-caught-charisma-success-13
+@cast Дмит | Охранник
+
+Дмит: А чьё?
+@next next-step-caught-charisma-success-14
+::end
+
+::dialogue next-step-caught-charisma-success-14
+@cast Дмит | Охранник
+
+Охранник: Я сказал — не ваше.
+@next next-step-caught-charisma-success-15
+::end
+
+::dialogue next-step-caught-charisma-success-15
+@cast Дмит | Охранник
+
+Рассказчик: Охранник быстро убирает телефон во внутренний карман.
+@next next-step-caught-charisma-success-16
+::end
+
+::dialogue next-step-caught-charisma-success-16
+@cast Дмит | Охранник
+
+Вадим: Вы знаете владельца?
+@next next-step-caught-charisma-success-17
+::end
+
+::dialogue next-step-caught-charisma-success-17
+@cast Дмит | Охранник
+
+Охранник: Молчи.
+@next next-step-caught-charisma-success-18
+::end
+
+::dialogue next-step-caught-charisma-success-18
+@cast Дмит | Охранник
+
+Рассказчик: Впервые за весь вечер охранник выглядит не злым, а испуганным.
+@effect-next flag GUARD_ESCORT_TO_BACKPACK
+@effect-next flag GUARD_RECOGNIZED_BLACK_PHONE
+@effect-next flag SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE
+@next school-exit-entry
+::end
+
+::dialogue next-step-caught-charisma-fail-0
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Охранник: Хватит мне зубы заговаривать.
+@next next-step-caught-charisma-fail-1
+::end
+
+::dialogue next-step-caught-charisma-fail-1
+@cast Дмит | Охранник
+
+Дмит: Я нормально объясняю.
+@next next-step-caught-charisma-fail-2
+::end
+
+::dialogue next-step-caught-charisma-fail-2
+@cast Дмит | Охранник
+
+Охранник: Сейчас директору всё объяснишь.
+@effect-next flag GUARD_REPORTED_TO_DIRECTOR
+@next next-step-caught-finish-0
+::end
+
+::dialogue next-step-caught-luck-success-0
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Рассказчик: Главная дверь неожиданно открывается. В школу входит учитель информатики с папкой под мышкой.
+@next next-step-caught-luck-success-1
+::end
+
+::dialogue next-step-caught-luck-success-1
+@cast Дмит | Охранник
+
+Рассказчик: Учитель информатики: Что здесь происходит?
+@next next-step-caught-luck-success-2
+::end
+
+::dialogue next-step-caught-luck-success-2
+@cast Дмит | Охранник
+
+Вадим: Сергей Павлович!
+@next next-step-caught-luck-success-3
+::end
+
+::dialogue next-step-caught-luck-success-3
+@cast Дмит | Охранник
+
+Охранник: Эти двое в школу залезли.
+@next next-step-caught-luck-success-4
+::end
+
+::dialogue next-step-caught-luck-success-4
+@cast Дмит | Охранник
+
+Вадим: Я забыл рюкзак с документами.
+@next next-step-caught-luck-success-5
+::end
+
+::dialogue next-step-caught-luck-success-5
+@cast Дмит | Охранник
+
+Рассказчик: Учитель информатики: Я как раз вернулся за ведомостью.
+@next next-step-caught-luck-success-6
+::end
+
+::dialogue next-step-caught-luck-success-6
+@cast Дмит | Охранник
+
+Дмит: Во. Всё нормально.
+@next next-step-caught-luck-success-7
+::end
+
+::dialogue next-step-caught-luck-success-7
+@cast Дмит | Охранник
+
+Охранник: Ничего не нормально.
+@next next-step-caught-luck-success-8
+::end
+
+::dialogue next-step-caught-luck-success-8
+@cast Дмит | Охранник
+
+Рассказчик: Учитель информатики: Сначала заберём документы. Потом будем разбираться.
+@next next-step-caught-luck-success-9
+::end
+
+::dialogue next-step-caught-luck-success-9
+@cast Дмит | Охранник
+
+Рассказчик: Учитель ведёт их на второй этаж.
+@effect-next flag TEACHER_SAVED_OLYMPIAD
+@next next-step-caught-finish-0
+::end
+
+::dialogue next-step-caught-luck-fail-0
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Рассказчик: Проходит несколько минут. Никто не появляется.
+@next next-step-caught-luck-fail-1
+::end
+
+::dialogue next-step-caught-luck-fail-1
+@cast Дмит | Охранник
+
+Охранник: Всё. Хватит ждать.
+@next next-step-caught-luck-fail-2
+::end
+
+::dialogue next-step-caught-luck-fail-2
+@cast Дмит | Охранник
+
+Дмит: Мы вообще ничего не ждём.
+@next next-step-caught-luck-fail-3
+::end
+
+::dialogue next-step-caught-luck-fail-3
+@cast Дмит | Охранник
+
+Вадим: Ты предложил ждать.
+@next next-step-caught-luck-fail-4
+::end
+
+::dialogue next-step-caught-luck-fail-4
+@cast Дмит | Охранник
+
+Дмит: Тихо.
+@effect-next flag GUARD_REPORTED_TO_DIRECTOR
+@next next-step-caught-finish-0
+::end
+
+::dialogue next-step-caught-finish-0
+@bg school-dark-vaz
+@cast Дмит | Охранник
+
+Рассказчик: Этап «Кабинет информатики» завершён. Следующий этап: побег из школы или разговор с охранником.
+@effect-next flag SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE
+@next school-exit-entry
+::end
+
+::dialogue stage-end-home
+@cast Дмит | Вадим
+@sound-next quest-complete
+
+Рассказчик: Этап заканчивается безопасным решением: компания помогает Вадиму с велосипедом и ведёт его домой. Школа остаётся закрытой, но живой и без ночного цирка.
+@effect-next experience 4
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_MET_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_SENT_VADIM_HOME
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+@end
+::end
+
+::dialogue stage-end-refuse
+@cast Дмит | Вадим
+@sound-next quest-complete
+
+Рассказчик: Этап заканчивается отказом. Вадим остаётся у школы, а у Дмита внутри появляется неприятная тишина — такая, которую не перебивает даже Данз.
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_MET_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_REFUSED_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+@end
+::end
+
+::dialogue stage-end-walk
+@cast Дмит | Вадим
+@sound-next quest-complete
+
+Рассказчик: Этап заканчивается ночной прогулкой с Вадимом. Район принимает малого в компанию, а школа остаётся позади тёмной коробкой с чужим рюкзаком внутри.
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_MET_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_WALK_WITH_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+@end
+::end
+
+::dialogue stage-end-teacher
+@cast Дмит | Вадим
+@sound-next quest-complete
+
+Рассказчик: Этап заканчивается законным решением. Учитель едет к школе, Вадим впервые за вечер выдыхает, а Дмит получает редкий опыт: проблему можно решить без забора.
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_MET_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_TEACHER_HELP
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+@end
+::end
+
+::dialogue stage-end-sabotage
+@cast Дмит | Вадим
+@sound-next quest-complete
+
+Рассказчик: Этап сворачивает в сторону расследования: прежде чем лезть в школу, Дмит решает понять, кто сорвал цепь с велосипеда Вадима.
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_MET_VADIM
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_BACKPACK_STORY
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_CHAIN_INVESTIGATION
+@effect-next flag CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+@end
+::end

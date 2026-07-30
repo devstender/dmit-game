@@ -1,0 +1,189 @@
+# ГЛАВА 2 — «ПУТЁВКА»
+# PART 13 — УСЛОВНЫЕ ВЕТКИ ЭЛЕКТРИЧКИ
+#
+# Подключать после:
+# part-13-train-main.quest
+#
+# Используются:
+# - UNKNOWN_GIRL_INTEREST;
+# - GIRL_WARNED_ABOUT_MATVEY;
+# - Эмпатия;
+# - перк «Свой человек».
+
+
+# =========================================================
+# КОПЯР И ЕГО КНИГА
+# =========================================================
+
+::extend-choice train-first-hour-choice
+@when-trait Эмпатия 3
+@position 1
+
+- Спросить, помогает ли чтение не нервничать в дороге.
+  -> train-kopyar-empathy
+
+::end
+
+
+::dialogue train-kopyar-empathy
+@cast Дмит | Копяр
+
+Дмит: Ты поэтому читаешь, чтобы дорогу не замечать?
+
+Копяр: Частично.
+
+Дмит: Не любишь поезда?
+
+Копяр: Не люблю ждать, когда куда-то приеду.
+
+Дмит: И помогает?
+
+Копяр: Пока читаю — да.
+
+Рассказчик: Дмит больше не отвлекал его. Копяр чуть заметно кивнул и продолжил читать.
+
+@effect-next relation Копяр 2
+@effect-next trait Эмпатия 1
+@effect-next flag CHAPTER_2_DMIT_UNDERSTOOD_KOPYAR_TRAVEL_ANXIETY
+@next train-first-hour-convergence
+::end
+
+
+# =========================================================
+# ПЕРК «СВОЙ ЧЕЛОВЕК» И РОМАНЫЧ
+# =========================================================
+
+::extend-choice train-first-hour-choice
+@when PERK_OWN_GUY
+@position 4
+
+- Попросить Романыча сыграть официальный гимн сопровождающих.
+  -> train-own-guy-guitar-request
+
+::end
+
+
+::dialogue train-own-guy-guitar-request
+@cast Дмит | Романыч | Данз
+
+Дмит: Романыч, давай официальный гимн сопровождающих.
+
+Романыч: Он слишком секретный.
+
+Дмит: Мы свои.
+
+Романыч: Сильный аргумент. Тогда позже исполню любовную балладу.
+
+Данз: Это угроза?
+
+Романыч: Обещание.
+
+@effect-next relation Романыч 1
+@effect-next flag CHAPTER_2_DMIT_REQUESTED_ROMANYCH_TRAIN_SONG
+@next train-first-hour-convergence
+::end
+
+
+# =========================================================
+# ИСТОРИЯ ДАШИ
+# =========================================================
+
+::hook train-dasha-history-hook
+@fallback train-dasha-neutral-intro
+@continue train-dasha-introduction-convergence
+::end
+
+
+::extend train-dasha-history-hook
+@when GIRL_WARNED_ABOUT_MATVEY
+@priority 200
+@start train-dasha-warned-intro
+::end
+
+
+::extend train-dasha-history-hook
+@when UNKNOWN_GIRL_INTEREST
+@priority 100
+@start train-dasha-interested-intro
+::end
+
+
+# ---------------------------------------------------------
+# ДАША ПРЕДУПРЕЖДАЛА ДМИТА
+# ---------------------------------------------------------
+
+::dialogue train-dasha-warned-intro
+@cast Дмит | Даша | Матвей
+
+Даша: Это я тебе тогда писала.
+
+Дмит: С неизвестного номера?
+
+Даша: Ага.
+
+Дмит: Так это ты сказала не стоять у главного входа.
+
+Даша: Я. Матвей реально отправил туда человека.
+
+Дмит: Спасибо. Мы из-за этого хотя бы знали, куда не лезть.
+
+Даша: Не уверена, что вы после этого выбрали что-то умнее.
+
+Дмит: Уже другой вопрос.
+
+Рассказчик: Даша улыбнулась краем губ.
+
+@effect-next relation Даша 2
+@effect-next flag CHAPTER_2_DASHA_REVEALED_SHE_WARNED_DMIT
+@next train-dasha-introduction-convergence
+::end
+
+
+# ---------------------------------------------------------
+# ДАШЕ ПОНРАВИЛСЯ ДМИТ, НО ПРЕДУПРЕЖДЕНИЯ НЕ БЫЛО
+# ---------------------------------------------------------
+
+::dialogue train-dasha-interested-intro
+@cast Дмит | Даша | Матвей
+
+Даша: Я была тогда на Миньке.
+
+Дмит: Я помню.
+
+Даша: Не похоже. Ты даже имени не спросил.
+
+Дмит: Там немного не до знакомства было.
+
+Даша: Но вёл ты себя нормально.
+
+Дмит: Это сейчас комплимент?
+
+Даша: Пока наблюдение.
+
+@effect-next relation Даша 1
+@effect-next flag CHAPTER_2_DASHA_REMEMBERED_DMIT_FROM_MINKA
+@next train-dasha-introduction-convergence
+::end
+
+
+# ---------------------------------------------------------
+# НЕЙТРАЛЬНОЕ ЗНАКОМСТВО
+# ---------------------------------------------------------
+
+::dialogue train-dasha-neutral-intro
+@cast Дмит | Даша | Матвей
+
+Даша: Я была на Миньке, когда вы сцепились с Матвеем.
+
+Дмит: А. Помню тебя.
+
+Даша: Не уверена.
+
+Дмит: Лицо помню. Имя нет.
+
+Даша: Потому что я его не говорила.
+
+Дмит: Тогда всё сходится.
+
+@next train-dasha-introduction-convergence
+::end

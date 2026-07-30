@@ -1,0 +1,14 @@
+::chapter small-school
+@title Младший у школы
+@start start-1
+
+@include "./vadim-00-start-and-backstory.quest"
+@include "./vadim-01-decisions-scout-and-girl-warning.quest"
+@include "./vadim-02-infiltration-routes.quest"
+@include "./vadim-03-full-chase.quest"
+@include "./vadim-04-short-chase.quest"
+@include "./vadim-05-computer-room-together.quest"
+@include "./vadim-06-computer-room-alone.quest"
+@include "./vadim-07-caught-and-early-endings.quest"
+@include "./vadim-08-school-exit-and-final.quest"
+::end

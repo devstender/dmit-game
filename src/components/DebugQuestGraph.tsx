@@ -19,6 +19,8 @@ import type { Chapter, Scene } from '../types/story'
 type DebugQuestGraphProps = {
   chapter: Chapter
   currentSceneIndex: number
+  startIndex: number
+  endIndex: number
   onSelectStage: (sceneIndex: number) => void
   fullscreen: boolean
   onToggleFullscreen: () => void
@@ -97,11 +99,12 @@ const targetsFor = (scene: Scene): GraphTarget[] => [
   ] : []),
 ]
 
-function createGraph(chapter: Chapter, currentSceneIndex: number): { nodes: Node<GraphNodeData>[]; edges: Edge[] } {
+function createGraph(chapter: Chapter, currentSceneIndex: number, startIndex: number, endIndex: number): { nodes: Node<GraphNodeData>[]; edges: Edge[] } {
   const stagesById = new Map<string, Stage>()
   const sceneToStageId = new Map<number, string>()
 
   chapter.scenes.forEach((scene, index) => {
+    if (index < startIndex || index > endIndex) return
     const id = logicalStageId(scene, index)
     sceneToStageId.set(index, id)
     const existing = stagesById.get(id)
@@ -113,6 +116,7 @@ function createGraph(chapter: Chapter, currentSceneIndex: number): { nodes: Node
   })
 
   chapter.scenes.forEach((scene, index) => {
+    if (index < startIndex || index > endIndex) return
     const sourceId = sceneToStageId.get(index)
     const stage = sourceId ? stagesById.get(sourceId) : undefined
     if (!stage) return
@@ -179,10 +183,10 @@ function createGraph(chapter: Chapter, currentSceneIndex: number): { nodes: Node
   return { nodes, edges }
 }
 
-export function DebugQuestGraph({ chapter, currentSceneIndex, onSelectStage, fullscreen, onToggleFullscreen }: DebugQuestGraphProps) {
+export function DebugQuestGraph({ chapter, currentSceneIndex, startIndex, endIndex, onSelectStage, fullscreen, onToggleFullscreen }: DebugQuestGraphProps) {
   const { nodes, edges } = useMemo(
-    () => createGraph(chapter, currentSceneIndex),
-    [chapter, currentSceneIndex],
+    () => createGraph(chapter, currentSceneIndex, startIndex, endIndex),
+    [chapter, currentSceneIndex, endIndex, startIndex],
   )
 
   return (

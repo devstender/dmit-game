@@ -48,6 +48,7 @@ footer { position:absolute; bottom:20px; left:30px; font:600 10px Manrope; lette
 @media (max-width: 760px) { .topbar-actions { gap:7px; }.topbar-actions button { font-size:8px; }.topbar-actions b { display:none; }.map-layout { grid-template-columns:1fr; }.map-canvas { min-height:400px; }.quest-board { min-height:250px; }.map-marker span { font-size:8px; }.map-panel { padding:16px; }.map-header .panel-close { top:16px; right:16px; } }
 .creation-screen { min-height:100svh; padding:34px 16px; display:grid; place-items:center; position:relative; overflow:hidden; color:#fff8ee; background:radial-gradient(circle at 75% 20%,#874352,#321d38 43%,#151422 100%); }.creation-card { width:min(650px,100%); padding:clamp(22px,4vw,42px); position:relative; z-index:1; border:1px solid rgba(255,196,115,.42); background:rgba(28,22,39,.9); box-shadow:15px 18px 0 rgba(78,39,52,.48); }.creation-card h1 { font-size:clamp(42px,6vw,70px); }.creation-lead { max-width:560px; margin:16px 0 22px; color:#e9d3c5; font:14px/1.5 Manrope; }.special-points { display:flex; align-items:baseline; gap:8px; padding:12px 14px; margin-bottom:10px; color:#f8e7d4; background:rgba(116,68,72,.47); border-left:3px solid #ffbc67; font:700 12px Manrope; text-transform:uppercase; letter-spacing:.1em; }.special-points strong { color:#ffbf67; font-size:26px; }.special-points small { color:#cdb5aa; }.special-list { border-top:1px solid rgba(255,225,193,.16); }.special-row { min-height:49px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,225,193,.16); }.special-row > div:first-child { display:flex; align-items:center; gap:10px; font:700 14px Manrope; }.special-row > div:first-child b { width:27px; height:27px; display:grid; place-items:center; color:#331e2d; background:#f5b55f; font-size:15px; }.special-controls { display:flex; align-items:center; gap:10px; }.special-controls button { width:28px; height:28px; border:1px solid rgba(255,203,126,.56); color:#ffd08b; background:transparent; cursor:pointer; font-size:18px; }.special-controls button:disabled { opacity:.26; cursor:not-allowed; }.special-controls strong { min-width:16px; color:#fff7ec; font-size:17px; text-align:center; }.creation-actions { display:flex; justify-content:space-between; align-items:center; margin-top:26px; }.creation-actions .ghost-button { opacity:1; }.creation-actions .primary-button { margin-left:auto; }
 .perk-overlay { position:fixed; z-index:20; inset:0; padding:20px; display:grid; place-items:center; background:rgba(10,7,16,.76); backdrop-filter:blur(5px); }.perk-dialog { width:min(630px,100%); padding:clamp(24px,5vw,46px); border:1px solid rgba(255,193,109,.7); background:linear-gradient(150deg,#2d1b31,#191523); box-shadow:16px 18px 0 rgba(114,49,54,.42); }.perk-dialog h2 { margin:3px 0 8px; color:#fff5e6; font:700 clamp(37px,5vw,57px)/1 'Playfair Display'; }.perk-dialog h2 em { color:#ffc16b; }.perk-dialog > p:not(.eyebrow) { margin:0 0 22px; color:#dac5bb; font:14px/1.45 Manrope; }.perk-list { display:grid; grid-template-columns:repeat(2,1fr); gap:9px; }.perk-list button { min-height:104px; padding:14px; position:relative; text-align:left; border:1px solid rgba(255,201,125,.38); color:#fff5e9; background:rgba(85,48,61,.6); cursor:pointer; }.perk-list button:hover { background:#84464e; border-color:#ffc06c; }.perk-list button:disabled { opacity:.36; cursor:not-allowed; }.perk-list strong { display:block; padding-right:16px; color:#ffc573; font:800 15px Manrope; }.perk-list span { display:block; margin-top:7px; color:#f4ded3; font:11px/1.35 Manrope; }.perk-list i { position:absolute; right:13px; top:12px; color:#ffc573; font-size:18px; font-style:normal; }
+.special-level-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }.special-level-list button { min-height:76px; padding:13px 15px; border:1px solid rgba(255,201,125,.38); color:#fff5e9; background:rgba(85,48,61,.6); cursor:pointer; text-align:left; }.special-level-list button:hover { background:#84464e; border-color:#ffc06c; }.special-level-list button:disabled { opacity:.36; cursor:not-allowed; }.special-level-list strong { display:block; color:#ffc573; font:800 15px Manrope; }.special-level-list span { display:block; margin-top:7px; color:#f4ded3; font:700 13px Manrope; }.special-level-list i { padding:0 5px; color:#ffc573; font-style:normal; }
 
 /* School visual novel skin */
 :root {
@@ -679,10 +680,16 @@ h1 {
 }
 
 .inventory-grid i {
-  width: 23px;
-  height: 23px;
-  font-size: 13px;
-}
+    width: 23px;
+    height: 23px;
+    font-size: 13px;
+  }
+
+  .inventory-grid i svg {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2.15;
+  }
 
 .inventory-grid strong {
   margin-top: 7px;
@@ -1955,6 +1962,14 @@ h1 {
   width: 116%;
   flex: 0 0 auto;
   max-width: none;
+}
+
+.romanych .portrait-image {
+  transform: scaleX(-1);
+}
+
+.vanya .portrait-image {
+  transform: scaleX(-1);
 }
 
 .ked .portrait-image {
@@ -3631,6 +3646,18 @@ h1 {
   line-height: 1;
 }
 
+.relation-notification-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+}
+
+.relation-notification-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+}
+
 .relation-notification.positive {
   border-color: rgba(125, 205, 132, .62);
   background: linear-gradient(135deg, rgba(42, 96, 65, .97), rgba(23, 52, 43, .97));
@@ -3655,6 +3682,26 @@ h1 {
 @keyframes relation-notification-enter {
   from { opacity: 0; transform: translateY(-10px) scale(.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.topbar-menu-button,
+.topbar-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar-menu-button { gap: 7px; }
+.topbar-menu-button svg,
+.topbar-icon-button svg { width: 18px; height: 18px; stroke-width: 2.35; }
+.topbar-menu-label { display: inline !important; }
+.topbar-icon-button { min-width: 34px; min-height: 34px; }
+
+@media (max-width: 680px) {
+  .story-topbar .topbar-menu-label { display: inline !important; }
+  .topbar-menu-button { gap: 5px; }
+  .topbar-menu-button svg,
+  .topbar-icon-button svg { width: 17px; height: 17px; }
 }
 
 .chapter-select-screen {

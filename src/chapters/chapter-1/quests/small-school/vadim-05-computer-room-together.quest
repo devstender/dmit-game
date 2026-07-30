@@ -1,0 +1,2544 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — ВТОРОЙ ЭТАЖ, КАБИНЕТ И ЧЁРНЫЙ ТЕЛЕФОН ВМЕСТЕ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue computer-branch
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: У каждого маршрута есть цена. Школа всё ещё тёмная, охранник всё ещё злой, а рюкзак всё ещё в кабинете информатики.
+@next computer-branch-route-hook
+::end
+
+::hook computer-branch-route-hook
+@fallback next-step-together-0
+@continue next-step-together-0
+::end
+
+::extend computer-branch-route-hook
+@when SCHOOL_BREAK_IN_FAILED
+@priority 200
+@start next-step-caught-0
+::end
+
+::extend computer-branch-route-hook
+@when DMIT_ABANDONED_VADIM
+@priority 100
+@start next-step-alone-0
+::end
+
+::dialogue next-step-together-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим оказываются на втором этаже. Снизу слышны удары охранника по заблокированной двери и громкая ругань.
+@next next-step-floor-0
+::end
+
+::dialogue next-step-floor-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Информатика в конце правого коридора.
+@next next-step-floor-1
+::end
+
+::dialogue next-step-floor-1
+@cast Дмит | Вадим
+
+Дмит: Знаю.
+@next next-step-floor-2
+::end
+
+::dialogue next-step-floor-2
+@cast Дмит | Вадим
+
+Вадим: Тогда почему ты смотришь налево?
+@next next-step-floor-3
+::end
+
+::dialogue next-step-floor-3
+@cast Дмит | Вадим
+
+Дмит: Проверяю, не обошёл ли нас охранник.
+@next next-step-floor-4
+::end
+
+::dialogue next-step-floor-4
+@cast Дмит | Вадим
+
+Вадим: Лестница только одна.
+@next next-step-floor-5
+::end
+
+::dialogue next-step-floor-5
+@cast Дмит | Вадим
+
+Дмит: Вот теперь точно знаю.
+@next next-step-board-check
+::end
+
+::dialogue next-step-board-check
+@cast Дмит | Вадим
+
+Рассказчик: Коридор второго этажа погружён в темноту. Только зелёные лампы над аварийными выходами освещают двери кабинетов.
+@next next-step-board-check-route-hook
+::end
+
+::hook next-step-board-check-route-hook
+@fallback next-step-door-check
+@continue next-step-door-check
+::end
+
+::extend next-step-board-check-route-hook
+@when HONOUR_BOARD_DESTROYED
+@priority 100
+@start next-step-board-0
+::end
+
+::dialogue next-step-board-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Ты сломал стенд с отличниками.
+@next next-step-board-1
+::end
+
+::dialogue next-step-board-1
+@cast Дмит | Вадим
+
+Дмит: Он охранника задержал.
+@next next-step-board-2
+::end
+
+::dialogue next-step-board-2
+@cast Дмит | Вадим
+
+Вадим: Там была моя фотография.
+@next next-step-board-3
+::end
+
+::dialogue next-step-board-3
+@cast Дмит | Вадим
+
+Дмит: Новую сделают.
+@next next-step-board-4
+::end
+
+::dialogue next-step-board-4
+@cast Дмит | Вадим
+
+Вадим: Она была единственной нормальной.
+@next next-step-board-5
+::end
+
+::dialogue next-step-board-5
+@cast Дмит | Вадим
+
+Дмит: Ты в жизни так же выглядишь.
+@next next-step-board-6
+::end
+
+::dialogue next-step-board-6
+@cast Дмит | Вадим
+
+Вадим: Это не комплимент.
+@next next-step-board-7
+::end
+
+::dialogue next-step-board-7
+@cast Дмит | Вадим
+
+Дмит: Я пытался.
+@effect-next flag VADIM_TRUST_REDUCED
+@next next-step-door-check
+::end
+
+::dialogue next-step-door-check
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Коридор второго этажа погружён в темноту. Только зелёные лампы над аварийными выходами освещают двери кабинетов.
+@next next-step-door-check-route-hook
+::end
+
+::hook next-step-door-check-route-hook
+@fallback next-step-injury-check
+@continue next-step-injury-check
+::end
+
+::extend next-step-door-check-route-hook
+@when SCHOOL_DOOR_BROKEN
+@priority 100
+@start next-step-door-damage-0
+::end
+
+::dialogue next-step-door-damage-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Ещё ты сломал дверь.
+@next next-step-door-damage-1
+::end
+
+::dialogue next-step-door-damage-1
+@cast Дмит | Вадим
+
+Дмит: Она сама старая была.
+@next next-step-door-damage-2
+::end
+
+::dialogue next-step-door-damage-2
+@cast Дмит | Вадим
+
+Вадим: До твоего удара она работала.
+@next next-step-door-damage-3
+::end
+
+::dialogue next-step-door-damage-3
+@cast Дмит | Вадим
+
+Дмит: Теперь не надо ключ искать.
+@next next-step-door-damage-4
+::end
+
+::dialogue next-step-door-damage-4
+@cast Дмит | Вадим
+
+Вадим: Ты способен найти преимущество в любом повреждении имущества.
+@next next-step-injury-check
+::end
+
+::dialogue next-step-injury-check
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит делает несколько шагов и прижимает ладонь к виску.
+@next next-step-injury-check-route-hook
+::end
+
+::hook next-step-injury-check-route-hook
+@fallback next-step-help-choice
+@continue next-step-help-choice
+::end
+
+::extend next-step-injury-check-route-hook
+@when DMIT_DAMAGED
+@priority 100
+@start next-step-injury-0
+::end
+
+::dialogue next-step-injury-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Опять кружится голова?
+@next next-step-injury-1
+::end
+
+::dialogue next-step-injury-1
+@cast Дмит | Вадим
+
+Дмит: Не кружится.
+@next next-step-injury-2
+::end
+
+::dialogue next-step-injury-2
+@cast Дмит | Вадим
+
+Вадим: Ты остановился и держишься за стену.
+@next next-step-injury-3
+::end
+
+::dialogue next-step-injury-3
+@cast Дмит | Вадим
+
+Дмит: Стена удобная.
+@next next-step-injury-4
+::end
+
+::dialogue next-step-injury-4
+@cast Дмит | Вадим
+
+Вадим: Нужно идти медленнее.
+@next next-step-injury-5
+::end
+
+::dialogue next-step-injury-5
+@cast Дмит | Вадим
+
+Дмит: Охраннику это скажи.
+@next next-step-injury-6
+::end
+
+::dialogue next-step-injury-6
+@cast Дмит | Вадим
+
+Вадим: Если продолжишь бежать, можешь потерять сознание.
+@next next-step-injury-7
+::end
+
+::dialogue next-step-injury-7
+@cast Дмит | Вадим
+
+Дмит: Не потеряю.
+@next next-step-injury-8
+::end
+
+::dialogue next-step-injury-8
+@cast Дмит | Вадим
+
+Вадим: Это не решение.
+@next next-step-injury-9
+::end
+
+::dialogue next-step-injury-9
+@cast Дмит | Вадим
+
+Дмит: Зато коротко.
+@effect-next flag VADIM_WORRIED_ABOUT_DMIT
+@next next-step-help-choice
+::end
+
+::choice next-step-help-choice
+@bg school-second-floor-night
+@prompt Зачем ты вообще полез за мной в школу?
+@cast Дмит | Вадим
+
+- Пообещал помочь — значит, помогу.
+  +trait Ответственность 1
+  -> next-step-help-1-0
+
+- Чтобы ты один здесь не сдох.
+  +trait Эмпатия 1
+  +trait Товарищество 1
+  -> next-step-help-2-0
+
+- Мне самому стало интересно.
+  +trait Хитрость 1
+  -> next-step-help-3-0
+
+- Не задавай вопросы, пока нас ищут.
+  -> next-step-help-4-0
+
+::end
+
+::dialogue next-step-help-1-0
+@cast Дмит | Вадим
+
+Дмит: Пообещал помочь — значит, помогу.
+@next next-step-help-1-1
+::end
+
+::dialogue next-step-help-1-1
+@cast Дмит | Вадим
+
+Вадим: Ты не производишь впечатление человека, который всегда выполняет обещания.
+@next next-step-help-1-2
+::end
+
+::dialogue next-step-help-1-2
+@cast Дмит | Вадим
+
+Дмит: А я не всегда обещаю.
+@next next-step-help-1-3
+::end
+
+::dialogue next-step-help-1-3
+@cast Дмит | Вадим
+
+Вадим: Логично.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-help-2-0
+@cast Дмит | Вадим
+
+Дмит: Чтобы ты один здесь не сдох.
+@next next-step-help-2-1
+::end
+
+::dialogue next-step-help-2-1
+@cast Дмит | Вадим
+
+Вадим: В школе довольно сложно умереть.
+@next next-step-help-2-2
+::end
+
+::dialogue next-step-help-2-2
+@cast Дмит | Вадим
+
+Дмит: Ты с нашей географичкой не спорил.
+@next next-step-help-2-3
+::end
+
+::dialogue next-step-help-2-3
+@cast Дмит | Вадим
+
+Вадим: Справедливо.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-help-3-0
+@cast Дмит | Вадим
+
+Дмит: Мне самому стало интересно.
+@next next-step-help-3-1
+::end
+
+::dialogue next-step-help-3-1
+@cast Дмит | Вадим
+
+Вадим: Что именно?
+@next next-step-help-3-2
+::end
+
+::dialogue next-step-help-3-2
+@cast Дмит | Вадим
+
+Дмит: Сможем залезть или нет.
+@next next-step-help-3-3
+::end
+
+::dialogue next-step-help-3-3
+@cast Дмит | Вадим
+
+Вадим: Рюкзак тебя не интересует?
+@next next-step-help-3-4
+::end
+
+::dialogue next-step-help-3-4
+@cast Дмит | Вадим
+
+Дмит: Теперь уже интересует.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-help-4-0
+@cast Дмит | Вадим
+
+Дмит: Не задавай вопросы, пока нас ищут.
+@next next-step-help-4-1
+::end
+
+::dialogue next-step-help-4-1
+@cast Дмит | Вадим
+
+Вадим: Хорошо.
+@next next-step-help-4-2
+::end
+
+::dialogue next-step-help-4-2
+@cast Дмит | Вадим
+
+Дмит: Вот. Умеешь же.
+@next next-step-help-4-3
+::end
+
+::dialogue next-step-help-4-3
+@cast Дмит | Вадим
+
+Вадим: Но позже я спрошу снова.
+@next next-step-help-4-4
+::end
+
+::dialogue next-step-help-4-4
+@cast Дмит | Вадим
+
+Дмит: Бля.
+@next next-step-class-door-0
+::end
+
+::dialogue next-step-class-door-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: Ребята доходят до кабинета информатики. Дмит дёргает ручку.
+@next next-step-class-door-1
+::end
+
+::dialogue next-step-class-door-1
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: ЩЁЛК.
+@next next-step-class-door-2
+::end
+
+::dialogue next-step-class-door-2
+@cast Дмит | Вадим
+
+Дмит: Закрыто.
+@next next-step-class-door-3
+::end
+
+::dialogue next-step-class-door-3
+@cast Дмит | Вадим
+
+Вадим: Я предполагал.
+@next next-step-class-door-4
+::end
+
+::dialogue next-step-class-door-4
+@cast Дмит | Вадим
+
+Дмит: А сказать заранее?
+@next next-step-class-door-5
+::end
+
+::dialogue next-step-class-door-5
+@cast Дмит | Вадим
+
+Вадим: Я рассчитывал, что учитель мог забыть закрыть дверь.
+@next next-step-class-door-6
+::end
+
+::dialogue next-step-class-door-6
+@cast Дмит | Вадим
+
+Дмит: Ты строил весь план на том, что учитель затупит?
+@next next-step-class-door-7
+::end
+
+::dialogue next-step-class-door-7
+@cast Дмит | Вадим
+
+Вадим: Небольшую часть плана.
+@next next-step-class-door-8
+::end
+
+::dialogue next-step-class-door-8
+@cast Дмит | Вадим
+
+Дмит: Хороший план.
+@next next-step-class-door-9
+::end
+
+::dialogue next-step-class-door-9
+@cast Дмит | Вадим
+
+Вадим: У тебя был план сломать решётку.
+@next next-step-class-door-10
+::end
+
+::dialogue next-step-class-door-10
+@cast Дмит | Вадим
+
+Дмит: И он сработал.
+@next next-step-class-door-11
+::end
+
+::dialogue next-step-class-door-11
+@cast Дмит | Вадим
+
+Вадим: Сигнализация тоже сработала.
+@next next-step-class-door-12
+::end
+
+::dialogue next-step-class-door-12
+@cast Дмит | Вадим
+
+Дмит: Значит, всё рабочее.
+@next next-step-class-door-13
+::end
+
+::dialogue next-step-class-door-13
+@cast Дмит | Вадим
+
+Рассказчик: Снизу снова раздаётся металлический удар.
+@next quiet-mode-guard-approach
+::end
+
+::dialogue next-step-class-door-14
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Охранник: Я УЖЕ ИДУ!
+@next next-step-class-door-15
+::end
+
+::dialogue next-step-class-door-15
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Нужно открыть дверь быстро.
+@next next-step-open-choice
+::end
+
+::choice next-step-open-choice
+@prompt Нужно решить, как открыть кабинет информатики.
+@cast Дмит | Вадим
+# tone: danger
+
+- [Интеллект 5] Попросить Вадима найти запасной ключ учителя.
+  ? Интеллект 5
+  -> next-step-key-success-0
+  !-> next-step-key-fail-0
+
+- [Внимательность 5] Осмотреть верх двери и шкаф пожарной безопасности.
+  ? Внимательность 5
+  -> next-step-hidden-success-0
+  !-> next-step-hidden-fail-0
+
+- [Ловкость 6] Перелезть через внутреннее окно из соседнего кабинета.
+  ? Ловкость 6
+  -> next-step-window-check
+  !-> next-step-window-check
+
+- [Сила 6] Выбить дверь.
+  ? Сила 6
+  -> next-step-force-success-0
+  !-> next-step-force-fail-0
+
+- Вадим, ты это начал — ты и открывай.
+  -> next-step-neutral-open-0
+
+- Открывайте, свои.
+  -> next-step-knock-0
+
+::end
+
+::dialogue next-step-neutral-open-0
+@cast Дмит | Вадим
+
+Дмит: Вадим, ты это начал — ты и открывай.
+@next next-step-neutral-open-1
+::end
+
+::dialogue next-step-neutral-open-1
+@cast Дмит | Вадим
+
+Вадим: Я не умею вскрывать двери.
+@next next-step-neutral-open-2
+::end
+
+::dialogue next-step-neutral-open-2
+@cast Дмит | Вадим
+
+Дмит: А выглядишь так, будто умеешь.
+@next next-step-neutral-open-3
+::end
+
+::dialogue next-step-neutral-open-3
+@cast Дмит | Вадим
+
+Вадим: Как выглядит человек, который вскрывает двери?
+@next next-step-neutral-open-4
+::end
+
+::dialogue next-step-neutral-open-4
+@cast Дмит | Вадим
+
+Дмит: Умно.
+@next next-step-neutral-open-5
+::end
+
+::dialogue next-step-neutral-open-5
+@cast Дмит | Вадим
+
+Вадим: По твоей логике все отличники — преступники.
+@next next-step-neutral-open-6
+::end
+
+::dialogue next-step-neutral-open-6
+@cast Дмит | Вадим
+
+Дмит: Подозрительные вы.
+@next next-step-open-choice
+::end
+
+::dialogue next-step-knock-0
+@cast Дмит | Вадим
+
+Дмит: Открывайте, свои.
+@next next-step-knock-1
+::end
+
+::dialogue next-step-knock-1
+@cast Дмит | Вадим
+
+Вадим: Там никого нет.
+@next next-step-knock-2
+::end
+
+::dialogue next-step-knock-2
+@cast Дмит | Вадим
+
+Дмит: А вдруг компьютер откроет?
+@next next-step-knock-3
+::end
+
+::dialogue next-step-knock-3
+@cast Дмит | Вадим
+
+Вадим: Нет.
+@next next-step-knock-4
+::end
+
+::dialogue next-step-knock-4
+@cast Дмит | Вадим
+
+Охранник: Я СЛЫШУ ВАС!
+@next next-step-knock-5
+::end
+
+::dialogue next-step-knock-5
+@cast Дмит | Вадим
+
+Дмит: Зато охранник ответил.
+@next next-step-knock-6
+::end
+
+::dialogue next-step-knock-6
+@cast Дмит | Вадим
+
+Вадим: Теперь он знает, где мы.
+@effect-next flag GUARD_KNOWS_COMPUTER_ROOM
+@next next-step-open-choice
+::end
+
+::dialogue next-step-key-success-0
+@cast Дмит | Вадим
+
+Вадим: Учитель информатики часто оставляет ключ дежурному ученику.
+@next next-step-key-success-1
+::end
+
+::dialogue next-step-key-success-1
+@cast Дмит | Вадим
+
+Дмит: И где этот ученик?
+@next next-step-key-success-2
+::end
+
+::dialogue next-step-key-success-2
+@cast Дмит | Вадим
+
+Вадим: Дома.
+@next next-step-key-success-3
+::end
+
+::dialogue next-step-key-success-3
+@cast Дмит | Вадим
+
+Дмит: Охуенно помог.
+@next next-step-key-success-4
+::end
+
+::dialogue next-step-key-success-4
+@cast Дмит | Вадим
+
+Вадим: Но запасные ключи иногда лежат в кабинете завуча.
+@next next-step-key-success-5
+::end
+
+::dialogue next-step-key-success-5
+@cast Дмит | Вадим
+
+Дмит: Он закрыт.
+@next next-step-key-success-6
+::end
+
+::dialogue next-step-key-success-6
+@cast Дмит | Вадим
+
+Вадим: Есть ещё шкаф с документами возле учительской.
+@next next-step-key-success-7
+::end
+
+::dialogue next-step-key-success-7
+@cast Дмит | Вадим
+
+Дмит: Тоже закрыт?
+@next next-step-key-success-8
+::end
+
+::dialogue next-step-key-success-8
+@cast Дмит | Вадим
+
+Вадим: Нет. Учителя постоянно забывают его закрывать.
+@next next-step-key-success-9
+::end
+
+::dialogue next-step-key-success-9
+@cast Дмит | Вадим
+
+Дмит: Вот на это и надо было строить план.
+@next next-step-key-success-10
+::end
+
+::dialogue next-step-key-success-10
+@cast Дмит | Вадим
+
+Рассказчик: Вадим открывает узкий шкаф в конце коридора и быстро перебирает связки ключей.
+@next next-step-key-success-11
+::end
+
+::dialogue next-step-key-success-11
+@cast Дмит | Вадим
+
+Вадим: Кабинет двадцать четыре… двадцать пять… двадцать шесть.
+@next next-step-key-success-12
+::end
+
+::dialogue next-step-key-success-12
+@cast Дмит | Вадим
+
+Дмит: Нашёл?
+@next next-step-key-success-13
+::end
+
+::dialogue next-step-key-success-13
+@cast Дмит | Вадим
+
+Вадим: Да.
+@next next-step-key-success-14
+::end
+
+::dialogue next-step-key-success-14
+@cast Дмит | Вадим
+
+Дмит: Уф.
+@next next-step-key-success-15
+::end
+
+::dialogue next-step-key-success-15
+@cast Дмит | Вадим
+
+Вадим: Это реплика Мишгана.
+@next next-step-key-success-16
+::end
+
+::dialogue next-step-key-success-16
+@cast Дмит | Вадим
+
+Дмит: Теперь моя.
+@next next-step-key-success-17
+::end
+
+::dialogue next-step-key-success-17
+@cast Дмит | Вадим
+
+Рассказчик: Ключ поворачивается в замке.
+@effect-next flag COMPUTER_ROOM_OPENED_QUIETLY
+@next next-step-room-intro-0
+::end
+
+::dialogue next-step-key-fail-0
+@cast Дмит | Вадим
+
+Вадим: Ключи должны быть здесь.
+@next next-step-key-fail-1
+::end
+
+::dialogue next-step-key-fail-1
+@cast Дмит | Вадим
+
+Дмит: Но их нет.
+@next next-step-key-fail-2
+::end
+
+::dialogue next-step-key-fail-2
+@cast Дмит | Вадим
+
+Вадим: Я вижу.
+@next next-step-key-fail-3
+::end
+
+::dialogue next-step-key-fail-3
+@cast Дмит | Вадим
+
+Дмит: Просто уточняю.
+@next next-step-key-fail-4
+::end
+
+::dialogue next-step-key-fail-4
+@cast Дмит | Вадим
+
+Вадим: Вероятно, охранник забрал их на вахту.
+@next next-step-key-fail-5
+::end
+
+::dialogue next-step-key-fail-5
+@cast Дмит | Вадим
+
+Дмит: Тогда этот путь отпадает.
+@next next-step-open-choice
+::end
+
+::dialogue next-step-hidden-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит замечает царапины на верхней части дверной коробки.
+@next next-step-hidden-success-1
+::end
+
+::dialogue next-step-hidden-success-1
+@cast Дмит | Вадим
+
+Дмит: Подсади.
+@next next-step-hidden-success-2
+::end
+
+::dialogue next-step-hidden-success-2
+@cast Дмит | Вадим
+
+Вадим: Зачем?
+@next next-step-hidden-success-3
+::end
+
+::dialogue next-step-hidden-success-3
+@cast Дмит | Вадим
+
+Дмит: Там что-то лежит.
+@next next-step-hidden-success-4
+::end
+
+::dialogue next-step-hidden-success-4
+@cast Дмит | Вадим
+
+Вадим: Я тебя не подниму.
+@next next-step-hidden-success-5
+::end
+
+::dialogue next-step-hidden-success-5
+@cast Дмит | Вадим
+
+Дмит: Тогда стой ровно.
+@next next-step-hidden-success-6
+::end
+
+::dialogue next-step-hidden-success-6
+@cast Дмит | Вадим
+
+Вадим: Нет.
+@next next-step-hidden-success-7
+::end
+
+::dialogue next-step-hidden-success-7
+@cast Дмит | Вадим
+
+Рассказчик: Дмит встаёт на старый стул и проводит рукой по верхней части двери.
+@next next-step-hidden-success-8
+::end
+
+::dialogue next-step-hidden-success-8
+@cast Дмит | Вадим
+
+Дмит: Есть.
+@next next-step-hidden-success-9
+::end
+
+::dialogue next-step-hidden-success-9
+@cast Дмит | Вадим
+
+Рассказчик: На ладонь падает маленький ключ, обмотанный изолентой.
+@next next-step-hidden-success-10
+::end
+
+::dialogue next-step-hidden-success-10
+@cast Дмит | Вадим
+
+Вадим: Учитель прячет ключ над дверью?
+@next next-step-hidden-success-11
+::end
+
+::dialogue next-step-hidden-success-11
+@cast Дмит | Вадим
+
+Дмит: Все умные люди иногда делают тупую херню.
+@next next-step-hidden-success-12
+::end
+
+::dialogue next-step-hidden-success-12
+@cast Дмит | Вадим
+
+Вадим: Я начинаю понимать, почему ты так уверен в себе.
+@effect-next flag COMPUTER_ROOM_HIDDEN_KEY_FOUND
+@next next-step-room-intro-0
+::end
+
+::dialogue next-step-hidden-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит проверяет верх двери, подоконник и шкаф рядом.
+@next next-step-hidden-fail-1
+::end
+
+::dialogue next-step-hidden-fail-1
+@cast Дмит | Вадим
+
+Дмит: Ничего.
+@next next-step-hidden-fail-2
+::end
+
+::dialogue next-step-hidden-fail-2
+@cast Дмит | Вадим
+
+Вадим: Потому что учителя обычно не оставляют ключи возле закрытой двери.
+@next next-step-hidden-fail-3
+::end
+
+::dialogue next-step-hidden-fail-3
+@cast Дмит | Вадим
+
+Дмит: Один раз оставят — и я окажусь прав.
+@next next-step-open-choice
+::end
+
+::dialogue next-step-window-check
+@cast Дмит | Вадим
+
+Рассказчик: Дмит открывает соседний кабинет. Между помещениями находится небольшое внутреннее окно.
+@next next-step-window-check-route-hook
+::end
+
+::hook next-step-window-check-route-hook
+@fallback next-step-window-success-0
+@continue next-step-window-success-0
+::end
+
+::extend next-step-window-check-route-hook
+@when DMIT_DAMAGED
+@priority 100
+@start next-step-window-injury-0
+::end
+
+::dialogue next-step-window-success-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Вадим: Оно слишком высоко.
+@next next-step-window-success-1
+::end
+
+::dialogue next-step-window-success-1
+@cast Дмит | Вадим
+
+Дмит: Для тебя.
+@next next-step-window-success-2
+::end
+
+::dialogue next-step-window-success-2
+@cast Дмит | Вадим
+
+Вадим: Для тебя тоже.
+@next next-step-window-success-3
+::end
+
+::dialogue next-step-window-success-3
+@cast Дмит | Вадим
+
+Дмит: Сейчас увидишь.
+@next next-step-window-success-4
+::end
+
+::dialogue next-step-window-success-4
+@cast Дмит | Вадим
+
+Рассказчик: Дмит забирается на шкаф, протискивается через окно и падает на учительский стол в кабинете информатики.
+@next next-step-window-success-5
+::end
+
+::dialogue next-step-window-success-5
+@cast Дмит | Вадим
+
+Рассказчик: БУМ.
+@next next-step-window-success-6
+::end
+
+::dialogue next-step-window-success-6
+@cast Дмит | Вадим
+
+Вадим: Ты цел?
+@next next-step-window-success-7
+::end
+
+::dialogue next-step-window-success-7
+@cast Дмит | Вадим
+
+Дмит: Да.
+@next next-step-window-success-8
+::end
+
+::dialogue next-step-window-success-8
+@cast Дмит | Вадим
+
+Вадим: Это был громкий звук.
+@next next-step-window-success-9
+::end
+
+::dialogue next-step-window-success-9
+@cast Дмит | Вадим
+
+Дмит: Зато дверь сейчас открою.
+@next next-step-window-success-10
+::end
+
+::dialogue next-step-window-success-10
+@cast Дмит | Вадим
+
+Рассказчик: Через несколько секунд Дмит отпирает кабинет изнутри.
+@effect-next flag COMPUTER_ROOM_ENTERED_THROUGH_WINDOW
+@next next-step-room-intro-0
+::end
+
+::dialogue next-step-window-injury-0
+@bg school-second-floor-night
+@cast Дмит | Вадим
+
+Рассказчик: На середине подъёма у Дмита темнеет в глазах.
+@next next-step-window-injury-1
+::end
+
+::dialogue next-step-window-injury-1
+@cast Дмит | Вадим
+
+Дмит: Бля…
+@next next-step-window-injury-2
+::end
+
+::dialogue next-step-window-injury-2
+@cast Дмит | Вадим
+
+Вадим: Спускайся.
+@next next-step-window-injury-3
+::end
+
+::dialogue next-step-window-injury-3
+@cast Дмит | Вадим
+
+Дмит: Уже почти.
+@next next-step-window-injury-4
+::end
+
+::dialogue next-step-window-injury-4
+@cast Дмит | Вадим
+
+Вадим: Дмит, спускайся!
+@next next-step-window-injury-5
+::end
+
+::dialogue next-step-window-injury-5
+@cast Дмит | Вадим
+
+Рассказчик: Руки Дмита соскальзывают. Он падает со шкафа и ударяется плечом об парту.
+@next next-step-window-injury-6
+::end
+
+::dialogue next-step-window-injury-6
+@cast Дмит | Вадим
+
+Дмит: Сука!
+@next next-step-window-injury-7
+::end
+
+::dialogue next-step-window-injury-7
+@cast Дмит | Вадим
+
+Вадим: Я предупреждал.
+@effect-next flag DMIT_DAMAGED_SEVERE
+@effect-next flag GUARD_KNOWS_COMPUTER_ROOM
+@next next-step-open-choice
+::end
+
+::dialogue next-step-force-success-0
+@cast Дмит | Вадим
+
+Дмит: Отойди.
+@next next-step-force-success-1
+::end
+
+::dialogue next-step-force-success-1
+@cast Дмит | Вадим
+
+Вадим: Ты собираешься ломать ещё одну дверь?
+@next next-step-force-success-2
+::end
+
+::dialogue next-step-force-success-2
+@cast Дмит | Вадим
+
+Дмит: Она первая на этом этаже.
+@next next-step-force-success-3
+::end
+
+::dialogue next-step-force-success-3
+@cast Дмит | Вадим
+
+Рассказчик: Дмит разбегается и бьёт дверь плечом. Замок с треском вылетает из дерева.
+@next next-step-force-success-4
+::end
+
+::dialogue next-step-force-success-4
+@cast Дмит | Вадим
+
+Рассказчик: ГРОХОТ!
+@next next-step-force-success-5
+::end
+
+::dialogue next-step-force-success-5
+@cast Дмит | Вадим
+
+Вадим: Теперь охранник точно знает, где мы.
+@next next-step-force-success-6
+::end
+
+::dialogue next-step-force-success-6
+@cast Дмит | Вадим
+
+Дмит: Зато мы тоже знаем, где дверь открыта.
+@effect-next flag COMPUTER_ROOM_DOOR_BROKEN
+@effect-next flag GUARD_KNOWS_COMPUTER_ROOM
+@next next-step-room-intro-0
+::end
+
+::dialogue next-step-force-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит врезается в дверь. Она не открывается.
+@next next-step-force-fail-1
+::end
+
+::dialogue next-step-force-fail-1
+@cast Дмит | Вадим
+
+Дмит: Бля!
+@next next-step-force-fail-2
+::end
+
+::dialogue next-step-force-fail-2
+@cast Дмит | Вадим
+
+Вадим: Дверь открывается наружу.
+@next next-step-force-fail-3
+::end
+
+::dialogue next-step-force-fail-3
+@cast Дмит | Вадим
+
+Дмит: Ты раньше сказать не мог?
+@next next-step-force-fail-4
+::end
+
+::dialogue next-step-force-fail-4
+@cast Дмит | Вадим
+
+Вадим: Я не думал, что ты сразу побежишь.
+@next next-step-force-fail-5
+::end
+
+::dialogue next-step-force-fail-5
+@cast Дмит | Вадим
+
+Дмит: Ты меня плохо знаешь.
+@effect-next flag DMIT_DAMAGED
+@next next-step-open-choice
+::end
+
+::dialogue next-step-room-intro-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Рассказчик: Дверь кабинета информатики открывается. В темноте видны ряды старых компьютеров и массивный учительский стол.
+@next next-step-room-intro-1
+::end
+
+::dialogue next-step-room-intro-1
+@cast Дмит | Вадим
+
+Вадим: Рюкзак должен быть возле третьего компьютера.
+@next next-step-room-intro-2
+::end
+
+::dialogue next-step-room-intro-2
+@cast Дмит | Вадим
+
+Дмит: Тогда ищи.
+@next next-step-room-intro-3
+::end
+
+::dialogue next-step-room-intro-3
+@cast Дмит | Вадим
+
+Вадим: Нужно включить свет.
+@next next-step-room-intro-4
+::end
+
+::dialogue next-step-room-intro-4
+@cast Дмит | Вадим
+
+Дмит: Не надо. Охранник увидит.
+@next next-step-room-intro-5
+::end
+
+::dialogue next-step-room-intro-5
+@cast Дмит | Вадим
+
+Вадим: Я ничего не вижу.
+@next next-step-room-intro-6
+::end
+
+::dialogue next-step-room-intro-6
+@cast Дмит | Вадим
+
+Дмит: Телефон включи.
+@next next-step-room-intro-7
+::end
+
+::dialogue next-step-room-intro-7
+@cast Дмит | Вадим
+
+Вадим: У тебя есть телефон.
+@next next-step-room-intro-8
+::end
+
+::dialogue next-step-room-intro-8
+@cast Дмит | Вадим
+
+Дмит: У тебя тоже.
+@next next-step-room-intro-9
+::end
+
+::dialogue next-step-room-intro-9
+@cast Дмит | Вадим
+
+Вадим: У меня почти разряжен.
+@next next-step-room-intro-10
+::end
+
+::dialogue next-step-room-intro-10
+@cast Дмит | Вадим
+
+Дмит: У меня Данз звонит.
+@next next-step-room-intro-11
+::end
+
+::dialogue next-step-room-intro-11
+@cast Дмит | Вадим
+
+Вадим: Это не техническая проблема.
+@next next-step-room-choice
+::end
+
+::choice next-step-room-choice
+@prompt Вадим ищет рюкзак в темноте.
+@cast Дмит | Вадим
+
+- Только ничего больше не забудь.
+  -> next-step-room-1-0
+
+- Быстро бери рюкзак и валим.
+  -> next-step-room-2-0
+
+- Три месяца работы в одной флешке — это тупо.
+  -> next-step-room-3-0
+
+- Может, тут САМП установлен?
+  -> next-step-room-4-0
+
+::end
+
+::dialogue next-step-room-1-0
+@cast Дмит | Вадим
+
+Дмит: Только ничего больше не забудь.
+@next next-step-room-1-1
+::end
+
+::dialogue next-step-room-1-1
+@cast Дмит | Вадим
+
+Вадим: Я один раз забыл рюкзак.
+@next next-step-room-1-2
+::end
+
+::dialogue next-step-room-1-2
+@cast Дмит | Вадим
+
+Дмит: Этого хватило, чтобы мы ночью ломали школу.
+@next next-step-room-1-3
+::end
+
+::dialogue next-step-room-1-3
+@cast Дмит | Вадим
+
+Вадим: Это была твоя трактовка решения.
+@next next-step-find-bag-0
+::end
+
+::dialogue next-step-room-2-0
+@cast Дмит | Вадим
+
+Дмит: Быстро бери рюкзак и валим.
+@next next-step-room-2-1
+::end
+
+::dialogue next-step-room-2-1
+@cast Дмит | Вадим
+
+Вадим: Я тоже хочу уйти.
+@next next-step-room-2-2
+::end
+
+::dialogue next-step-room-2-2
+@cast Дмит | Вадим
+
+Дмит: Не похоже. Ты всё комментируешь.
+@next next-step-room-2-3
+::end
+
+::dialogue next-step-room-2-3
+@cast Дмит | Вадим
+
+Вадим: Мне так спокойнее.
+@next next-step-find-bag-0
+::end
+
+::dialogue next-step-room-3-0
+@cast Дмит | Вадим
+
+Дмит: Три месяца работы в одной флешке — это тупо.
+@next next-step-room-3-1
+::end
+
+::dialogue next-step-room-3-1
+@cast Дмит | Вадим
+
+Вадим: У меня есть резервная копия.
+@next next-step-room-3-2
+::end
+
+::dialogue next-step-room-3-2
+@cast Дмит | Вадим
+
+Дмит: Тогда нахуя мы здесь?
+@next next-step-room-3-3
+::end
+
+::dialogue next-step-room-3-3
+@cast Дмит | Вадим
+
+Вадим: Документы только в рюкзаке.
+@next next-step-room-3-4
+::end
+
+::dialogue next-step-room-3-4
+@cast Дмит | Вадим
+
+Дмит: Фух. А то я уже начал думать.
+@next next-step-find-bag-0
+::end
+
+::dialogue next-step-room-4-0
+@cast Дмит | Вадим
+
+Дмит: Может, тут САМП установлен?
+@next next-step-room-4-1
+::end
+
+::dialogue next-step-room-4-1
+@cast Дмит | Вадим
+
+Вадим: Нет.
+@next next-step-room-4-2
+::end
+
+::dialogue next-step-room-4-2
+@cast Дмит | Вадим
+
+Дмит: Ты даже не проверил.
+@next next-step-room-4-3
+::end
+
+::dialogue next-step-room-4-3
+@cast Дмит | Вадим
+
+Вадим: На школьных компьютерах четыре гигабайта памяти.
+@next next-step-room-4-4
+::end
+
+::dialogue next-step-room-4-4
+@cast Дмит | Вадим
+
+Дмит: Данз бы всё равно попытался.
+@next next-step-find-bag-0
+::end
+
+::dialogue next-step-find-bag-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Рассказчик: Вадим проходит вдоль компьютеров и останавливается возле третьего ряда.
+@next next-step-find-bag-1
+::end
+
+::dialogue next-step-find-bag-1
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Вадим: Вот он.
+@next next-step-find-bag-2
+::end
+
+::dialogue next-step-find-bag-2
+@cast Дмит | Вадим
+
+Рассказчик: Под столом лежит тёмный рюкзак.
+@next next-step-find-bag-3
+::end
+
+::dialogue next-step-find-bag-3
+@cast Дмит | Вадим
+
+Дмит: Проверяй всё на месте.
+@next next-step-find-bag-4
+::end
+
+::dialogue next-step-find-bag-4
+@cast Дмит | Вадим
+
+Вадим: Документы есть.
+@next next-step-find-bag-5
+::end
+
+::dialogue next-step-find-bag-5
+@cast Дмит | Вадим
+
+Дмит: Флешка?
+@next next-step-find-bag-6
+::end
+
+::dialogue next-step-find-bag-6
+@cast Дмит | Вадим
+
+Вадим: Есть.
+@next next-step-find-bag-7
+::end
+
+::dialogue next-step-find-bag-7
+@cast Дмит | Вадим
+
+Дмит: Проект?
+@next next-step-find-bag-8
+::end
+
+::dialogue next-step-find-bag-8
+@cast Дмит | Вадим
+
+Вадим: Есть.
+@next next-step-find-bag-9
+::end
+
+::dialogue next-step-find-bag-9
+@cast Дмит | Вадим
+
+Дмит: Тогда валим.
+@next next-step-find-bag-10
+::end
+
+::dialogue next-step-find-bag-10
+@cast Дмит | Вадим
+
+Рассказчик: В этот момент на учительском столе начинает вибрировать чужой телефон.
+@next next-step-find-bag-11
+::end
+
+::dialogue next-step-find-bag-11
+@cast Дмит | Вадим
+
+Рассказчик: В-В-В.
+@next next-step-find-bag-12
+::end
+
+::dialogue next-step-find-bag-12
+@cast Дмит | Вадим
+
+Дмит: Это чё?
+@next next-step-find-bag-13
+::end
+
+::dialogue next-step-find-bag-13
+@cast Дмит | Вадим
+
+Вадим: Не мой.
+@next next-step-find-bag-14
+::end
+
+::dialogue next-step-find-bag-14
+@cast Дмит | Вадим
+
+Рассказчик: На столе лежит старый чёрный телефон. Дорогой, тяжёлый, без чехла и имени владельца.
+@next next-step-find-bag-15
+::end
+
+::dialogue next-step-find-bag-15
+@cast Дмит | Вадим
+
+Вадим: Его не было здесь днём.
+@next next-step-find-bag-16
+::end
+
+::dialogue next-step-find-bag-16
+@cast Дмит | Вадим
+
+Дмит: Точно?
+@next next-step-find-bag-17
+::end
+
+::dialogue next-step-find-bag-17
+@cast Дмит | Вадим
+
+Вадим: Я сидел за этим столом почти два часа.
+@next next-step-find-bag-18
+::end
+
+::dialogue next-step-find-bag-18
+@cast Дмит | Вадим
+
+Рассказчик: Экран телефона загорается.
+@next next-step-find-bag-19
+::end
+
+::phone next-step-find-bag-19
+@cast Дмит | Вадим
+@contact Неизвестный номер
+@time 22:43
+
+Рассказчик: Машина будет у школы в 23:40.
+@next next-step-find-bag-20
+::end
+
+::phone next-step-find-bag-20
+@cast Дмит | Вадим
+@contact Неизвестный номер
+@time 22:43
+
+Рассказчик: Деньги у Игоря.
+@next next-step-find-bag-21
+::end
+
+::phone next-step-find-bag-21
+@cast Дмит | Вадим
+@contact Неизвестный номер
+@time 22:43
+
+Рассказчик: Младший ничего не должен увидеть.
+@next next-step-find-bag-22
+::end
+
+::dialogue next-step-find-bag-22
+@cast Дмит | Вадим
+
+Дмит: Какой ещё Игорь?
+@next next-step-find-bag-23
+::end
+
+::dialogue next-step-find-bag-23
+@cast Дмит | Вадим
+
+Вадим: Не знаю.
+@next next-step-find-bag-24
+::end
+
+::dialogue next-step-find-bag-24
+@cast Дмит | Вадим
+
+Дмит: И кто младший?
+@next next-step-find-bag-25
+::end
+
+::dialogue next-step-find-bag-25
+@cast Дмит | Вадим
+
+Вадим: Возможно, я.
+@next next-step-find-bag-26
+::end
+
+::dialogue next-step-find-bag-26
+@cast Дмит | Вадим
+
+Дмит: С чего ты решил?
+@next next-step-find-bag-27
+::end
+
+::dialogue next-step-find-bag-27
+@cast Дмит | Вадим
+
+Вадим: Я младше почти всех, кто находится здесь ночью.
+@next next-step-find-bag-28
+::end
+
+::dialogue next-step-find-bag-28
+@cast Дмит | Вадим
+
+Дмит: Логично.
+@next next-step-find-bag-29
+::end
+
+::dialogue next-step-find-bag-29
+@cast Дмит | Вадим
+@sound-next phone-vibrate
+
+Вадим: И поэтому мне не нравится это сообщение.
+@next next-step-phone-choice
+::end
+
+::choice next-step-phone-choice
+@bg computer-class-night
+@prompt Чёрный телефон снова вибрирует. Снизу снова раздаётся шум. Времени на решение мало.
+@cast Дмит | Вадим
+# tone: danger
+
+- Взять телефон себе.
+  +trait Хитрость 1
+  -> next-step-phone-take-0
+
+- Дать Вадиму быстро посмотреть, но телефон оставить у себя.
+  # short-label: Показать Вадиму.
+  -> next-step-phone-vadim-0
+
+- [Интеллект 6] Быстро открыть сообщения и запомнить важные данные.
+  ? Интеллект 6
+  +trait Хитрость 1
+  -> next-step-phone-read-success-0
+  !-> next-step-phone-read-fail-0
+
+- Оставить телефон на месте.
+  +trait Ответственность 1
+  -> next-step-phone-leave-0
+
+- Разбить телефон.
+  +trait Самообладание -1
+  -> next-step-phone-break-0
+
+- Позвонить по последнему входящему номеру.
+  +trait Смелость 1
+  -> next-step-phone-call-0
+
+::end
+
+::dialogue next-step-phone-take-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Вадим: Нужно отнести его директору или в милицию.
+@next next-step-phone-take-1
+::end
+
+::dialogue next-step-phone-take-1
+@cast Дмит | Вадим
+
+Дмит: Сначала понять бы, чей он.
+@next next-step-phone-take-2
+::end
+
+::dialogue next-step-phone-take-2
+@cast Дмит | Вадим
+
+Вадим: Именно поэтому его должны проверять взрослые.
+@next next-step-phone-take-3
+::end
+
+::dialogue next-step-phone-take-3
+@cast Дмит | Вадим
+
+Дмит: Охраннику отдадим?
+@next next-step-phone-take-4
+::end
+
+::dialogue next-step-phone-take-4
+@cast Дмит | Вадим
+
+Вадим: Я сказал взрослые, а не обязательно охранник.
+@next next-step-phone-take-5
+::end
+
+::dialogue next-step-phone-take-5
+@cast Дмит | Вадим
+
+Дмит: Жёстко.
+@next next-step-phone-take-6
+::end
+
+::dialogue next-step-phone-take-6
+@cast Дмит | Вадим
+
+Вадим: Я просто оценил его работу.
+@next next-step-phone-take-7
+::end
+
+::dialogue next-step-phone-take-7
+@cast Дмит | Вадим
+
+Дмит: Я заберу.
+@next next-step-phone-take-8
+::end
+
+::dialogue next-step-phone-take-8
+@cast Дмит | Вадим
+
+Вадим: Зачем?
+@next next-step-phone-take-9
+::end
+
+::dialogue next-step-phone-take-9
+@cast Дмит | Вадим
+
+Дмит: Разберусь дома.
+@next next-step-phone-take-10
+::end
+
+::dialogue next-step-phone-take-10
+@cast Дмит | Вадим
+
+Вадим: Ты умеешь разбираться в чужих телефонах?
+@next next-step-phone-take-11
+::end
+
+::dialogue next-step-phone-take-11
+@cast Дмит | Вадим
+
+Дмит: Нет.
+@next next-step-phone-take-12
+::end
+
+::dialogue next-step-phone-take-12
+@cast Дмит | Вадим
+
+Вадим: Тогда твой план снова основан на уверенности.
+@next next-step-phone-take-13
+::end
+
+::dialogue next-step-phone-take-13
+@cast Дмит | Вадим
+
+Дмит: Пока работает.
+@next next-step-phone-take-14
+::end
+
+::dialogue next-step-phone-take-14
+@cast Дмит | Вадим
+
+Рассказчик: Дмит убирает телефон в карман.
+@effect-next flag DMIT_HAS_BLACK_PHONE
+@next next-step-finish-together-0
+::end
+
+::dialogue next-step-phone-vadim-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Дмит: Глянь быстро. Ты умный — разбирайся.
+@next next-step-phone-vadim-1
+::end
+
+::dialogue next-step-phone-vadim-1
+@cast Дмит | Вадим
+
+Вадим: Я хотел передать его взрослым.
+@next next-step-phone-vadim-2
+::end
+
+::dialogue next-step-phone-vadim-2
+@cast Дмит | Вадим
+
+Дмит: Сначала поймём, что там. Телефон останется у меня.
+@next next-step-phone-vadim-3
+::end
+
+::dialogue next-step-phone-vadim-3
+@cast Дмит | Вадим
+
+Вадим: А если сообщения связаны с преступлением?
+@next next-step-phone-vadim-4
+::end
+
+::dialogue next-step-phone-vadim-4
+@cast Дмит | Вадим
+
+Дмит: Тогда смотри и не потеряй из рук.
+@next next-step-phone-vadim-5
+::end
+
+::dialogue next-step-phone-vadim-5
+@cast Дмит | Вадим
+
+Вадим: Очень полезный совет.
+@next next-step-phone-vadim-6
+::end
+
+::dialogue next-step-phone-vadim-6
+@cast Дмит | Вадим
+
+Рассказчик: Вадим возвращает телефон Дмиту. Тот убирает его в карман.
+@effect-next flag DMIT_HAS_BLACK_PHONE
+@next next-step-finish-together-0
+::end
+
+::dialogue next-step-phone-read-success-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит открывает список сообщений.
+@next next-step-phone-read-success-1
+::end
+
+::dialogue next-step-phone-read-success-1
+@cast Дмит | Вадим
+
+Вадим: Там может быть пароль.
+@next next-step-phone-read-success-2
+::end
+
+::dialogue next-step-phone-read-success-2
+@cast Дмит | Вадим
+
+Дмит: Нет пароля.
+@next next-step-phone-read-success-3
+::end
+
+::dialogue next-step-phone-read-success-3
+@cast Дмит | Вадим
+
+Вадим: Это странно.
+@next next-step-phone-read-success-4
+::end
+
+::dialogue next-step-phone-read-success-4
+@cast Дмит | Вадим
+
+Рассказчик: В переписке несколько коротких сообщений.
+@next next-step-phone-read-success-5
+::end
+
+::dialogue next-step-phone-read-success-5
+@cast Дмит | Вадим
+
+Рассказчик: Игорь подтвердил передачу.
+@next next-step-phone-read-success-6
+::end
+
+::dialogue next-step-phone-read-success-6
+@cast Дмит | Вадим
+
+Рассказчик: Строитель готов принять груз.
+@next next-step-phone-read-success-7
+::end
+
+::dialogue next-step-phone-read-success-7
+@cast Дмит | Вадим
+
+Рассказчик: Не использовать основной вход.
+@next next-step-phone-read-success-8
+::end
+
+::dialogue next-step-phone-read-success-8
+@cast Дмит | Вадим
+
+Рассказчик: Младший остаётся в школе до двадцати трёх тридцати.
+@next next-step-phone-read-success-9
+::end
+
+::dialogue next-step-phone-read-success-9
+@cast Дмит | Вадим
+
+Дмит: «Строитель»?
+@next next-step-phone-read-success-10
+::end
+
+::dialogue next-step-phone-read-success-10
+@cast Дмит | Вадим
+
+Вадим: Так называется твой лагерь?
+@next next-step-phone-read-success-11
+::end
+
+::dialogue next-step-phone-read-success-11
+@cast Дмит | Вадим
+
+Дмит: Откуда ты знаешь?
+@next next-step-phone-read-success-12
+::end
+
+::dialogue next-step-phone-read-success-12
+@cast Дмит | Вадим
+
+Вадим: Ты говорил об этом в школьной беседе.
+@next next-step-phone-read-success-13
+::end
+
+::dialogue next-step-phone-read-success-13
+@cast Дмит | Вадим
+
+Дмит: Точно.
+@next next-step-phone-read-success-14
+::end
+
+::dialogue next-step-phone-read-success-14
+@cast Дмит | Вадим
+
+Вадим: Совпадение выглядит неприятно.
+@effect-next flag BLACK_PHONE_MESSAGES_READ
+@effect-next flag BUILDER_CAMP_CONNECTION_NOTICED
+@next next-step-phone-after-read-choice
+::end
+
+::dialogue next-step-phone-read-fail-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит нажимает не на ту кнопку. Телефон требует код доступа.
+@next next-step-phone-read-fail-1
+::end
+
+::dialogue next-step-phone-read-fail-1
+@cast Дмит | Вадим
+
+Дмит: Закрылся.
+@next next-step-phone-read-fail-2
+::end
+
+::dialogue next-step-phone-read-fail-2
+@cast Дмит | Вадим
+
+Вадим: Ты заблокировал экран.
+@next next-step-phone-read-fail-3
+::end
+
+::dialogue next-step-phone-read-fail-3
+@cast Дмит | Вадим
+
+Дмит: Он сам.
+@next next-step-phone-read-fail-4
+::end
+
+::dialogue next-step-phone-read-fail-4
+@cast Дмит | Вадим
+
+Вадим: Телефоны редко делают что-то сами.
+@next next-step-phone-locked-choice
+::end
+
+::dialogue next-step-phone-leave-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Дмит: Не наше. Пусть лежит.
+@next next-step-phone-leave-1
+::end
+
+::dialogue next-step-phone-leave-1
+@cast Дмит | Вадим
+
+Вадим: Это, возможно, самый разумный твой ответ за вечер.
+@next next-step-phone-leave-2
+::end
+
+::dialogue next-step-phone-leave-2
+@cast Дмит | Вадим
+
+Дмит: Не привыкать.
+@next next-step-phone-leave-3
+::end
+
+::dialogue next-step-phone-leave-3
+@cast Дмит | Вадим
+
+Рассказчик: Телефон остаётся на учительском столе.
+@effect-next flag BLACK_PHONE_LEFT_AT_SCHOOL
+@next next-step-finish-together-0
+::end
+
+::dialogue next-step-phone-break-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Дмит: Мутная херня.
+@next next-step-phone-break-1
+::end
+
+::dialogue next-step-phone-break-1
+@cast Дмит | Вадим
+
+Вадим: Что ты собираешься делать?
+@next next-step-phone-break-2
+::end
+
+::dialogue next-step-phone-break-2
+@cast Дмит | Вадим
+
+Рассказчик: Дмит поднимает телефон над столом.
+@next next-step-phone-break-3
+::end
+
+::dialogue next-step-phone-break-3
+@cast Дмит | Вадим
+
+Вадим: Не надо.
+@next next-step-phone-break-4
+::end
+
+::dialogue next-step-phone-break-4
+@cast Дмит | Вадим
+
+Дмит: Почему?
+@next next-step-phone-break-5
+::end
+
+::dialogue next-step-phone-break-5
+@cast Дмит | Вадим
+
+Вадим: Потому что это чужая вещь и возможное доказательство.
+@next next-step-phone-break-6
+::end
+
+::dialogue next-step-phone-break-6
+@cast Дмит | Вадим
+
+Дмит: Вот поэтому.
+@next next-step-phone-break-7
+::end
+
+::dialogue next-step-phone-break-7
+@cast Дмит | Вадим
+
+Рассказчик: Дмит бросает телефон на пол и наступает на экран.
+@next next-step-phone-break-8
+::end
+
+::dialogue next-step-phone-break-8
+@cast Дмит | Вадим
+
+Вадим: Это было очень глупо.
+@next next-step-phone-break-9
+::end
+
+::dialogue next-step-phone-break-9
+@cast Дмит | Вадим
+
+Дмит: Зато никто не прочитает.
+@next next-step-phone-break-10
+::end
+
+::dialogue next-step-phone-break-10
+@cast Дмит | Вадим
+
+Вадим: Кроме людей, которые отправляли сообщения и уже знают их содержание.
+@next next-step-phone-break-11
+::end
+
+::dialogue next-step-phone-break-11
+@cast Дмит | Вадим
+
+Дмит: Бля.
+@effect-next flag BLACK_PHONE_DESTROYED
+@effect-next flag VADIM_TRUST_REDUCED
+@next next-step-finish-together-0
+::end
+
+::dialogue next-step-phone-call-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Дмит: Давай узнаем, кто там.
+@next next-step-phone-call-1
+::end
+
+::dialogue next-step-phone-call-1
+@cast Дмит | Вадим
+
+Вадим: Не звони.
+@next next-step-phone-call-2
+::end
+
+::dialogue next-step-phone-call-2
+@cast Дмит | Вадим
+
+Дмит: Почему?
+@next next-step-phone-call-3
+::end
+
+::dialogue next-step-phone-call-3
+@cast Дмит | Вадим
+
+Вадим: Потому что человек поймёт, что телефон у нас.
+@next next-step-phone-call-4
+::end
+
+::dialogue next-step-phone-call-4
+@cast Дмит | Вадим
+
+Дмит: Может, он просто потерял.
+@next next-step-phone-call-5
+::end
+
+::dialogue next-step-phone-call-5
+@cast Дмит | Вадим
+
+Вадим: Сообщения не похожи на переписку обычного владельца.
+@next next-step-phone-call-6
+::end
+
+::dialogue next-step-phone-call-6
+@cast Дмит | Вадим
+
+Дмит: Тем более интересно.
+@next next-step-phone-call-7
+::end
+
+::dialogue next-step-phone-call-7
+@cast Дмит | Вадим
+
+Рассказчик: Дмит нажимает кнопку вызова.
+@next next-step-phone-call-8
+::end
+
+::dialogue next-step-phone-call-8
+@cast Дмит | Вадим
+
+Рассказчик: После второго гудка кто-то отвечает.
+@next next-step-phone-call-9
+::end
+
+::dialogue next-step-phone-call-9
+@cast Дмит | Вадим
+
+Рассказчик: Да.
+@next next-step-phone-call-10
+::end
+
+::dialogue next-step-phone-call-10
+@cast Дмит | Вадим
+
+Дмит: Алло.
+@next next-step-phone-call-11
+::end
+
+::dialogue next-step-phone-call-11
+@cast Дмит | Вадим
+
+Рассказчик: Кто это?
+@next next-step-phone-call-12
+::end
+
+::dialogue next-step-phone-call-12
+@cast Дмит | Вадим
+
+Дмит: А вы кому звоните?
+@next next-step-phone-call-13
+::end
+
+::dialogue next-step-phone-call-13
+@cast Дмит | Вадим
+
+Рассказчик: Телефон где?
+@next next-step-phone-call-14
+::end
+
+::dialogue next-step-phone-call-14
+@cast Дмит | Вадим
+
+Дмит: В школе.
+@next next-step-phone-call-15
+::end
+
+::dialogue next-step-phone-call-15
+@cast Дмит | Вадим
+
+Рассказчик: На линии становится тихо.
+@next next-step-phone-call-16
+::end
+
+::dialogue next-step-phone-call-16
+@cast Дмит | Вадим
+
+Рассказчик: Как тебя зовут?
+@effect-next flag DMIT_HAS_BLACK_PHONE
+@effect-next flag MAFIA_CONTACT_ALERTED
+@next next-step-phone-name-choice
+::end
+
+::choice next-step-phone-name-choice
+@bg computer-class-night
+@prompt Незнакомец ждёт ответа.
+@cast Дмит | Вадим
+# tone: danger
+# timed-choice: 10 seconds; default option index: 2
+
+- Назвать настоящее имя.
+  +flag MAFIA_KNOWS_DMIT_NAME
+  +flag MAFIA_CONTACT_ALERTED
+  -> next-step-finish-together-0
+
+- Назваться Матвеем.
+  +flag MAFIA_SUSPECTS_MATVEY
+  +flag MAFIA_CONTACT_ALERTED
+  -> next-step-finish-together-0
+
+- Промолчать и сбросить звонок.
+  +flag MAFIA_CONTACT_ALERTED
+  -> next-step-finish-together-0
+
+- [Харизма 6] Представиться охранником школы.
+  ? Харизма 6
+  -> next-step-phone-guard-success-0
+  !-> next-step-finish-together-0
+
+::end
+
+::dialogue next-step-phone-guard-success-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Дмит: Охрана школы. Телефон найден при обходе.
+@next next-step-phone-guard-success-1
+::end
+
+::dialogue next-step-phone-guard-success-1
+@cast Дмит | Вадим
+
+Рассказчик: В каком кабинете?
+@next next-step-phone-guard-success-2
+::end
+
+::dialogue next-step-phone-guard-success-2
+@cast Дмит | Вадим
+
+Дмит: Информатика.
+@next next-step-phone-guard-success-3
+::end
+
+::dialogue next-step-phone-guard-success-3
+@cast Дмит | Вадим
+
+Рассказчик: Ничего не трогайте. За ним приедут.
+@next next-step-phone-guard-success-4
+::end
+
+::dialogue next-step-phone-guard-success-4
+@cast Дмит | Вадим
+
+Дмит: Кто?
+@next next-step-phone-guard-success-5
+::end
+
+::dialogue next-step-phone-guard-success-5
+@cast Дмит | Вадим
+
+Рассказчик: Человек Игоря.
+@next next-step-phone-guard-success-6
+::end
+
+::dialogue next-step-phone-guard-success-6
+@cast Дмит | Вадим
+
+Рассказчик: Звонок обрывается.
+@next next-step-phone-guard-success-7
+::end
+
+::dialogue next-step-phone-guard-success-7
+@cast Дмит | Вадим
+
+Вадим: Теперь они едут сюда.
+@next next-step-phone-guard-success-8
+::end
+
+::dialogue next-step-phone-guard-success-8
+@cast Дмит | Вадим
+
+Дмит: Зато знаем, что Игорь настоящий.
+@next next-step-phone-guard-success-9
+::end
+
+::dialogue next-step-phone-guard-success-9
+@cast Дмит | Вадим
+
+Вадим: Я не сомневался, что люди с таким именем существуют.
+@effect-next flag IGOR_CONNECTION_CONFIRMED
+@effect-next flag MAFIA_CONTACT_ALERTED
+@next next-step-finish-together-0
+::end
+
+::dialogue next-step-finish-together-0
+@bg computer-class-night
+@cast Дмит | Вадим
+
+Рассказчик: В коридоре раздаётся удар. Охранник почти добрался до второго этажа.
+@next next-step-finish-together-1
+::end
+
+::dialogue next-step-finish-together-1
+@cast Дмит | Вадим
+
+Охранник: Я ЗНАЮ, ЧТО ВЫ В ИНФОРМАТИКЕ!
+@next next-step-finish-together-2
+::end
+
+::dialogue next-step-finish-together-2
+@cast Дмит | Вадим
+
+Дмит: Как он узнал?
+@next next-step-finish-together-3
+::end
+
+::dialogue next-step-finish-together-3
+@cast Дмит | Вадим
+
+Вадим: Ты выбил дверь.
+@next next-step-finish-together-4
+::end
+
+::dialogue next-step-finish-together-4
+@cast Дмит | Вадим
+
+Дмит: А. Точно.
+@next next-step-finish-together-5
+::end
+
+::dialogue next-step-finish-together-5
+@cast Дмит | Вадим
+
+Вадим: Рюкзак у меня.
+@next next-step-finish-together-6
+::end
+
+::dialogue next-step-finish-together-6
+@cast Дмит | Вадим
+
+Дмит: Телефон решили.
+@next next-step-finish-together-7
+::end
+
+::dialogue next-step-finish-together-7
+@cast Дмит | Вадим
+
+Вадим: Осталось выйти.
+@next next-step-finish-together-8
+::end
+
+::dialogue next-step-finish-together-8
+@cast Дмит | Вадим
+
+Дмит: Самая лёгкая часть.
+@next next-step-finish-together-9
+::end
+
+::dialogue next-step-finish-together-9
+@cast Дмит | Вадим
+
+Вадим: После всего, что произошло, я тебе не верю.
+@next next-step-finish-together-10
+::end
+
+::dialogue next-step-finish-together-10
+@cast Дмит | Вадим
+
+Дмит: Правильно.
+@effect-next experience 20
+@effect-next flag SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE
+@next school-exit-entry
+::end
+
+::choice next-step-phone-after-read-choice
+@bg computer-class-night
+@prompt Сообщения прочитаны. Что делать с телефоном?
+@cast Дмит | Вадим
+
+- Забрать телефон.
+  +flag DMIT_HAS_BLACK_PHONE
+  +trait Хитрость 1
+  -> next-step-phone-after-read-take
+
+- Оставить телефон на месте.
+  +flag BLACK_PHONE_LEFT_AT_SCHOOL
+  +trait Ответственность 1
+  -> next-step-phone-after-read-leave
+
+- Позвонить по последнему номеру.
+  +flag DMIT_HAS_BLACK_PHONE
+  +trait Смелость 1
+  -> next-step-phone-call-0
+
+::end
+
+::dialogue next-step-phone-after-read-take
+@cast Дмит | Вадим
+
+Дмит: Теперь точно забираю.
+@next next-step-phone-after-read-take__1
+::end
+
+::dialogue next-step-phone-after-read-take__1
+@cast Дмит | Вадим
+
+Вадим: Потому что увидел название лагеря?
+@next next-step-phone-after-read-take__2
+::end
+
+::dialogue next-step-phone-after-read-take__2
+@cast Дмит | Вадим
+
+Дмит: Потому что кто-то пишет про Игоря и знает эту школу.
+@next next-step-phone-after-read-take__3
+::end
+
+::dialogue next-step-phone-after-read-take__3
+@cast Дмит | Вадим
+
+Вадим: Это всё ещё кража.
+@next next-step-phone-after-read-take__4
+::end
+
+::dialogue next-step-phone-after-read-take__4
+@cast Дмит | Вадим
+
+Дмит: Тогда называй сбором улик.
+@next next-step-finish-together-0
+::end
+
+::dialogue next-step-phone-after-read-leave
+@cast Дмит | Вадим
+
+Дмит: Пусть лежит.
+@next next-step-phone-after-read-leave__1
+::end
+
+::dialogue next-step-phone-after-read-leave__1
+@cast Дмит | Вадим
+
+Вадим: После всего, что мы прочитали?
+@next next-step-phone-after-read-leave__2
+::end
+
+::dialogue next-step-phone-after-read-leave__2
+@cast Дмит | Вадим
+
+Дмит: Именно после этого.
+@next next-step-phone-after-read-leave__3
+::end
+
+::dialogue next-step-phone-after-read-leave__3
+@cast Дмит | Вадим
+
+Вадим: Разумно.
+@next next-step-finish-together-0
+::end
+
+::choice next-step-phone-locked-choice
+@bg computer-class-night
+@prompt Телефон заблокирован.
+@cast Дмит | Вадим
+
+- Всё равно забрать его.
+  +flag DMIT_HAS_BLACK_PHONE
+  -> next-step-phone-take-0
+
+- Оставить телефон.
+  +flag BLACK_PHONE_LEFT_AT_SCHOOL
+  -> next-step-phone-leave-0
+
+::end

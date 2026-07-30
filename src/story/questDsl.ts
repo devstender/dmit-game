@@ -4,6 +4,8 @@ import type {
   ChoiceTimer,
   Emotion,
   PhoneMessage,
+  PersonalityTrait,
+  PersonalityTraits,
   RelationCharacter,
   Scene,
   SceneEffect,
@@ -18,8 +20,14 @@ type Music = NonNullable<Scene['music']>
 
 type Effect =
   | { kind: 'flag'; name: string }
+  | { kind: 'item'; id: string }
+  | { kind: 'ability'; ability: Ability; delta: number }
   | { kind: 'relation'; character: RelationCharacter; delta: number }
   | { kind: 'money'; delta: number }
+  | { kind: 'experience'; delta: number }
+  | { kind: 'trait'; trait: PersonalityTrait; delta: number }
+  | { kind: 'suspicion'; delta: number }
+  | { kind: 'reputation'; delta: number }
 
 type Context = {
   background?: Background
@@ -42,20 +50,22 @@ type DialogueLine =
   | readonly [DialogueSpeaker, string]
   | readonly [DialogueSpeaker, string, Cast | Context]
 
-type SkillCheck = {
-  stat: Ability
-  value: number
-}
+type SkillCheck =
+  | { kind: 'ability'; stat: Ability; value: number }
+  | { kind: 'trait'; trait: PersonalityTrait; value: number }
 
 type Requirement =
   | { kind: 'flags-all'; flags: readonly string[] }
   | { kind: 'flags-any'; flags: readonly string[] }
   | { kind: 'money'; amount: number }
+  | { kind: 'trait'; trait: PersonalityTrait; value: number }
 
 type FlagVisibility = {
   allFlags?: string[]
   anyFlags?: string[]
   unlessFlags?: string[]
+  traits?: Partial<PersonalityTraits>
+  reputation?: number
 }
 
 type Option = {
@@ -192,7 +202,13 @@ const mergeEffects = (effects: readonly Effect[] | undefined): SceneEffect | und
   const result: SceneEffect = {}
   for (const effect of effects) {
     if (effect.kind === 'flag') result.flags = [...(result.flags ?? []), effect.name]
+    if (effect.kind === 'item') result.items = [...(result.items ?? []), effect.id]
+    if (effect.kind === 'ability') result.abilities = { ...(result.abilities ?? {}), [effect.ability]: (result.abilities?.[effect.ability] ?? 0) + effect.delta }
     if (effect.kind === 'money') result.money = (result.money ?? 0) + effect.delta
+    if (effect.kind === 'experience') result.experience = (result.experience ?? 0) + effect.delta
+    if (effect.kind === 'reputation') result.reputation = (result.reputation ?? 0) + effect.delta
+    if (effect.kind === 'suspicion') result.suspicion = (result.suspicion ?? 0) + effect.delta
+    if (effect.kind === 'trait') result.traits = { ...(result.traits ?? {}), [effect.trait]: (result.traits?.[effect.trait] ?? 0) + effect.delta }
     if (effect.kind === 'relation') {
       result.relations = { ...(result.relations ?? {}), [effect.character]: (result.relations?.[effect.character] ?? 0) + effect.delta }
     }
@@ -200,16 +216,18 @@ const mergeEffects = (effects: readonly Effect[] | undefined): SceneEffect | und
   return result
 }
 
-const requirementsToChoice = (requirements: Requirement | readonly Requirement[] | undefined): Pick<StoryChoice, 'requiresMoney' | 'requiresFlags' | 'requiresAnyFlags'> => {
+const requirementsToChoice = (requirements: Requirement | readonly Requirement[] | undefined): Pick<StoryChoice, 'requiresMoney' | 'requiresFlags' | 'requiresAnyFlags' | 'requiresTraits'> => {
   const all = !requirements ? [] : Array.isArray(requirements) ? requirements : [requirements]
   const flags = all.filter((item): item is Extract<Requirement, { kind: 'flags-all' }> => item.kind === 'flags-all').flatMap((item) => item.flags)
   const anyFlags = all.filter((item): item is Extract<Requirement, { kind: 'flags-any' }> => item.kind === 'flags-any').flatMap((item) => item.flags)
   const moneyRequirement = all.find((item): item is Extract<Requirement, { kind: 'money' }> => item.kind === 'money')
+  const traits = all.filter((item): item is Extract<Requirement, { kind: 'trait' }> => item.kind === 'trait')
   // The runtime only has an all-flags condition. Keep any-flags in DSL validation/docs until the engine gains a matching field.
   return {
     ...(flags.length ? { requiresFlags: flags } : {}),
     ...(anyFlags.length ? { requiresAnyFlags: anyFlags } : {}),
     ...(moneyRequirement ? { requiresMoney: moneyRequirement.amount } : {}),
+    ...(traits.length ? { requiresTraits: Object.fromEntries(traits.map((item) => [item.trait, item.value])) } : {}),
   }
 }
 
@@ -260,17 +278,35 @@ const localizedAbilityNames: Record<string, Ability> = {
   'Удача': 'luck',
 }
 
-export const skill = (stat: Ability | keyof typeof localizedAbilityNames, value: number): SkillCheck => ({
-  stat: localizedAbilityNames[stat] ?? stat as Ability,
-  value,
-})
+const localizedTraitNames: Record<string, PersonalityTrait> = {
+  'Характер': 'courage',
+  'Смелость': 'courage',
+  'Самообладание': 'composure',
+  'Ответственность': 'responsibility',
+  'Товарищество': 'camaraderie',
+  'Хитрость': 'cunning',
+  'Эмпатия': 'empathy',
+}
+
+export const skill = (stat: Ability | PersonalityTrait | keyof typeof localizedAbilityNames | keyof typeof localizedTraitNames, value: number): SkillCheck => {
+  const traitName = localizedTraitNames[stat]
+  if (traitName) return { kind: 'trait', trait: traitName, value }
+  return { kind: 'ability', stat: localizedAbilityNames[stat] ?? stat as Ability, value }
+}
 export const flag = (name: string): Effect => ({ kind: 'flag', name })
+export const item = (id: string): Effect => ({ kind: 'item', id })
+export const ability = (value: Ability | keyof typeof localizedAbilityNames, delta: number): Effect => ({ kind: 'ability', ability: localizedAbilityNames[value] ?? value as Ability, delta })
 export const relation = (character: RelationCharacter, delta: number): Effect => ({ kind: 'relation', character, delta })
 export const money = (delta: number): Effect => ({ kind: 'money', delta })
+export const experience = (delta: number): Effect => ({ kind: 'experience', delta })
+export const trait = (value: PersonalityTrait, delta: number): Effect => ({ kind: 'trait', trait: value, delta })
+export const suspicion = (delta: number): Effect => ({ kind: 'suspicion', delta })
+export const reputation = (delta: number): Effect => ({ kind: 'reputation', delta })
 export const requiresFlag = (name: string): Requirement => ({ kind: 'flags-all', flags: [name] })
 export const requiresAllFlags = (...flags: string[]): Requirement => ({ kind: 'flags-all', flags })
 export const requiresAnyFlag = (...flags: string[]): Requirement => ({ kind: 'flags-any', flags })
 export const requiresMoney = (amount: number): Requirement => ({ kind: 'money', amount })
+export const requiresTrait = (trait: PersonalityTrait, value: number): Requirement => ({ kind: 'trait', trait, value })
 
 export const validateQuest = (quest: QuestDefinition): void => {
   const ids = new Set<string>()
@@ -289,7 +325,7 @@ export const validateQuest = (quest: QuestDefinition): void => {
         if (node.defaultOptionIndex !== undefined && (node.defaultOptionIndex < 0 || node.defaultOptionIndex >= node.options.length)) errors.push(message(quest, node, 'Timed choice defaultOptionIndex is out of range.'))
       }
       node.options.forEach((option, index) => {
-        if (option.check && (!validAbilities.has(option.check.stat) || !Number.isFinite(option.check.value) || option.check.value <= 0)) errors.push(message(quest, node, `Option ${index + 1} "${option.text}": invalid skill value.`))
+        if (option.check && ((!('trait' in option.check) && !validAbilities.has(option.check.stat)) || !Number.isFinite(option.check.value) || option.check.value <= 0)) errors.push(message(quest, node, `Option ${index + 1} "${option.text}": invalid skill value.`))
         if (option.check && !option.failNext) errors.push(message(quest, node, `Option ${index + 1} "${option.text}": skill check requires failNext.`))
       })
     }
@@ -411,7 +447,8 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
     ...(option.narration ? { narration: option.narration } : {}),
     next: resolve(option.next),
     ...(option.failNext ? { failNext: resolve(option.failNext) } : {}),
-    ...(option.runtimeRequires ?? (option.check ? { [option.check.stat]: option.check.value } : undefined) ? { requires: option.runtimeRequires ?? (option.check ? { [option.check.stat]: option.check.value } : undefined) } : {}),
+    ...(option.runtimeRequires ?? (option.check && option.check.kind === 'ability' ? { [option.check.stat]: option.check.value } : undefined) ? { requires: option.runtimeRequires ?? (option.check && option.check.kind === 'ability' ? { [option.check.stat]: option.check.value } : undefined) } : {}),
+    ...(option.check?.kind === 'trait' ? { traitCheck: { [option.check.trait]: option.check.value } } : {}),
     ...(option.visibleWhen ? { visibleWhen: option.visibleWhen } : {}),
     ...requirementsToChoice(option.require),
     ...(option.runtimeRequiresMoney !== undefined ? { requiresMoney: option.runtimeRequiresMoney } : {}),
@@ -473,6 +510,7 @@ export const compileQuest = (startIndex: number, quest: QuestDefinition): Scene[
           ...(branch.allFlags?.length ? { allFlags: branch.allFlags } : {}),
           ...(branch.anyFlags?.length ? { anyFlags: branch.anyFlags } : {}),
           ...(branch.unlessFlags?.length ? { unlessFlags: branch.unlessFlags } : {}),
+          ...(branch.traits ? { traits: branch.traits } : {}),
           ...(branch.priority !== undefined ? { priority: branch.priority } : {}),
         }))
       scene.fallbackNext = resolve(node.fallback)

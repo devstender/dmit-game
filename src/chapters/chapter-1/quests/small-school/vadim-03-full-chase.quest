@@ -1,0 +1,2217 @@
+# ГЛАВА 1 — «МЛАДШИЙ У ШКОЛЫ»
+# ПОЛНАЯ ПЕРЕСБОРКА V2 — ПОЛНАЯ ПОГОНЯ
+#
+# Основа: scenes.ts + импортированный smallSchoolExitNodes.
+# Исходные реплики сохранены, кроме перечисленных логических исправлений.
+# tone/music/timer/short-label сохранены комментариями и в metadata JSON.
+
+::dialogue full-chase-start-0
+@cast Дмит | Вадим
+
+Рассказчик: Внутри школы тихо. Издалека слышны телевизор охранника и мерное тиканье настенных часов.
+@next full-chase-start-1
+::end
+
+::dialogue full-chase-start-1
+@cast Дмит | Вадим
+
+Вадим: До лестницы нужно пройти два коридора.
+@next full-chase-start-2
+::end
+
+::dialogue full-chase-start-2
+@cast Дмит | Вадим
+
+Дмит: Веди.
+@next full-chase-start-3
+::end
+
+::dialogue full-chase-start-3
+@cast Дмит | Вадим
+
+Вадим: Ты сказал, что пойдёшь первым.
+@next full-chase-start-4
+::end
+
+::dialogue full-chase-start-4
+@cast Дмит | Вадим
+
+Дмит: Тогда показывай сзади.
+@next full-chase-start-5
+::end
+
+::dialogue full-chase-start-5
+@cast Дмит | Вадим
+
+Вадим: Это неудобно.
+@next full-chase-start-6
+::end
+
+::dialogue full-chase-start-6
+@cast Дмит | Вадим
+
+Дмит: Зато безопасно.
+@next full-chase-start-7
+::end
+
+::dialogue full-chase-start-7
+@cast Дмит | Вадим
+
+Рассказчик: Дмит выходит из раздевалки. Вадим держится в нескольких шагах позади.
+@next full-chase-start-8
+::end
+
+::dialogue full-chase-start-8
+@cast Дмит | Вадим
+
+Вадим: Направо.
+@next full-chase-start-9
+::end
+
+::dialogue full-chase-start-9
+@cast Дмит | Вадим
+
+Дмит: Я знаю.
+@next full-chase-start-10
+::end
+
+::dialogue full-chase-start-10
+@cast Дмит | Вадим
+
+Вадим: Ты пошёл налево.
+@next full-chase-start-11
+::end
+
+::dialogue full-chase-start-11
+@cast Дмит | Вадим
+
+Дмит: Я проверял.
+@next full-chase-start-12
+::end
+
+::dialogue full-chase-start-12
+@cast Дмит | Вадим
+
+Вадим: Кого?
+@next full-chase-start-13
+::end
+
+::dialogue full-chase-start-13
+@cast Дмит | Вадим
+
+Дмит: Тебя.
+@next full-chase-start-14
+::end
+
+::dialogue full-chase-start-14
+@cast Дмит | Вадим
+
+Рассказчик: Дмит разворачивается и быстро идёт в другую сторону.
+@next full-chase-start-15
+::end
+
+::dialogue full-chase-start-15
+@cast Дмит | Вадим
+
+Рассказчик: В этот момент из-за угла появляется охранник с фонариком.
+@next full-chase-start-16
+::end
+
+::dialogue full-chase-start-16
+@cast Дмит | Вадим
+
+Охранник: А НУ СТОЯТЬ!
+@next full-chase-start-17
+::end
+
+::dialogue full-chase-start-17
+@cast Дмит | Вадим
+
+Дмит: Бля.
+@next full-chase-start-18
+::end
+
+::dialogue full-chase-start-18
+@cast Дмит | Вадим
+
+Вадим: Он нас увидел.
+@next full-chase-start-19
+::end
+
+::dialogue full-chase-start-19
+@cast Дмит | Вадим
+
+Дмит: Я заметил!
+@next full-chase-start-20
+::end
+
+::dialogue full-chase-start-20
+@cast Дмит | Вадим
+
+Охранник: СТОЯТЬ, Я СКАЗАЛ!
+@next full-chase-start-21
+::end
+
+::dialogue full-chase-start-21
+@cast Дмит | Вадим
+
+Дмит: Бежим!
+@next full-chase-start-22
+::end
+
+::dialogue full-chase-start-22
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим срываются с места. Охранник бежит следом, освещая коридор фонариком.
+@next full-chase-start-23
+::end
+
+::dialogue full-chase-start-23
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Слева находится дверь в спортивный зал. Справа — кабинет музыки. Возле стены стоит коробка с мячами.
+@next full-chase-first-choice
+::end
+
+::choice full-chase-first-choice
+@prompt Первое отвлечение: охранник почти рядом.
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+# timed-choice: 10 seconds; default option index: 3
+
+- [Ловкость 5] Пнуть коробку с мячами под ноги охраннику.
+  ? Ловкость 5
+  -> full-balls-success-0
+  !-> full-balls-fail-0
+
+- [Интеллект 5] Включить звонок в кабинете музыки.
+  ? Интеллект 5
+  -> full-music-success-0
+  !-> full-music-fail-0
+
+- Они побежали в спортзал!
+  -> full-lie-0
+
+- Просто бежать вперёд.
+  -> full-run-0
+
+::end
+
+::dialogue full-balls-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит на бегу бьёт ногой по коробке. По коридору раскатываются баскетбольные и волейбольные мячи.
+@next full-balls-success-1
+::end
+
+::dialogue full-balls-success-1
+@cast Дмит | Вадим
+
+Охранник: Ах вы суки!
+@next full-balls-success-2
+::end
+
+::dialogue full-balls-success-2
+@cast Дмит | Вадим
+
+Рассказчик: Охранник наступает на один из мячей, размахивает руками и едва удерживается на ногах.
+@next full-balls-success-3
+::end
+
+::dialogue full-balls-success-3
+@cast Дмит | Вадим
+
+Дмит: Страйк!
+@next full-balls-success-4
+::end
+
+::dialogue full-balls-success-4
+@cast Дмит | Вадим
+
+Вадим: Это другой вид спорта.
+@next full-balls-success-5
+::end
+
+::dialogue full-balls-success-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Сейчас вообще похуй!
+@effect-next flag GUARD_LOST_ADVANTAGE_1
+@next full-route-intro-0
+::end
+
+::dialogue full-balls-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит пытается ударить по коробке, но попадает носком в стену.
+@next full-balls-fail-1
+::end
+
+::dialogue full-balls-fail-1
+@cast Дмит | Вадим
+
+Дмит: А-А, бля!
+@next full-balls-fail-2
+::end
+
+::dialogue full-balls-fail-2
+@cast Дмит | Вадим
+
+Вадим: Не останавливайся!
+@next full-balls-fail-3
+::end
+
+::dialogue full-balls-fail-3
+@cast Дмит | Вадим
+
+Охранник: Попались!
+@next full-balls-fail-4
+::end
+
+::dialogue full-balls-fail-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник приближается.
+@effect-next flag CHASE_ERROR_1
+@next full-route-intro-0
+::end
+
+::dialogue full-music-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит дёргает дверь кабинета музыки. Она оказывается открыта.
+@next full-music-success-1
+::end
+
+::dialogue full-music-success-1
+@cast Дмит | Вадим
+
+Дмит: Вадим, где тут шум включается?
+@next full-music-success-2
+::end
+
+::dialogue full-music-success-2
+@cast Дмит | Вадим
+
+Вадим: Я не знаю!
+@next full-music-success-3
+::end
+
+::dialogue full-music-success-3
+@cast Дмит | Вадим
+
+Дмит: Ты же умный!
+@next full-music-success-4
+::end
+
+::dialogue full-music-success-4
+@cast Дмит | Вадим
+
+Вадим: Я не учитель музыки!
+@next full-music-success-5
+::end
+
+::dialogue full-music-success-5
+@cast Дмит | Вадим
+
+Рассказчик: Дмит ударяет ладонью по клавишам старого синтезатора.
+@next full-music-success-6
+::end
+
+::dialogue full-music-success-6
+@cast Дмит | Вадим
+
+Рассказчик: БА-А-АМ!
+@next full-music-success-7
+::end
+
+::dialogue full-music-success-7
+@cast Дмит | Вадим
+
+Охранник: Кто ещё там?!
+@next full-music-success-8
+::end
+
+::dialogue full-music-success-8
+@cast Дмит | Вадим
+
+Рассказчик: Охранник на секунду останавливается и направляет фонарик в кабинет.
+@next full-music-success-9
+::end
+
+::dialogue full-music-success-9
+@cast Дмит | Вадим
+
+Дмит: Работает!
+@next full-music-success-10
+::end
+
+::dialogue full-music-success-10
+@cast Дмит | Вадим
+
+Вадим: Случайно.
+@next full-music-success-11
+::end
+
+::dialogue full-music-success-11
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Главное — работает.
+@effect-next flag GUARD_LOST_ADVANTAGE_1
+@next full-route-intro-0
+::end
+
+::dialogue full-music-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит дёргает дверь кабинета музыки, но она заперта.
+@next full-music-fail-1
+::end
+
+::dialogue full-music-fail-1
+@cast Дмит | Вадим
+
+Дмит: Бля!
+@next full-music-fail-2
+::end
+
+::dialogue full-music-fail-2
+@cast Дмит | Вадим
+
+Вадим: Дальше беги!
+@next full-music-fail-3
+::end
+
+::dialogue full-music-fail-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Потерянные секунды позволяют охраннику приблизиться.
+@effect-next flag CHASE_ERROR_1
+@next full-route-intro-0
+::end
+
+::dialogue full-lie-0
+@cast Дмит | Вадим
+
+Дмит: Они в спортзал побежали!
+@next full-lie-1
+::end
+
+::dialogue full-lie-1
+@cast Дмит | Вадим
+
+Охранник: Кто — они?! Я вас вижу!
+@next full-lie-2
+::end
+
+::dialogue full-lie-2
+@cast Дмит | Вадим
+
+Дмит: Другие!
+@next full-lie-3
+::end
+
+::dialogue full-lie-3
+@cast Дмит | Вадим
+
+Охранник: Какие другие?!
+@next full-lie-4
+::end
+
+::dialogue full-lie-4
+@cast Дмит | Вадим
+
+Вадим: Очень слабая попытка.
+@next full-lie-5
+::end
+
+::dialogue full-lie-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Зато попробовал.
+@next full-route-intro-0
+::end
+
+::dialogue full-run-0
+@cast Дмит | Вадим
+
+Дмит: Не оборачивайся!
+@next full-run-1
+::end
+
+::dialogue full-run-1
+@cast Дмит | Вадим
+
+Вадим: Я и не оборачиваюсь!
+@next full-run-2
+::end
+
+::dialogue full-run-2
+@cast Дмит | Вадим
+
+Дмит: Тогда откуда знаешь, где он?
+@next full-run-3
+::end
+
+::dialogue full-run-3
+@cast Дмит | Вадим
+
+Вадим: Он очень громко кричит!
+@next full-run-4
+::end
+
+::dialogue full-run-4
+@cast Дмит | Вадим
+
+Охранник: СТОЯТЬ!
+@next full-run-5
+::end
+
+::dialogue full-run-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Справедливо.
+@next full-route-intro-0
+::end
+
+::dialogue full-route-intro-0
+@cast Дмит | Вадим
+
+Рассказчик: В конце коридора путь разделяется.
+@next full-route-intro-1
+::end
+
+::dialogue full-route-intro-1
+@cast Дмит | Вадим
+
+Рассказчик: Слева — короткий путь к лестнице через освещённый холл. Справа — тёмный коридор возле кабинетов труда.
+@next full-route-intro-2
+::end
+
+::dialogue full-route-intro-2
+@cast Дмит | Вадим
+
+Вадим: Налево быстрее!
+@next full-route-intro-3
+::end
+
+::dialogue full-route-intro-3
+@cast Дмит | Вадим
+
+Дмит: Там светло!
+@next full-route-intro-4
+::end
+
+::dialogue full-route-intro-4
+@cast Дмит | Вадим
+
+Вадим: Зато справа тупик!
+@next full-route-intro-5
+::end
+
+::dialogue full-route-intro-5
+@cast Дмит | Вадим
+
+Дмит: Ты раньше сказать не мог?!
+@next full-route-intro-6
+::end
+
+::dialogue full-route-intro-6
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: СТОЯТЬ, МАЛОЛЕТКИ!
+@next full-route-choice
+::end
+
+::choice full-route-choice
+@prompt Маршрут на лестницу.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 10 seconds; default option index: 1
+
+- [Внимательность 5] Заметить служебную дверь.
+  ? Внимательность 5
+  -> full-service-success-0
+  !-> full-service-fail-0
+
+- Побежать через освещённый холл.
+  -> full-hall-0
+
+- Повернуть в тёмный коридор.
+  -> full-dark-intro-0
+
+- Вадим, сам решай!
+  -> full-vadim-route-0
+
+::end
+
+::dialogue full-service-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит замечает между шкафами узкую дверь без таблички.
+@next full-service-success-1
+::end
+
+::dialogue full-service-success-1
+@cast Дмит | Вадим
+
+Дмит: Сюда!
+@next full-service-success-2
+::end
+
+::dialogue full-service-success-2
+@cast Дмит | Вадим
+
+Вадим: Это кладовая уборщицы.
+@next full-service-success-3
+::end
+
+::dialogue full-service-success-3
+@cast Дмит | Вадим
+
+Дмит: Проход есть?
+@next full-service-success-4
+::end
+
+::dialogue full-service-success-4
+@cast Дмит | Вадим
+
+Вадим: Кажется, с другой стороны ещё одна дверь.
+@next full-service-success-5
+::end
+
+::dialogue full-service-success-5
+@cast Дмит | Вадим
+
+Дмит: Значит, есть.
+@next full-service-success-6
+::end
+
+::dialogue full-service-success-6
+@cast Дмит | Вадим
+
+Рассказчик: Ребята вбегают в кладовую и выскакивают в соседний коридор.
+@next full-service-success-7
+::end
+
+::dialogue full-service-success-7
+@cast Дмит | Вадим
+
+Охранник: Куда делись?!
+@next full-service-success-8
+::end
+
+::dialogue full-service-success-8
+@cast Дмит | Вадим
+
+Вадим: Ты это заметил?
+@next full-service-success-9
+::end
+
+::dialogue full-service-success-9
+@cast Дмит | Вадим
+
+Дмит: Я иногда смотрю по сторонам.
+@next full-service-success-10
+::end
+
+::dialogue full-service-success-10
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Редко, но полезно.
+@effect-next flag GUARD_LOST_ADVANTAGE_2
+@next full-trap-intro-0
+::end
+
+::dialogue full-service-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит замечает дверь слишком поздно и пролетает мимо неё.
+@next full-service-fail-1
+::end
+
+::dialogue full-service-fail-1
+@cast Дмит | Вадим
+
+Вадим: Там был проход!
+@next full-service-fail-2
+::end
+
+::dialogue full-service-fail-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Теперь уже нет!
+@effect-next flag CHASE_ERROR_2
+@next full-hall-0
+::end
+
+::dialogue full-hall-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим выбегают в ярко освещённый холл.
+@next full-hall-1
+::end
+
+::dialogue full-hall-1
+@cast Дмит | Вадим
+
+Охранник: Вижу вас!
+@next full-hall-2
+::end
+
+::dialogue full-hall-2
+@cast Дмит | Вадим
+
+Дмит: А мы тебя!
+@next full-hall-3
+::end
+
+::dialogue full-hall-3
+@cast Дмит | Вадим
+
+Вадим: Зачем ты ему ответил?
+@next full-hall-4
+::end
+
+::dialogue full-hall-4
+@cast Дмит | Вадим
+
+Дмит: Чтобы не думал, что мы невежливые.
+@next full-hall-5
+::end
+
+::dialogue full-hall-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник точно видит, куда они направляются.
+@effect-next flag CHASE_ERROR_2
+@next full-trap-intro-0
+::end
+
+::dialogue full-dark-intro-0
+@cast Дмит | Вадим
+
+Рассказчик: Ребята сворачивают направо и через несколько секунд упираются в запертую металлическую дверь.
+@next full-dark-intro-1
+::end
+
+::dialogue full-dark-intro-1
+@cast Дмит | Вадим
+
+Дмит: Ты сказал, тут тупик?!
+@next full-dark-intro-2
+::end
+
+::dialogue full-dark-intro-2
+@cast Дмит | Вадим
+
+Вадим: Я именно это и сказал!
+@next full-dark-intro-3
+::end
+
+::dialogue full-dark-intro-3
+@cast Дмит | Вадим
+
+Дмит: Я услышал «туда»!
+@next full-dark-intro-4
+::end
+
+::dialogue full-dark-intro-4
+@cast Дмит | Вадим
+
+Вадим: Это разные слова!
+@next full-dark-intro-5
+::end
+
+::dialogue full-dark-intro-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: Ну всё!
+@effect-next flag CHASE_ERROR_2
+@next full-dark-choice
+::end
+
+::choice full-dark-choice
+@prompt Запертая дверь. Выбор нужно сделать быстро.
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+# timed-choice: 10 seconds; default option index: 2
+
+- [Сила 5] Выбить дверь плечом.
+  ? Сила 5
+  -> full-dark-strength-0
+  !-> full-dark-fail-0
+
+- [Ловкость 5] Перепрыгнуть через подоконник.
+  ? Ловкость 5
+  -> full-dark-agility-0
+  !-> full-dark-fail-0
+
+- Развернуться и бежать обратно.
+  -> full-dark-fail-0
+
+::end
+
+::dialogue full-dark-strength-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит врезается плечом в старую дверь. Замок вылетает из крепления.
+@next full-dark-strength-1
+::end
+
+::dialogue full-dark-strength-1
+@cast Дмит | Вадим
+
+Дмит: Открыто!
+@next full-dark-strength-2
+::end
+
+::dialogue full-dark-strength-2
+@cast Дмит | Вадим
+
+Вадим: Ты сломал школьную дверь.
+@next full-dark-strength-3
+::end
+
+::dialogue full-dark-strength-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Потом обсудим!
+@effect-next flag SCHOOL_DOOR_BROKEN
+@next full-trap-intro-0
+::end
+
+::dialogue full-dark-agility-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит запрыгивает на широкий подоконник и перебирается через открывающуюся створку в соседний кабинет.
+@next full-dark-agility-1
+::end
+
+::dialogue full-dark-agility-1
+@cast Дмит | Вадим
+
+Дмит: Давай руку!
+@next full-dark-agility-2
+::end
+
+::dialogue full-dark-agility-2
+@cast Дмит | Вадим
+
+Вадим: Я сам.
+@next full-dark-agility-3
+::end
+
+::dialogue full-dark-agility-3
+@cast Дмит | Вадим
+
+Дмит: Тогда быстрее сам!
+@next full-dark-agility-4
+::end
+
+::dialogue full-dark-agility-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Вадим перебирается следом.
+@next full-trap-intro-0
+::end
+
+::dialogue full-dark-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит теряет время возле двери.
+@next full-dark-fail-1
+::end
+
+::dialogue full-dark-fail-1
+@cast Дмит | Вадим
+
+Охранник: Стоять!
+@next full-dark-fail-2
+::end
+
+::dialogue full-dark-fail-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Охранник почти хватает Вадима за рюкзак.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next full-critical-intro-0
+::end
+
+::dialogue full-vadim-route-0
+@cast Дмит | Вадим
+
+Дмит: Вадим, сам решай!
+@next full-vadim-route-1
+::end
+
+::dialogue full-vadim-route-1
+@cast Дмит | Вадим
+
+Вадим: Налево!
+@next full-vadim-route-2
+::end
+
+::dialogue full-vadim-route-2
+@cast Дмит | Вадим
+
+Дмит: Тогда налево!
+@next full-vadim-route-3
+::end
+
+::dialogue full-vadim-route-3
+@cast Дмит | Вадим
+
+Рассказчик: Они выбегают в освещённый холл.
+@next full-vadim-route-4
+::end
+
+::dialogue full-vadim-route-4
+@cast Дмит | Вадим
+
+Дмит: Ты мог выбрать что-нибудь потемнее.
+@next full-vadim-route-5
+::end
+
+::dialogue full-vadim-route-5
+@cast Дмит | Вадим
+
+Вадим: Ты дал мне три секунды.
+@next full-vadim-route-6
+::end
+
+::dialogue full-vadim-route-6
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Справедливо.
+@next full-hall-0
+::end
+
+::dialogue full-trap-intro-0
+@cast Дмит | Вадим
+
+Рассказчик: Возле лестницы стоит тележка уборщицы. На ней ведро с водой, швабра и несколько бутылок чистящего средства.
+@next full-trap-intro-1
+::end
+
+::dialogue full-trap-intro-1
+@cast Дмит | Вадим
+
+Рассказчик: Охранник приближается. До лестницы остаётся несколько метров.
+@next full-trap-intro-2
+::end
+
+::dialogue full-trap-intro-2
+@cast Дмит | Вадим
+
+Вадим: Он нас догоняет!
+@next full-trap-intro-3
+::end
+
+::dialogue full-trap-intro-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Вижу!
+@next full-trap-choice
+::end
+
+::choice full-trap-choice
+@prompt Тележка уборщицы у лестницы.
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+# timed-choice: 10 seconds; default option index: 3
+
+- [Сила 5] Опрокинуть тележку.
+  ? Сила 5
+  -> full-cart-success-0
+  !-> full-cart-fail-0
+
+- [Интеллект 5] Разлить воду и поставить табличку.
+  ? Интеллект 5
+  -> full-wet-success-0
+  !-> full-wet-fail-0
+
+- Бросить швабру.
+  -> full-mop-check
+
+- Спрятаться за тележкой.
+  -> full-hide-0
+
+::end
+
+::dialogue full-cart-success-0
+@cast Дмит | Вадим
+
+Дмит: Отойди!
+@next full-cart-success-1
+::end
+
+::dialogue full-cart-success-1
+@cast Дмит | Вадим
+
+Рассказчик: Дмит хватает тележку и переворачивает её поперёк прохода.
+@next full-cart-success-2
+::end
+
+::dialogue full-cart-success-2
+@cast Дмит | Вадим
+
+Рассказчик: ГРОХОТ!
+@next full-cart-success-3
+::end
+
+::dialogue full-cart-success-3
+@cast Дмит | Вадим
+
+Охранник: Ах вы твари!
+@next full-cart-success-4
+::end
+
+::dialogue full-cart-success-4
+@cast Дмит | Вадим
+
+Рассказчик: Охранник пытается перепрыгнуть препятствие, задевает ведро и падает на колени.
+@next full-cart-success-5
+::end
+
+::dialogue full-cart-success-5
+@cast Дмит | Вадим
+
+Мишган: Уф-уф! Работа по корпусу!
+@next full-cart-success-6
+::end
+
+::dialogue full-cart-success-6
+@cast Дмит | Вадим
+
+Дмит: Ты на связи откуда?!
+@next full-cart-success-7
+::end
+
+::dialogue full-cart-success-7
+@cast Дмит | Вадим
+
+Мишган: Данз включил громкую!
+@next full-cart-success-8
+::end
+
+::dialogue full-cart-success-8
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Отключитесь!
+@effect-next flag JANITOR_CART_TRAP_USED
+@next full-final-intro-0
+::end
+
+::dialogue full-cart-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит тянет тележку, но колесо застревает.
+@next full-cart-fail-1
+::end
+
+::dialogue full-cart-fail-1
+@cast Дмит | Вадим
+
+Дмит: Да двигайся ты!
+@next full-cart-fail-2
+::end
+
+::dialogue full-cart-fail-2
+@cast Дмит | Вадим
+
+Вадим: Тормоз включён!
+@next full-cart-fail-3
+::end
+
+::dialogue full-cart-fail-3
+@cast Дмит | Вадим
+
+Дмит: У тележки есть тормоз?!
+@next full-cart-fail-4
+::end
+
+::dialogue full-cart-fail-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: Сейчас узнаешь!
+@effect-next flag CHASE_CRITICAL_ERROR
+@next full-critical-intro-0
+::end
+
+::dialogue full-wet-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Вадим быстро снимает ведро, а Дмит выплёскивает воду на плитку.
+@next full-wet-success-1
+::end
+
+::dialogue full-wet-success-1
+@cast Дмит | Вадим
+
+Дмит: Табличку!
+@next full-wet-success-2
+::end
+
+::dialogue full-wet-success-2
+@cast Дмит | Вадим
+
+Вадим: Зачем?
+@next full-wet-success-3
+::end
+
+::dialogue full-wet-success-3
+@cast Дмит | Вадим
+
+Дмит: Чтобы всё по правилам!
+@next full-wet-success-4
+::end
+
+::dialogue full-wet-success-4
+@cast Дмит | Вадим
+
+Рассказчик: Вадим ставит табличку посреди лужи.
+@next full-wet-success-5
+::end
+
+::dialogue full-wet-success-5
+@cast Дмит | Вадим
+
+Охранник: Вы совсем охренели?!
+@next full-wet-success-6
+::end
+
+::dialogue full-wet-success-6
+@cast Дмит | Вадим
+
+Рассказчик: Охранник пытается обойти табличку, наступает в воду и скользит.
+@next full-wet-success-7
+::end
+
+::dialogue full-wet-success-7
+@cast Дмит | Вадим
+
+Дмит: Предупреждение же стояло!
+@next full-wet-success-8
+::end
+
+::dialogue full-wet-success-8
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Формально он сам виноват.
+@effect-next flag WET_FLOOR_TRAP_USED
+@next full-final-intro-0
+::end
+
+::dialogue full-wet-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит пытается открыть ведро, но крышка не поддаётся.
+@next full-wet-fail-1
+::end
+
+::dialogue full-wet-fail-1
+@cast Дмит | Вадим
+
+Дмит: Кто ведро так закрыл?!
+@next full-wet-fail-2
+::end
+
+::dialogue full-wet-fail-2
+@cast Дмит | Вадим
+
+Вадим: Чтобы вода не выливалась.
+@next full-wet-fail-3
+::end
+
+::dialogue full-wet-fail-3
+@cast Дмит | Вадим
+
+Дмит: Очень удобно!
+@next full-wet-fail-4
+::end
+
+::dialogue full-wet-fail-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: Стоять!
+@effect-next flag CHASE_CRITICAL_ERROR
+@next full-critical-intro-0
+::end
+
+::dialogue full-mop-check
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит хватает швабру и бросает её поперёк коридора.
+@next full-mop-check-route-hook
+::end
+
+::hook full-mop-check-route-hook
+@fallback full-mop-drunk-0
+@continue full-mop-drunk-0
+::end
+
+::extend full-mop-check-route-hook
+@when CHAPTER_1_ALCOHOL_SOBER
+@priority 100
+@start full-mop-sober-0
+::end
+
+::dialogue full-mop-sober-0
+@bg school-corridor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит хватает швабру и бросает её поперёк коридора.
+@next full-mop-sober-1
+::end
+
+::dialogue full-mop-sober-1
+@cast Дмит | Вадим
+
+Охранник: Эй!
+@next full-mop-sober-2
+::end
+
+::dialogue full-mop-sober-2
+@cast Дмит | Вадим
+
+Рассказчик: Швабра падает точно под ноги охраннику. Он вынужден остановиться.
+@next full-mop-sober-3
+::end
+
+::dialogue full-mop-sober-3
+@cast Дмит | Вадим
+
+Дмит: Получай!
+@next full-mop-sober-4
+::end
+
+::dialogue full-mop-sober-4
+@cast Дмит | Вадим
+
+Вадим: Это была швабра.
+@next full-mop-sober-5
+::end
+
+::dialogue full-mop-sober-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Главное — попал.
+@next full-final-intro-0
+::end
+
+::dialogue full-mop-drunk-0
+@bg school-corridor-night
+@cast Дмит | Вадим
+
+Рассказчик: Дмит хватает швабру и бросает её поперёк коридора.
+@next full-mop-drunk-1
+::end
+
+::dialogue full-mop-drunk-1
+@cast Дмит | Вадим
+
+Охранник: Эй!
+@next full-mop-drunk-2
+::end
+
+::dialogue full-mop-drunk-2
+@cast Дмит | Вадим
+
+Рассказчик: Швабра падает точно под ноги охраннику. Он вынужден остановиться.
+@next full-mop-drunk-3
+::end
+
+::dialogue full-mop-drunk-3
+@cast Дмит | Вадим
+
+Дмит: Получай!
+@next full-mop-drunk-4
+::end
+
+::dialogue full-mop-drunk-4
+@cast Дмит | Вадим
+
+Вадим: Это была швабра.
+@next full-mop-drunk-5
+::end
+
+::dialogue full-mop-drunk-5
+@cast Дмит | Вадим
+
+Дмит: Главное — попал.
+@next full-mop-drunk-6
+::end
+
+::dialogue full-mop-drunk-6
+@cast Дмит | Вадим
+
+Рассказчик: Швабра ударяется о стену и падает далеко в стороне.
+@next full-mop-drunk-7
+::end
+
+::dialogue full-mop-drunk-7
+@cast Дмит | Вадим
+
+Дмит: Она кривая.
+@next full-mop-drunk-8
+::end
+
+::dialogue full-mop-drunk-8
+@cast Дмит | Вадим
+
+Вадим: Ты бросил в другую сторону.
+@next full-mop-drunk-9
+::end
+
+::dialogue full-mop-drunk-9
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Коридор качнулся.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next full-critical-intro-0
+::end
+
+::dialogue full-hide-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим приседают за тележкой.
+@next full-hide-1
+::end
+
+::dialogue full-hide-1
+@cast Дмит | Вадим
+
+Вадим: Он видел, как мы сюда спрятались.
+@next full-hide-2
+::end
+
+::dialogue full-hide-2
+@cast Дмит | Вадим
+
+Дмит: Может, забудет.
+@next full-hide-3
+::end
+
+::dialogue full-hide-3
+@cast Дмит | Вадим
+
+Охранник: Вылезайте!
+@next full-hide-4
+::end
+
+::dialogue full-hide-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Не забыл.
+@effect-next flag CHASE_CRITICAL_ERROR
+@next full-critical-intro-0
+::end
+
+::dialogue full-critical-intro-0
+@cast Дмит | Вадим
+
+Рассказчик: Охранник догоняет ребят у лестницы и хватает Вадима за воротник.
+@next full-critical-intro-1
+::end
+
+::dialogue full-critical-intro-1
+@cast Дмит | Вадим
+
+Вадим: Дмит!
+@next full-critical-intro-2
+::end
+
+::dialogue full-critical-intro-2
+@cast Дмит | Вадим
+
+Охранник: Всё! Набегались!
+@next full-critical-intro-3
+::end
+
+::dialogue full-critical-intro-3
+@cast Дмит | Вадим
+
+Дмит: Отпусти его!
+@next full-critical-intro-4
+::end
+
+::dialogue full-critical-intro-4
+@cast Дмит | Вадим
+
+Охранник: Оба к директору пойдёте!
+@next full-critical-intro-5
+::end
+
+::dialogue full-critical-intro-5
+@cast Дмит | Вадим
+
+Дмит: Ночью?
+@next full-critical-intro-6
+::end
+
+::dialogue full-critical-intro-6
+@cast Дмит | Вадим
+
+Охранник: Утром подождёте!
+@next full-critical-intro-7
+::end
+
+::dialogue full-critical-intro-7
+@cast Дмит | Вадим
+
+Вадим: Это очень плохой план.
+@next full-critical-intro-8
+::end
+
+::dialogue full-critical-intro-8
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: Тебя не спрашивали!
+@next full-critical-choice
+::end
+
+::choice full-critical-choice
+@prompt Охранник держит Вадима. Последний опасный выбор.
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+# timed-choice: 10 seconds; default option index: 3
+
+- [Сила 6] Выдернуть Вадима.
+  ? Сила 6
+  -> full-save-strength-0
+  !-> full-caught-0
+
+- [Харизма 6] Отвлечь охранника.
+  ? Харизма 6
+  -> full-save-charisma-0
+  !-> full-caught-0
+
+- [Ловкость 6] Расстегнуть куртку Вадима.
+  ? Ловкость 6
+  -> full-save-agility-0
+  !-> full-caught-0
+
+- Убежать одному.
+  +trait Ответственность -1
+  +trait Товарищество -2
+  -> full-abandon-0
+
+::end
+
+::dialogue full-save-strength-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит хватает Вадима за руку и резко тянет на себя.
+@next full-save-strength-1
+::end
+
+::dialogue full-save-strength-1
+@cast Дмит | Вадим
+
+Охранник: Ах ты!
+@next full-save-strength-2
+::end
+
+::dialogue full-save-strength-2
+@cast Дмит | Вадим
+
+Рассказчик: Вадим вырывается, но Дмит получает удар локтем в лицо.
+@next full-save-strength-3
+::end
+
+::dialogue full-save-strength-3
+@cast Дмит | Вадим
+
+Дмит: Бля!
+@next full-save-strength-4
+::end
+
+::dialogue full-save-strength-4
+@cast Дмит | Вадим
+
+Вадим: Ты в порядке?
+@next full-save-strength-5
+::end
+
+::dialogue full-save-strength-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Беги!
+@effect-next flag DMIT_DAMAGED
+@next full-final-intro-0
+::end
+
+::dialogue full-save-charisma-0
+@cast Дмит | Вадим
+
+Дмит: Сзади ещё трое! Они дверь подсобки ломают!
+@next full-save-charisma-1
+::end
+
+::dialogue full-save-charisma-1
+@cast Дмит | Вадим
+
+Охранник: Что?!
+@next full-save-charisma-2
+::end
+
+::dialogue full-save-charisma-2
+@cast Дмит | Вадим
+
+Рассказчик: Охранник машинально оборачивается.
+@next full-save-charisma-3
+::end
+
+::dialogue full-save-charisma-3
+@cast Дмит | Вадим
+
+Дмит: Сейчас!
+@next full-save-charisma-4
+::end
+
+::dialogue full-save-charisma-4
+@cast Дмит | Вадим
+
+Рассказчик: Вадим вырывается из его рук.
+@next full-save-charisma-5
+::end
+
+::dialogue full-save-charisma-5
+@cast Дмит | Вадим
+
+Охранник: Стойте, суки!
+@next full-save-charisma-6
+::end
+
+::dialogue full-save-charisma-6
+@cast Дмит | Вадим
+
+Вадим: Там действительно кто-то ломает дверь?
+@next full-save-charisma-7
+::end
+
+::dialogue full-save-charisma-7
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Теперь уже неважно!
+@next full-final-intro-0
+::end
+
+::dialogue full-save-agility-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит проскакивает сбоку и дёргает молнию на куртке Вадима.
+@next full-save-agility-1
+::end
+
+::dialogue full-save-agility-1
+@cast Дмит | Вадим
+
+Вадим: Что ты делаешь?!
+@next full-save-agility-2
+::end
+
+::dialogue full-save-agility-2
+@cast Дмит | Вадим
+
+Дмит: Руки вверх!
+@next full-save-agility-3
+::end
+
+::dialogue full-save-agility-3
+@cast Дмит | Вадим
+
+Рассказчик: Вадим поднимает руки и выскальзывает из куртки. Охранник остаётся держать пустую одежду.
+@next full-save-agility-4
+::end
+
+::dialogue full-save-agility-4
+@cast Дмит | Вадим
+
+Охранник: Чего?!
+@next full-save-agility-5
+::end
+
+::dialogue full-save-agility-5
+@cast Дмит | Вадим
+
+Дмит: Потом заберём!
+@next full-save-agility-6
+::end
+
+::dialogue full-save-agility-6
+@cast Дмит | Вадим
+
+Вадим: Это хорошая куртка!
+@next full-save-agility-7
+::end
+
+::dialogue full-save-agility-7
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Живой ты лучше!
+@next full-final-intro-0
+::end
+
+::dialogue full-caught-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит пытается помочь, но охранник отталкивает его.
+@next full-caught-1
+::end
+
+::dialogue full-caught-1
+@cast Дмит | Вадим
+
+Дмит: Бля!
+@next full-caught-2
+::end
+
+::dialogue full-caught-2
+@cast Дмит | Вадим
+
+Рассказчик: Дмит падает на пол. Охранник крепче удерживает Вадима.
+@next full-caught-3
+::end
+
+::dialogue full-caught-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: Всё. Конец.
+@effect-next flag SCHOOL_BREAK_IN_FAILED
+@next computer-branch
+::end
+
+::dialogue full-abandon-0
+@cast Дмит | Вадим
+
+Дмит: Вадим… извини.
+@next full-abandon-1
+::end
+
+::dialogue full-abandon-1
+@cast Дмит | Вадим
+
+Вадим: Что?
+@next full-abandon-2
+::end
+
+::dialogue full-abandon-2
+@cast Дмит | Вадим
+
+Рассказчик: Дмит разворачивается и бежит вверх по лестнице.
+@next full-abandon-3
+::end
+
+::dialogue full-abandon-3
+@cast Дмит | Вадим
+
+Вадим: Дмит!
+@next full-abandon-4
+::end
+
+::dialogue full-abandon-4
+@cast Дмит | Вадим
+
+Охранник: Стой!
+@next full-abandon-5
+::end
+
+::dialogue full-abandon-5
+@cast Дмит | Вадим
+
+Рассказчик: Охранник остаётся с Вадимом, а Дмит скрывается на втором этаже.
+@next full-abandon-6
+::end
+
+::dialogue full-abandon-6
+@cast Дмит | Вадим
+
+Вадим: Ты обещал помочь.
+@next full-abandon-7
+::end
+
+::dialogue full-abandon-7
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Дмит слышит его голос, но не останавливается.
+@effect-next flag DMIT_ABANDONED_VADIM
+@effect-next flag SCHOOL_FIRST_FLOOR_PASSED
+@next computer-branch
+::end
+
+::dialogue full-final-intro-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим добегают до лестницы. Охранник снова появляется в конце коридора.
+@next full-final-intro-1
+::end
+
+::dialogue full-final-intro-1
+@cast Дмит | Вадим
+
+Охранник: Я всё равно вас поймаю!
+@next full-final-intro-2
+::end
+
+::dialogue full-final-intro-2
+@cast Дмит | Вадим
+
+Вадим: Он очень настойчивый.
+@next full-final-intro-3
+::end
+
+::dialogue full-final-intro-3
+@cast Дмит | Вадим
+
+Дмит: Работа такая!
+@next full-final-intro-4
+::end
+
+::dialogue full-final-intro-4
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Рассказчик: Возле лестницы висят тяжёлые противопожарные двери. Рядом находится школьный стенд, рулон верёвки и стопка спортивных матов.
+@next full-final-choice
+::end
+
+::choice full-final-choice
+@prompt Последняя ловушка на лестнице.
+@cast Дмит | Охранник
+# tone: danger
+# music: school-chase
+# timed-choice: 10 seconds; default option index: 3
+
+- [Интеллект 6] Закрыть противопожарную дверь.
+  ? Интеллект 6
+  -> full-door-success-0
+  !-> full-door-fail-0
+
+- [Сила 6] Сбросить спортивные маты.
+  ? Сила 6
+  -> full-mats-success-0
+  !-> full-mats-fail-0
+
+- [Ловкость 6] Натянуть верёвку.
+  ? Ловкость 6
+  -> full-rope-success-0
+  !-> full-rope-fail-0
+
+- Перевернуть стенд отличников.
+  -> full-board-0
+
+::end
+
+::dialogue full-door-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Вадим дёргает рычаг. Тяжёлая дверь начинает медленно закрываться.
+@next full-door-success-1
+::end
+
+::dialogue full-door-success-1
+@cast Дмит | Вадим
+
+Дмит: Швабру!
+@next full-door-success-2
+::end
+
+::dialogue full-door-success-2
+@cast Дмит | Вадим
+
+Вадим: Мы её оставили внизу.
+@next full-door-success-3
+::end
+
+::dialogue full-door-success-3
+@cast Дмит | Вадим
+
+Дмит: Тогда вот это!
+@next full-door-success-4
+::end
+
+::dialogue full-door-success-4
+@cast Дмит | Вадим
+
+Рассказчик: Дмит выдёргивает металлическую стойку из школьного стенда и блокирует дверь.
+@next full-door-success-5
+::end
+
+::dialogue full-door-success-5
+@cast Дмит | Вадим
+
+Охранник: Открыли сейчас же!
+@next full-door-success-6
+::end
+
+::dialogue full-door-success-6
+@cast Дмит | Вадим
+
+Рассказчик: Охранник дёргает дверь с другой стороны, но она не поддаётся.
+@next full-door-success-7
+::end
+
+::dialogue full-door-success-7
+@cast Дмит | Вадим
+
+Дмит: Всё. Отдыхай.
+@next full-door-success-8
+::end
+
+::dialogue full-door-success-8
+@cast Дмит | Вадим
+
+Вадим: Ненадолго.
+@next full-door-success-9
+::end
+
+::dialogue full-door-success-9
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Нам надолго и не надо.
+@effect-next flag GUARD_BLOCKED_BY_FIRE_DOOR
+@next full-finish-0
+::end
+
+::dialogue full-door-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит пытается заблокировать дверь, но металлическая стойка выскальзывает.
+@next full-door-fail-1
+::end
+
+::dialogue full-door-fail-1
+@cast Дмит | Вадим
+
+Охранник: Попались!
+@next full-door-fail-2
+::end
+
+::dialogue full-door-fail-2
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Бежим дальше!
+@next full-caught-0
+::end
+
+::dialogue full-mats-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим толкают стопку матов вниз по лестнице.
+@next full-mats-success-1
+::end
+
+::dialogue full-mats-success-1
+@cast Дмит | Вадим
+
+Вадим: Это безопасно?
+@next full-mats-success-2
+::end
+
+::dialogue full-mats-success-2
+@cast Дмит | Вадим
+
+Дмит: Для нас — да!
+@next full-mats-success-3
+::end
+
+::dialogue full-mats-success-3
+@cast Дмит | Вадим
+
+Рассказчик: Маты съезжают вниз и заваливают проход.
+@next full-mats-success-4
+::end
+
+::dialogue full-mats-success-4
+@cast Дмит | Вадим
+
+Охранник: Вы совсем охренели?!
+@next full-mats-success-5
+::end
+
+::dialogue full-mats-success-5
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Немного!
+@effect-next flag GYM_MATS_TRAP_USED
+@next full-finish-0
+::end
+
+::dialogue full-mats-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Маты оказываются тяжелее, чем выглядят.
+@next full-mats-fail-1
+::end
+
+::dialogue full-mats-fail-1
+@cast Дмит | Вадим
+
+Дмит: Помогай!
+@next full-mats-fail-2
+::end
+
+::dialogue full-mats-fail-2
+@cast Дмит | Вадим
+
+Вадим: Я помогаю!
+@next full-mats-fail-3
+::end
+
+::dialogue full-mats-fail-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Охранник: Вот вы где!
+@next full-caught-0
+::end
+
+::dialogue full-rope-success-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит быстро натягивает верёвку между перилами и батареей.
+@next full-rope-success-1
+::end
+
+::dialogue full-rope-success-1
+@cast Дмит | Вадим
+
+Вадим: Это опасно.
+@next full-rope-success-2
+::end
+
+::dialogue full-rope-success-2
+@cast Дмит | Вадим
+
+Дмит: Для него.
+@next full-rope-success-3
+::end
+
+::dialogue full-rope-success-3
+@cast Дмит | Вадим
+
+Рассказчик: Охранник выбегает на лестницу, замечает верёвку и в последний момент останавливается.
+@next full-rope-success-4
+::end
+
+::dialogue full-rope-success-4
+@cast Дмит | Вадим
+
+Охранник: Ах вы мелкие ублюдки!
+@next full-rope-success-5
+::end
+
+::dialogue full-rope-success-5
+@cast Дмит | Вадим
+
+Дмит: Главное, заметил.
+@next full-rope-success-6
+::end
+
+::dialogue full-rope-success-6
+@cast Дмит | Вадим
+
+Вадим: Тогда ловушка не сработала.
+@next full-rope-success-7
+::end
+
+::dialogue full-rope-success-7
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Зато он остановился.
+@next full-finish-0
+::end
+
+::dialogue full-rope-fail-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит не успевает закрепить второй конец верёвки.
+@next full-rope-fail-1
+::end
+
+::dialogue full-rope-fail-1
+@cast Дмит | Вадим
+
+Рассказчик: Верёвка падает на пол.
+@next full-rope-fail-2
+::end
+
+::dialogue full-rope-fail-2
+@cast Дмит | Вадим
+
+Охранник: Это что должно было быть?
+@next full-rope-fail-3
+::end
+
+::dialogue full-rope-fail-3
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Потом покажу!
+@next full-caught-0
+::end
+
+::dialogue full-board-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит толкает большой стенд с фотографиями лучших учеников школы.
+@next full-board-1
+::end
+
+::dialogue full-board-1
+@cast Дмит | Вадим
+
+Вадим: Там моя фотография.
+@next full-board-2
+::end
+
+::dialogue full-board-2
+@cast Дмит | Вадим
+
+Дмит: Извини.
+@next full-board-3
+::end
+
+::dialogue full-board-3
+@cast Дмит | Вадим
+
+Рассказчик: Стенд падает поперёк прохода.
+@next full-board-4
+::end
+
+::dialogue full-board-4
+@cast Дмит | Вадим
+
+Охранник: Дмитриевский!
+@next full-board-5
+::end
+
+::dialogue full-board-5
+@cast Дмит | Вадим
+
+Дмит: Он даже в темноте меня узнаёт.
+@next full-board-6
+::end
+
+::dialogue full-board-6
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Вадим: Ты довольно узнаваемый.
+@effect-next flag HONOUR_BOARD_DESTROYED
+@effect-next flag VADIM_TRUST_REDUCED
+@next full-finish-0
+::end
+
+::dialogue full-finish-0
+@cast Дмит | Вадим
+
+Рассказчик: Дмит и Вадим поднимаются на второй этаж и захлопывают за собой дверь.
+@next full-finish-1
+::end
+
+::dialogue full-finish-1
+@cast Дмит | Вадим
+
+Рассказчик: Снизу слышны удары охранника и отборная ругань.
+@next full-finish-2
+::end
+
+::dialogue full-finish-2
+@cast Дмит | Вадим
+
+Охранник: Я ВАС ВСЁ РАВНО НАЙДУ!
+@next full-finish-3
+::end
+
+::dialogue full-finish-3
+@cast Дмит | Вадим
+
+Дмит: Пусть сначала поднимется.
+@next full-finish-4
+::end
+
+::dialogue full-finish-4
+@cast Дмит | Вадим
+
+Вадим: Он поднимется.
+@next full-finish-5
+::end
+
+::dialogue full-finish-5
+@cast Дмит | Вадим
+
+Дмит: Ты всегда такой успокаивающий?
+@next full-finish-6
+::end
+
+::dialogue full-finish-6
+@cast Дмит | Вадим
+
+Вадим: Я стараюсь оценивать ситуацию честно.
+@next full-finish-7
+::end
+
+::dialogue full-finish-7
+@cast Дмит | Вадим
+
+Дмит: Лучше иногда ври.
+@next full-finish-8
+::end
+
+::dialogue full-finish-8
+@cast Дмит | Вадим
+
+Вадим: Ты уже отвечаешь за эту часть.
+@next full-finish-9
+::end
+
+::dialogue full-finish-9
+@cast Дмит | Вадим
+
+Рассказчик: Второй этаж погружён в темноту. В конце длинного коридора находится кабинет информатики.
+@next full-finish-10
+::end
+
+::dialogue full-finish-10
+@cast Дмит | Вадим
+
+Вадим: Рюкзак там.
+@next full-finish-11
+::end
+
+::dialogue full-finish-11
+@cast Дмит | Вадим
+
+Дмит: Тогда быстро забираем и валим.
+@next full-finish-12
+::end
+
+::dialogue full-finish-12
+@cast Дмит | Вадим
+
+Вадим: Охранник перекрыл путь назад.
+@next full-finish-13
+::end
+
+::dialogue full-finish-13
+@cast Дмит | Вадим
+
+Дмит: Значит, найдём другой.
+@next full-finish-14
+::end
+
+::dialogue full-finish-14
+@cast Дмит | Вадим
+
+Вадим: Ты знаешь другой выход?
+@next full-finish-15
+::end
+
+::dialogue full-finish-15
+@cast Дмит | Вадим
+
+Дмит: Нет.
+@next full-finish-16
+::end
+
+::dialogue full-finish-16
+@cast Дмит | Вадим
+
+Вадим: Отлично.
+@next full-finish-17
+::end
+
+::dialogue full-finish-17
+@cast Дмит | Вадим
+# tone: danger
+# music: school-chase
+
+Дмит: Не привыкай.
+@effect-next experience 18
+@effect-next flag SCHOOL_FIRST_FLOOR_PASSED
+@effect-next flag DMIT_AND_VADIM_REACHED_SECOND_FLOOR
+@effect-next flag GUARD_SEARCHING_SECOND_FLOOR
+@next computer-branch
+::end

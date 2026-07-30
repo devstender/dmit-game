@@ -1,0 +1,2126 @@
+[
+  {
+    "kind": "dialogue",
+    "id": "computer-together-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит и Вадим оказываются на втором этаже. Снизу слышны удары охранника по заблокированной двери и громкая ругань."
+      ]
+    ],
+    "next": "computer-together-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-2",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "school-second-floor-night",
+    "sound": "guard-shout",
+    "lines": [
+      [
+        "Охранник",
+        "Я ВАС ВСЁ РАВНО НАЙДУ!"
+      ]
+    ],
+    "next": "computer-together-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Пусть сначала поднимется."
+      ]
+    ],
+    "next": "computer-together-4"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-4",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Он поднимется."
+      ]
+    ],
+    "next": "computer-together-5"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-5",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Ты всегда такой успокаивающий?"
+      ]
+    ],
+    "next": "computer-together-6"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-6",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Я стараюсь оценивать ситуацию честно."
+      ]
+    ],
+    "next": "computer-together-7"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-7",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Лучше иногда ври."
+      ]
+    ],
+    "next": "computer-together-8"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-together-8",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "За эту часть уже отвечаешь ты."
+      ]
+    ],
+    "next": "computer-damage-board-check"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-damage-board-check",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Зелёные лампы аварийных выходов освещают двери кабинетов."
+      ]
+    ],
+    "routes": [
+      {
+        "flag": "HONOUR_BOARD_DESTROYED",
+        "next": "computer-board-1"
+      }
+    ],
+    "fallback": "computer-damage-door-check"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-board-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Ты сломал стенд с отличниками."
+      ]
+    ],
+    "next": "computer-board-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-board-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Он охранника задержал."
+      ]
+    ],
+    "next": "computer-board-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-board-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Там была моя фотография."
+      ]
+    ],
+    "next": "computer-board-4"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-board-4",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Новую сделают."
+      ]
+    ],
+    "next": "computer-damage-door-check"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-damage-door-check",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Коридор тянется к кабинету информатики."
+      ]
+    ],
+    "routes": [
+      {
+        "flag": "SCHOOL_DOOR_BROKEN",
+        "next": "computer-door-damage-1"
+      }
+    ],
+    "fallback": "computer-damage-check"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-door-damage-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "Ещё ты сломал дверь."
+      ]
+    ],
+    "next": "computer-door-damage-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-door-damage-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Дмит",
+        "Она сама старая была."
+      ]
+    ],
+    "next": "computer-door-damage-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-door-damage-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "До твоего удара она работала."
+      ]
+    ],
+    "next": "computer-damage-check"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-damage-check",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит делает несколько шагов и прислоняет ладонь к виску."
+      ]
+    ],
+    "routes": [
+      {
+        "flag": "DMIT_DAMAGED",
+        "next": "computer-injury-1"
+      }
+    ],
+    "fallback": "computer-help-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-injury-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Опять кружится голова?"
+      ]
+    ],
+    "next": "computer-injury-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-injury-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Не кружится."
+      ]
+    ],
+    "next": "computer-injury-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-injury-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Ты остановился и держишься за стену."
+      ]
+    ],
+    "next": "computer-injury-4"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-injury-4",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Стена удобная."
+      ]
+    ],
+    "next": "computer-injury-5"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-injury-5",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "VADIM_WORRIED_ABOUT_DMIT"
+      ]
+    },
+    "lines": [
+      [
+        "Вадим",
+        "Нужно идти медленнее."
+      ]
+    ],
+    "next": "computer-help-choice"
+  },
+  {
+    "kind": "choice",
+    "id": "computer-help-choice",
+    "speaker": "Вадим",
+    "prompt": "Зачем ты вообще полез за мной в школу?",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "options": [
+      {
+        "text": "Пообещал помочь — значит, помогу.",
+        "next": "computer-help-promise-1"
+      },
+      {
+        "text": "Чтобы ты один здесь не сдох.",
+        "next": "computer-help-death-1"
+      },
+      {
+        "text": "Мне самому стало интересно.",
+        "next": "computer-help-interest-1"
+      },
+      {
+        "text": "Не задавай вопросы, пока нас ищут.",
+        "next": "computer-help-stop-1"
+      }
+    ]
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-promise-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Пообещал помочь — значит, помогу."
+      ]
+    ],
+    "next": "computer-help-promise-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-promise-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Ты не производишь впечатление человека, который всегда выполняет обещания."
+      ]
+    ],
+    "next": "computer-class-door-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-death-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Чтобы ты один здесь не сдох."
+      ]
+    ],
+    "next": "computer-help-death-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-death-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "В школе довольно сложно умереть. Но с географичкой я бы не спорил."
+      ]
+    ],
+    "next": "computer-class-door-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-interest-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Мне самому стало интересно."
+      ]
+    ],
+    "next": "computer-help-interest-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-interest-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Рюкзак тебя не интересует?"
+      ]
+    ],
+    "next": "computer-help-interest-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-interest-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Теперь уже интересует."
+      ]
+    ],
+    "next": "computer-class-door-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-stop-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Не задавай вопросы, пока нас ищут."
+      ]
+    ],
+    "next": "computer-help-stop-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-help-stop-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Хорошо. Но позже я спрошу снова."
+      ]
+    ],
+    "next": "computer-class-door-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-class-door-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Ребята доходят до кабинета информатики. Дмит дёргает ручку."
+      ]
+    ],
+    "next": "computer-class-door-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-class-door-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Закрыто."
+      ]
+    ],
+    "next": "computer-class-door-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-class-door-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Я предполагал."
+      ]
+    ],
+    "next": "computer-class-door-4"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-class-door-4",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Ты строил весь план на том, что учитель затупит?"
+      ]
+    ],
+    "next": "computer-class-door-5"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-class-door-5",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Небольшую часть плана."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "choice",
+    "id": "computer-open-choice",
+    "speaker": "Рассказчик",
+    "prompt": "Снизу раздаётся металлический удар. Охранник почти на втором этаже — дверь нужно открыть быстро.",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "tone": "danger",
+    "options": [
+      {
+        "text": "[Интеллект 5] Попросить Вадима найти запасной ключ.",
+        "next": "computer-key-good-1",
+        "failNext": "computer-key-fail-1",
+        "runtimeRequires": {
+          "intelligence": 5
+        },
+        "failureText": "Вадим быстро перебирает связки, но нужного ключа среди них нет."
+      },
+      {
+        "text": "[Внимательность 5] Осмотреть верх двери и шкаф пожарной безопасности.",
+        "next": "computer-hidden-good-0",
+        "failNext": "computer-hidden-fail-1",
+        "runtimeRequires": {
+          "perception": 5
+        },
+        "failureText": "Дмит проверяет верх двери и шкаф рядом. Ничего."
+      },
+      {
+        "text": "[Ловкость 6] Перелезть через внутреннее окно.",
+        "next": "computer-window-check",
+        "failNext": "computer-window-fail-1",
+        "runtimeRequires": {
+          "agility": 6
+        },
+        "failureText": "Дмит цепляется за шкаф и громко соскальзывает вниз."
+      },
+      {
+        "text": "[Сила 6] Выбить дверь.",
+        "next": "computer-force-good-1",
+        "failNext": "computer-force-fail-1",
+        "runtimeRequires": {
+          "strength": 6
+        },
+        "failureText": "Дмит врезается в дверь. Она не открывается."
+      },
+      {
+        "text": "Вадим, ты это начал — ты и открывай.",
+        "next": "computer-neutral-open-1"
+      },
+      {
+        "text": "Постучать: Открывайте, свои.",
+        "next": "computer-knock-1"
+      }
+    ]
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-key-good-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Запасные ключи иногда лежат в шкафу с документами возле учительской."
+      ]
+    ],
+    "next": "computer-key-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-key-good-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Вадим перебирает связки: кабинет двадцать четыре, двадцать пять, двадцать шесть."
+      ]
+    ],
+    "next": "computer-key-good-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-key-good-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "COMPUTER_ROOM_OPENED_QUIETLY"
+      ]
+    },
+    "lines": [
+      [
+        "Вадим",
+        "Да. Нашёл."
+      ]
+    ],
+    "next": "computer-enter-room-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-key-fail-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Тогда этот путь отпадает."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-hidden-good-0",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "COMPUTER_ROOM_HIDDEN_KEY_FOUND"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит замечает царапины на дверной коробке и находит маленький ключ, обмотанный изолентой."
+      ]
+    ],
+    "next": "computer-hidden-good-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-hidden-good-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Учитель прячет ключ над дверью?"
+      ]
+    ],
+    "next": "computer-hidden-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-hidden-good-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "COMPUTER_ROOM_HIDDEN_KEY_FOUND"
+      ]
+    },
+    "lines": [
+      [
+        "Дмит",
+        "Все умные люди иногда делают тупую херню."
+      ]
+    ],
+    "next": "computer-enter-room-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-hidden-fail-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Один раз оставят — и ты окажешься прав."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-window-check",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит открывает соседний кабинет. Между помещениями — небольшое внутреннее окно."
+      ]
+    ],
+    "routes": [
+      {
+        "flag": "DMIT_DAMAGED",
+        "next": "computer-window-injury-1"
+      }
+    ],
+    "fallback": "computer-window-good-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-window-injury-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "DMIT_DAMAGED_SEVERE"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "На середине подъёма у Дмита темнеет в глазах. Он падает со шкафа и ударяется плечом о парту."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-window-good-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "COMPUTER_ROOM_ENTERED_THROUGH_WINDOW"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит протискивается через окно и падает на учительский стол. Через секунду он отпирает кабинет изнутри."
+      ]
+    ],
+    "next": "computer-enter-room-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-window-fail-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "DMIT_DAMAGED"
+      ]
+    },
+    "lines": [
+      [
+        "Вадим",
+        "Это был громкий звук."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-force-good-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Отойди."
+      ]
+    ],
+    "next": "computer-force-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-force-good-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "sound": "mishgan-fall",
+    "effects": {
+      "flags": [
+        "COMPUTER_ROOM_DOOR_BROKEN"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит бьёт дверь плечом. Замок с треском вылетает из дерева."
+      ]
+    ],
+    "next": "computer-enter-room-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-force-fail-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "DMIT_DAMAGED"
+      ]
+    },
+    "lines": [
+      [
+        "Вадим",
+        "Дверь открывается наружу."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-neutral-open-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Вадим, ты это начал — ты и открывай."
+      ]
+    ],
+    "next": "computer-neutral-open-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-neutral-open-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Вадим",
+        "Я не умею вскрывать двери. Ты просто считаешь отличников подозрительными."
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-knock-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Открывайте, свои."
+      ]
+    ],
+    "next": "computer-knock-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-knock-2",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "school-second-floor-night",
+    "sound": "guard-shout",
+    "effects": {
+      "flags": [
+        "GUARD_KNOWS_COMPUTER_ROOM"
+      ]
+    },
+    "lines": [
+      [
+        "Охранник",
+        "Я СЛЫШУ ВАС!"
+      ]
+    ],
+    "next": "computer-open-choice"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-enter-room-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дверь открывается. В темноте видны ряды старых компьютеров и массивный учительский стол."
+      ]
+    ],
+    "next": "computer-room-choice"
+  },
+  {
+    "kind": "choice",
+    "id": "computer-room-choice",
+    "speaker": "Вадим",
+    "prompt": "Рюкзак должен быть возле третьего компьютера.",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "options": [
+      {
+        "text": "Только ничего больше не забудь.",
+        "next": "computer-room-talk-1"
+      },
+      {
+        "text": "Быстро бери рюкзак и валим.",
+        "next": "computer-room-talk-2"
+      },
+      {
+        "text": "Три месяца работы в одной флешке — это тупо.",
+        "next": "computer-room-talk-3"
+      },
+      {
+        "text": "Может, тут САМП установлен?",
+        "next": "computer-room-talk-4"
+      }
+    ]
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-room-talk-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "Я один раз забыл рюкзак. Этого хватило, чтобы мы ночью ломали школу."
+      ]
+    ],
+    "next": "computer-find-bag-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-room-talk-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "Я тоже хочу уйти. Мне так спокойнее комментировать."
+      ]
+    ],
+    "next": "computer-find-bag-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-room-talk-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "У меня есть резервная копия. Но документы только в рюкзаке."
+      ]
+    ],
+    "next": "computer-find-bag-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-room-talk-4",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "На школьных компьютерах четыре гигабайта памяти."
+      ]
+    ],
+    "next": "computer-find-bag-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-find-bag-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Под столом третьего ряда лежит тёмный рюкзак. Вадим проверяет документы, флешку и проект — всё на месте."
+      ]
+    ],
+    "next": "computer-phone-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-phone-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "sound": "phone-vibrate",
+    "lines": [
+      [
+        "Рассказчик",
+        "На учительском столе начинает вибрировать чужой чёрный телефон."
+      ]
+    ],
+    "next": "computer-phone-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-phone-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "Его не было здесь днём."
+      ]
+    ],
+    "next": "computer-phone-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-phone-3",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "phoneMessage": {
+      "contact": "Неизвестный номер",
+      "direction": "incoming",
+      "time": "22:43"
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Машина будет у школы в 23:40."
+      ]
+    ],
+    "next": "computer-phone-money"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-phone-money",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "phoneMessage": {
+      "contact": "Неизвестный номер",
+      "direction": "incoming",
+      "time": "22:43"
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Деньги у Игоря."
+      ]
+    ],
+    "next": "computer-phone-junior"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-phone-junior",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "phoneMessage": {
+      "contact": "Неизвестный номер",
+      "direction": "incoming",
+      "time": "22:43"
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Младший ничего не должен увидеть."
+      ]
+    ],
+    "next": "computer-phone-choice"
+  },
+  {
+    "kind": "choice",
+    "id": "computer-phone-choice",
+    "speaker": "Вадим",
+    "prompt": "Нужно отнести его директору или в милицию.",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "tone": "danger",
+    "options": [
+      {
+        "text": "Взять телефон себе.",
+        "next": "phone-take-1",
+        "sceneEffects": {
+          "flags": [
+            "DMIT_HAS_BLACK_PHONE"
+          ]
+        }
+      },
+      {
+        "text": "Отдать телефон Вадиму.",
+        "next": "phone-vadim-1",
+        "sceneEffects": {
+          "flags": [
+            "VADIM_HAS_BLACK_PHONE"
+          ]
+        }
+      },
+      {
+        "text": "[Интеллект 6] Быстро прочитать сообщения.",
+        "next": "phone-read-good-1",
+        "failNext": "phone-read-fail-1",
+        "runtimeRequires": {
+          "intelligence": 6
+        },
+        "failureText": "Дмит нажимает не на ту кнопку. Телефон требует код доступа."
+      },
+      {
+        "text": "Оставить телефон на месте.",
+        "next": "phone-leave-1",
+        "sceneEffects": {
+          "flags": [
+            "BLACK_PHONE_LEFT_AT_SCHOOL"
+          ]
+        }
+      },
+      {
+        "text": "Разбить телефон.",
+        "next": "phone-break-1",
+        "sceneEffects": {
+          "flags": [
+            "BLACK_PHONE_DESTROYED"
+          ]
+        }
+      },
+      {
+        "text": "Позвонить по последнему номеру.",
+        "next": "phone-call-1",
+        "sceneEffects": {
+          "flags": [
+            "MAFIA_CONTACT_ALERTED"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-take-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Дмит",
+        "Я заберу. Разберусь дома."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-vadim-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Дмит",
+        "Держи. Ты умный — разбирайся."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-read-good-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "effects": {
+      "flags": [
+        "BLACK_PHONE_MESSAGES_READ",
+        "BUILDER_CAMP_CONNECTION_NOTICED"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "В переписке: Игорь подтвердил передачу. Строитель готов принять груз. Не использовать основной вход."
+      ]
+    ],
+    "next": "phone-read-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-read-good-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Дмит",
+        "Строитель? Так называется наш лагерь."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-read-fail-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Вадим",
+        "Ты заблокировал экран."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-leave-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Дмит",
+        "Не наше. Пусть лежит."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-break-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "sound": "mishgan-fall",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит бросает телефон на пол и наступает на экран. ХРУСТ."
+      ]
+    ],
+    "next": "phone-break-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-break-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Вадим",
+        "Это было очень глупо."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-call-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "sound": "phone-vibrate",
+    "lines": [
+      [
+        "Рассказчик",
+        "После второго гудка кто-то отвечает: Да."
+      ]
+    ],
+    "next": "phone-call-choice"
+  },
+  {
+    "kind": "timed-choice",
+    "id": "phone-call-choice",
+    "speaker": "Рассказчик",
+    "prompt": "Неизвестный голос спрашивает: Как тебя зовут?",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "tone": "danger",
+    "options": [
+      {
+        "text": "Назвать настоящее имя.",
+        "next": "phone-name-1",
+        "sceneEffects": {
+          "flags": [
+            "MAFIA_KNOWS_DMIT_NAME"
+          ]
+        }
+      },
+      {
+        "text": "Назваться Матвеем.",
+        "next": "phone-matvey-1",
+        "sceneEffects": {
+          "flags": [
+            "MAFIA_SUSPECTS_MATVEY"
+          ]
+        }
+      },
+      {
+        "text": "Промолчать и сбросить.",
+        "next": "computer-stage-end"
+      },
+      {
+        "text": "[Харизма 6] Представиться охранником школы.",
+        "next": "phone-guard-good-1",
+        "failNext": "computer-stage-end",
+        "runtimeRequires": {
+          "charisma": 6
+        },
+        "failureText": "Незнакомец не верит и сбрасывает звонок."
+      }
+    ],
+    "durationSeconds": 10,
+    "defaultOptionIndex": 2
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-guard-good-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Дмит",
+        "Алло. Это охрана школы, телефон найден при обходе."
+      ]
+    ],
+    "next": "phone-guard-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-guard-good-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "effects": {
+      "flags": [
+        "IGOR_CONNECTION_CONFIRMED",
+        "MAFIA_CONTACT_ALERTED"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Незнакомец отвечает: Ничего не трогайте. За ним приедут. Человек Игоря."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-name-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Рассказчик",
+        "Звонок обрывается. Время вышло."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "phone-matvey-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-dark-vaz",
+    "lines": [
+      [
+        "Рассказчик",
+        "На линии становится тихо: Матвей? Звонок обрывается."
+      ]
+    ],
+    "next": "computer-stage-end"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-stage-end",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "sound": "quest-complete",
+    "effects": {
+      "experience": 20,
+      "flags": [
+        "SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "В коридоре раздаётся удар. Охранник почти добрался до второго этажа. Рюкзак у Вадима, а чёрный телефон уже изменил этот вечер."
+      ]
+    ],
+    "next": "school-exit-entry"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "school-second-floor-night",
+    "tone": "danger",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит остаётся на втором этаже один. Снизу Вадим кричит его имя, а охранник требует спускаться."
+      ]
+    ],
+    "next": "computer-alone-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Дмит",
+        "Я иду…"
+      ]
+    ],
+    "next": "computer-alone-choice"
+  },
+  {
+    "kind": "timed-choice",
+    "id": "computer-alone-choice",
+    "speaker": "Рассказчик",
+    "prompt": "У Дмита есть несколько секунд: вернуться к Вадиму или добраться до рюкзака одному.",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "tone": "danger",
+    "options": [
+      {
+        "text": "Вернуться за Вадимом.",
+        "next": "computer-caught-1",
+        "sceneEffects": {
+          "flags": [
+            "DMIT_RETURNED_FOR_VADIM"
+          ]
+        }
+      },
+      {
+        "text": "Продолжить одному.",
+        "next": "computer-alone-room-1",
+        "sceneEffects": {
+          "flags": [
+            "DMIT_DOUBLE_ABANDONMENT"
+          ]
+        }
+      },
+      {
+        "text": "[Интеллект 6] Включить сигнализацию снаружи.",
+        "next": "computer-alone-alarm-good-1",
+        "failNext": "computer-alone-room-1",
+        "runtimeRequires": {
+          "intelligence": 6
+        },
+        "failureText": "Дмит тянет за щиток, но только включает мигающий свет. Охранник становится ещё злее."
+      }
+    ],
+    "durationSeconds": 5,
+    "defaultOptionIndex": 1
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-alarm-good-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "school-second-floor-night",
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит дёргает рычаг пожарной сигнализации. Охранник ругается и на секунду отпускает Вадима."
+      ]
+    ],
+    "next": "computer-alone-alarm-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-alarm-good-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "school-second-floor-night",
+    "effects": {
+      "flags": [
+        "DMIT_RETURNED_FOR_VADIM"
+      ]
+    },
+    "lines": [
+      [
+        "Вадим",
+        "Ты вернулся?"
+      ]
+    ],
+    "next": "computer-together-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-room-1",
+    "cast": [
+      "Дмит"
+    ],
+    "background": "school-second-floor-night",
+    "sound": "phone-vibrate",
+    "lines": [
+      [
+        "Рассказчик",
+        "В кабинете информатики темно. Дмит находит рюкзак под третьим компьютером и слышит вибрацию чёрного телефона."
+      ]
+    ],
+    "next": "computer-alone-phone-choice"
+  },
+  {
+    "kind": "choice",
+    "id": "computer-alone-phone-choice",
+    "speaker": "Рассказчик",
+    "prompt": "На экране телефона: Машина будет у школы в 23:40. Деньги у Игоря.",
+    "cast": [
+      "Дмит"
+    ],
+    "background": "school-second-floor-night",
+    "tone": "danger",
+    "options": [
+      {
+        "text": "Забрать телефон и рюкзак.",
+        "next": "computer-alone-end-1",
+        "sceneEffects": {
+          "flags": [
+            "DMIT_HAS_BLACK_PHONE"
+          ]
+        }
+      },
+      {
+        "text": "Оставить телефон и забрать рюкзак.",
+        "next": "computer-alone-end-1",
+        "sceneEffects": {
+          "flags": [
+            "BLACK_PHONE_LEFT_AT_SCHOOL"
+          ]
+        }
+      },
+      {
+        "text": "Позвонить Вадиму.",
+        "next": "computer-alone-call-vadim-1"
+      }
+    ]
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-call-vadim-1",
+    "cast": [
+      "Дмит"
+    ],
+    "background": "school-second-floor-night",
+    "phoneMessage": {
+      "contact": "Вадим",
+      "direction": "outgoing",
+      "time": "22:17"
+    },
+    "lines": [
+      [
+        "Дмит",
+        "Вадим, я рюкзак нашёл."
+      ]
+    ],
+    "next": "computer-alone-call-vadim-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-call-vadim-2",
+    "cast": [
+      "Дмит"
+    ],
+    "background": "school-second-floor-night",
+    "phoneMessage": {
+      "contact": "Вадим",
+      "direction": "incoming",
+      "time": "22:17"
+    },
+    "lines": [
+      [
+        "Вадим",
+        "Я знаю. Иди обратно."
+      ]
+    ],
+    "next": "computer-alone-end-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-alone-end-1",
+    "cast": [
+      "Дмит"
+    ],
+    "background": "school-second-floor-night",
+    "tone": "danger",
+    "sound": "quest-complete",
+    "effects": {
+      "experience": 9,
+      "flags": [
+        "SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Дмит надевает рюкзак на плечо. Внизу Вадим снова зовёт его, а путь назад теперь выглядит хуже, чем несколько минут назад."
+      ]
+    ],
+    "next": "school-exit-entry"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "tone": "danger",
+    "lines": [
+      [
+        "Рассказчик",
+        "Ночь на вахте. Охранник усаживает Дмита и Вадима на стулья так, будто оформляет их в школьную тюрьму."
+      ]
+    ],
+    "next": "computer-caught-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-2",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Охранник",
+        "Ну что, герои? Кто вас сюда пустил?"
+      ]
+    ],
+    "next": "computer-caught-choice"
+  },
+  {
+    "kind": "choice",
+    "id": "computer-caught-choice",
+    "speaker": "Рассказчик",
+    "prompt": "Вадим молчит. Охранник ждёт ответа Дмита.",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "tone": "danger",
+    "options": [
+      {
+        "text": "Это я всё придумал. Вадим хотел забрать рюкзак.",
+        "next": "computer-caught-blame-1",
+        "sceneEffects": {
+          "flags": [
+            "DMIT_TOOK_BLAME_FOR_VADIM"
+          ]
+        }
+      },
+      {
+        "text": "Это Вадим меня уговорил.",
+        "next": "computer-caught-vadim-1",
+        "sceneEffects": {
+          "flags": [
+            "DMIT_BLAMED_VADIM"
+          ]
+        }
+      },
+      {
+        "text": "Мы просто заблудились.",
+        "next": "computer-caught-neutral-1"
+      },
+      {
+        "text": "[Харизма 6] Сначала дайте забрать рюкзак — там олимпиада.",
+        "next": "computer-caught-bag-good-1",
+        "failNext": "computer-caught-end-1",
+        "runtimeRequires": {
+          "charisma": 6
+        },
+        "failureText": "Охранник устало смотрит на Дмита. Хватит мне зубы заговаривать."
+      }
+    ]
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-blame-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Дмит",
+        "Это я всё придумал. Вадим хотел забрать рюкзак."
+      ]
+    ],
+    "next": "computer-caught-blame-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-blame-2",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Охранник",
+        "Ну хоть один умный нашёлся."
+      ]
+    ],
+    "next": "computer-caught-end-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-vadim-1",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Дмит",
+        "Это Вадим меня уговорил."
+      ]
+    ],
+    "next": "computer-caught-vadim-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-vadim-2",
+    "cast": [
+      "Дмит",
+      "Вадим"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Вадим",
+        "Ты серьёзно?"
+      ]
+    ],
+    "next": "computer-caught-end-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-neutral-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Дмит",
+        "Мы просто заблудились."
+      ]
+    ],
+    "next": "computer-caught-neutral-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-neutral-2",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "lines": [
+      [
+        "Охранник",
+        "На втором этаже, ночью, через разбитую дверь?"
+      ]
+    ],
+    "next": "computer-caught-end-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-bag-good-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "effects": {
+      "flags": [
+        "GUARD_ESCORT_TO_BACKPACK"
+      ]
+    },
+    "lines": [
+      [
+        "Охранник",
+        "Ладно. Быстро заберём рюкзак и сразу вниз."
+      ]
+    ],
+    "next": "computer-caught-bag-good-2"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-bag-good-2",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "sound": "phone-vibrate",
+    "lines": [
+      [
+        "Рассказчик",
+        "В кабинете охранник первым замечает чёрный телефон и резко меняется в лице."
+      ]
+    ],
+    "next": "computer-caught-bag-good-3"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-bag-good-3",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "effects": {
+      "flags": [
+        "GUARD_RECOGNIZED_BLACK_PHONE"
+      ]
+    },
+    "lines": [
+      [
+        "Охранник",
+        "Это не ваше."
+      ]
+    ],
+    "next": "computer-caught-end-1"
+  },
+  {
+    "kind": "dialogue",
+    "id": "computer-caught-end-1",
+    "cast": [
+      "Дмит",
+      "Охранник"
+    ],
+    "background": "computer-class-night",
+    "tone": "danger",
+    "sound": "quest-complete",
+    "effects": {
+      "flags": [
+        "SCHOOL_COMPUTER_ROOM_STAGE_COMPLETE"
+      ]
+    },
+    "lines": [
+      [
+        "Рассказчик",
+        "Охранник быстро убирает телефон во внутренний карман. Впервые за весь вечер он выглядит не злым, а испуганным."
+      ]
+    ],
+    "next": "school-exit-entry"
+  }
+]

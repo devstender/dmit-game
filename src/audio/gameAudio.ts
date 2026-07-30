@@ -26,6 +26,15 @@ import schoolChase from '../assets/audio/small-school/интерактив.mp3'
 import schoolDoorBuzz from '../assets/audio/small-school/тревожная_кнопка.mp3'
 import guardAlert from '../assets/audio/small-school/тревожный_звук.mp3'
 import bikeChainRattle from '../assets/audio/звук_починки.mp3'
+import stationCameraShutter from '../assets/chapter_2/quest-vokzal-1/camera_shutter.mp3'
+import shoulderBump from '../assets/chapter_2/quest-vokzal-1/shoulder_bump.mp3'
+import stationSquareAmbient from '../assets/chapter_2/quest-vokzal-1/вокзал_площадь.mp3'
+import stationInteriorAmbient from '../assets/chapter_2/quest-vokzal-1/звук_внутри_вокзала.mp3'
+import trainCarriageEntry from '../assets/chapter_2/quest-vokzal-1/звук_входа_в_вагон.mp3'
+import trainDeparture from '../assets/chapter_2/quest-vokzal-1/звук_отправления_поезда.mp3'
+import campGateClose from '../assets/chapter_2/quest-vokzal-1/camp_gate_close.mp3'
+import campAmbient from '../assets/chapter_2/quest-vokzal-1/звук_лагеря.mp3'
+import forestAmbient from '../assets/chapter_2/quest-vokzal-1/звук_в_лесу.mp3'
 
 export const gameSounds = {
   classDoor,
@@ -48,6 +57,15 @@ export const gameSounds = {
   igorMysterySting,
   phoneMessageReceived,
   bikeChainRattle,
+  stationCameraShutter,
+  shoulderBump,
+  stationSquareAmbient,
+  stationInteriorAmbient,
+  trainCarriageEntry,
+  trainDeparture,
+  campGateClose,
+  campAmbient,
+  forestAmbient,
   mishganFall: fallSound,
   phoneVibrate: phoneNotification,
   questComplete,

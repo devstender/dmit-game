@@ -248,5 +248,5 @@
 @effect-next flag CHAPTER_2_LEFT_HOME_FOR_STATION
 @effect-next flag CHAPTER_2_HOME_PACKING_QUEST_COMPLETE
 Рассказчик: В восемь утра Дмит и мама наконец собрались, вышли из дома с сумкой и поехали на вокзал. Впереди был «Строитель» — и дорога, которая точно не обещала быть спокойной.
-@end
+@next station-start
 ::end

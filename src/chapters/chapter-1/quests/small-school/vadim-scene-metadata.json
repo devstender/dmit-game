@@ -1,0 +1,1094 @@
+{
+  "bike-choice": {
+    "shortLabels": [
+      "Осмотреть велосипед и вещи Вадима.",
+      "Спросить про школу."
+    ]
+  },
+  "main-choice": {
+    "shortLabels": [
+      "Помочь Вадиму.",
+      "Отказать Вадиму.",
+      "Забрать гулять.",
+      "Позвонить учителю.",
+      "Проводить Вадима домой."
+    ]
+  },
+  "infiltration-24": {
+    "shortLabels": [
+      "Пусть Вадим ведёт.",
+      "Самый быстрый вход.",
+      "Мы тут старшие.",
+      "Спокойно проверить."
+    ]
+  },
+  "pre-entry-choice": {
+    "shortLabels": [
+      "Данз ничего не делает.",
+      "Кед следит за Данзом.",
+      "Мишган без ударов.",
+      "Последний шанс Вадиму."
+    ]
+  },
+  "entry-choice": {
+    "shortLabels": [
+      "Уговорить охранника.",
+      "Подкупить охранника.",
+      "Окно раздевалки.",
+      "Отвлечь светом.",
+      "Решётка подсобки."
+    ]
+  },
+  "guard-neutral-choice": {
+    "shortLabels": [
+      "Аллергия на орехи.",
+      "Сложное название.",
+      "Попросить Вадима.",
+      "Сказать прямо."
+    ]
+  },
+  "entry-recovery-choice": {
+    "shortLabels": [
+      "Окно раздевалки.",
+      "Отвлечь светом.",
+      "Решётка подсобки."
+    ]
+  },
+  "bribe-neutral-choice": {
+    "shortLabels": [
+      "Никто не узнает.",
+      "Мы благодарные.",
+      "Половина сейчас.",
+      "Ищем другой вход."
+    ]
+  },
+  "window-neutral-choice": {
+    "shortLabels": [
+      "Кед, не кидай.",
+      "Мишган ловит.",
+      "Урок Вадиму.",
+      "Все тихо."
+    ]
+  },
+  "full-chase-start-23": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-chase-first-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 3
+    }
+  },
+  "full-balls-success-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-balls-fail-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-music-success-11": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-music-fail-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-lie-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-run-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-route-intro-6": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-route-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 1
+    }
+  },
+  "full-service-success-10": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-service-fail-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-hall-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-dark-intro-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-dark-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 2
+    }
+  },
+  "full-dark-strength-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-dark-agility-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-dark-fail-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-vadim-route-6": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-trap-intro-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-trap-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 3
+    }
+  },
+  "full-cart-success-8": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-cart-fail-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-wet-success-8": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-wet-fail-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-mop-check": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-mop-sober-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-mop-drunk-9": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-hide-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-critical-intro-8": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-critical-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 3
+    }
+  },
+  "full-save-strength-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-save-charisma-7": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-save-agility-7": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-caught-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-abandon-7": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-final-intro-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-final-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 3
+    }
+  },
+  "full-door-success-9": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-door-fail-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-mats-success-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-mats-fail-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-rope-success-7": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-rope-fail-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-board-6": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "full-finish-17": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-1": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-4": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-5": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-6": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-7": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-8": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-9": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-10": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-11": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-12": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-13": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-14": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-15": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-16": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-start-17": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-first-choice-option-1-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-first-choice-option-2-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-first-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 4,
+      "defaultOptionIndex": 3
+    }
+  },
+  "chase-balls-good": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-music-good": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-first-fail": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-lie": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-lie-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-run": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-route-choice-option-1-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-route-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 3,
+      "defaultOptionIndex": 1
+    }
+  },
+  "chase-service-good": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-service-good-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-service-good-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-hall": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-hall-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-hall-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-dark-choice-option-1-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-dark-choice-option-2-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-dark-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 3,
+      "defaultOptionIndex": 2
+    }
+  },
+  "chase-dark-strength": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-dark-agility": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-cart-choice-option-1-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-cart-choice-option-2-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-cart-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 4,
+      "defaultOptionIndex": 3
+    }
+  },
+  "chase-cart-strength": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-cart-intelligence": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-cart-intelligence-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-mop-route": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-mop-sober": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-mop-drunk": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-1": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-3": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-choice-option-1-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-choice-option-2-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-choice-option-3-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-critical-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 3,
+      "defaultOptionIndex": 3
+    }
+  },
+  "chase-save-strength": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-save-charisma": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-save-charisma-2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-save-agility": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-last-choice-option-1-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-last-choice-option-2-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-last-choice-option-3-failure": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "chase-last-choice": {
+    "tone": "danger",
+    "music": "school-chase",
+    "choiceTimer": {
+      "durationSeconds": 4,
+      "defaultOptionIndex": 3
+    }
+  },
+  "chase-end-1": {
+    "tone": "danger"
+  },
+  "chase-end-2": {
+    "tone": "danger"
+  },
+  "chase-end-3": {
+    "tone": "danger"
+  },
+  "chase-end-4": {
+    "tone": "danger"
+  },
+  "chase-end-5": {
+    "tone": "danger"
+  },
+  "chase-end-6": {
+    "tone": "danger"
+  },
+  "chase-end-7": {
+    "tone": "danger"
+  },
+  "chase-end-8": {
+    "tone": "danger"
+  },
+  "chase-end-9": {
+    "tone": "danger"
+  },
+  "chase-end-10": {
+    "tone": "danger"
+  },
+  "chase-end-11": {
+    "tone": "danger"
+  },
+  "chase-end-12": {
+    "tone": "danger"
+  },
+  "chase-end-13": {
+    "tone": "danger"
+  },
+  "chase-end-14": {
+    "tone": "danger"
+  },
+  "chase-end-15": {
+    "tone": "danger"
+  },
+  "chase-caught-1": {
+    "tone": "danger"
+  },
+  "chase-abandon-1": {
+    "tone": "danger"
+  },
+  "chase-abandon-2": {
+    "tone": "danger"
+  },
+  "next-step-open-choice": {
+    "tone": "danger"
+  },
+  "next-step-phone-choice": {
+    "tone": "danger",
+    "shortLabels": [
+      null,
+      "Показать Вадиму.",
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "next-step-phone-name-choice": {
+    "tone": "danger",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 2
+    }
+  },
+  "next-step-alone-choice": {
+    "tone": "danger",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 1
+    }
+  },
+  "next-step-alone-end-choice": {
+    "tone": "danger",
+    "choiceTimer": {
+      "durationSeconds": 10,
+      "defaultOptionIndex": 0
+    }
+  },
+  "next-step-caught-choice": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone__1": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone__2": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone__3": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone__4": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone__5": {
+    "tone": "danger"
+  },
+  "guard-recognized-phone__6": {
+    "tone": "danger"
+  },
+  "guard-phone-dmit": {
+    "tone": "danger"
+  },
+  "guard-phone-dmit__1": {
+    "tone": "danger"
+  },
+  "guard-phone-dmit__2": {
+    "tone": "danger"
+  },
+  "guard-phone-dmit__3": {
+    "tone": "danger"
+  },
+  "guard-phone-dmit-choice": {
+    "tone": "danger"
+  },
+  "guard-takes-phone": {
+    "tone": "danger"
+  },
+  "guard-takes-phone__1": {
+    "tone": "danger"
+  },
+  "guard-takes-phone__2": {
+    "tone": "danger"
+  },
+  "guard-takes-phone__3": {
+    "tone": "danger"
+  },
+  "guard-takes-phone__4": {
+    "tone": "danger"
+  },
+  "guard-takes-phone__5": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden__1": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden__2": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden__3": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden__4": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden__5": {
+    "tone": "danger"
+  },
+  "guard-phone-hidden__6": {
+    "tone": "danger"
+  },
+  "guard-finds-phone": {
+    "tone": "danger"
+  },
+  "guard-finds-phone__1": {
+    "tone": "danger"
+  },
+  "guard-finds-phone__2": {
+    "tone": "danger"
+  },
+  "guard-finds-phone__3": {
+    "tone": "danger"
+  },
+  "guard-finds-phone__4": {
+    "tone": "danger"
+  },
+  "guard-finds-phone__5": {
+    "tone": "danger"
+  },
+  "guard-igor-question": {
+    "tone": "danger"
+  },
+  "guard-igor-question__1": {
+    "tone": "danger"
+  },
+  "guard-igor-question__2": {
+    "tone": "danger"
+  },
+  "guard-igor-question__3": {
+    "tone": "danger"
+  },
+  "guard-igor-question__4": {
+    "tone": "danger"
+  },
+  "guard-igor-question__5": {
+    "tone": "danger"
+  },
+  "guard-igor-question__6": {
+    "tone": "danger"
+  },
+  "guard-igor-choice": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__1": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__2": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__3": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__4": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__5": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__6": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__7": {
+    "tone": "danger"
+  },
+  "guard-read-messages-reaction__8": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__1": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__2": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__3": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__4": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__5": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__6": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__7": {
+    "tone": "danger"
+  },
+  "guard-phone-destroyed__8": {
+    "tone": "danger"
+  },
+  "guard-phone-left": {
+    "tone": "danger"
+  },
+  "guard-phone-left__1": {
+    "tone": "danger"
+  },
+  "guard-phone-left__2": {
+    "tone": "danger"
+  },
+  "guard-phone-left__3": {
+    "tone": "danger"
+  },
+  "guard-phone-left__4": {
+    "tone": "danger"
+  },
+  "guard-phone-left__5": {
+    "tone": "danger"
+  },
+  "guard-phone-left__6": {
+    "tone": "danger"
+  },
+  "exit-junction-together": {
+    "tone": "danger"
+  },
+  "exit-junction-together__1": {
+    "tone": "danger"
+  },
+  "exit-junction-together__2": {
+    "tone": "danger"
+  },
+  "exit-junction-together__3": {
+    "tone": "danger"
+  },
+  "exit-junction-together__4": {
+    "tone": "danger"
+  },
+  "exit-junction-together__5": {
+    "tone": "danger"
+  },
+  "exit-junction-together__6": {
+    "tone": "danger"
+  },
+  "exit-junction-together__7": {
+    "tone": "danger"
+  },
+  "exit-junction-together-choice": {
+    "tone": "danger"
+  },
+  "junction-listen-together": {
+    "tone": "danger"
+  },
+  "junction-listen-together__1": {
+    "tone": "danger"
+  },
+  "junction-listen-together__2": {
+    "tone": "danger"
+  },
+  "junction-listen-together__3": {
+    "tone": "danger"
+  },
+  "exit-junction-alone": {
+    "tone": "danger"
+  },
+  "exit-junction-alone__1": {
+    "tone": "danger"
+  },
+  "exit-junction-alone__2": {
+    "tone": "danger"
+  },
+  "exit-junction-alone__3": {
+    "tone": "danger"
+  },
+  "exit-junction-alone-choice": {
+    "tone": "danger"
+  },
+  "dmit-calls-vadim": {
+    "tone": "danger"
+  },
+  "dmit-calls-vadim__1": {
+    "tone": "danger"
+  },
+  "dmit-calls-vadim__2": {
+    "tone": "danger"
+  },
+  "dmit-calls-vadim__3": {
+    "tone": "danger"
+  },
+  "noise-route-together": {
+    "tone": "danger"
+  },
+  "noise-route-together__1": {
+    "tone": "danger"
+  },
+  "noise-route-together__2": {
+    "tone": "danger"
+  },
+  "noise-route-together__3": {
+    "tone": "danger"
+  },
+  "noise-route-alone": {
+    "tone": "danger"
+  },
+  "noise-route-alone__1": {
+    "tone": "danger"
+  },
+  "noise-route-alone__2": {
+    "tone": "danger"
+  },
+  "noise-route-alone__3": {
+    "tone": "danger"
+  },
+  "noise-route-alone__4": {
+    "tone": "danger"
+  },
+  "noise-route-alone__5": {
+    "tone": "danger"
+  },
+  "dark-route-together": {
+    "tone": "danger"
+  },
+  "dark-route-together__1": {
+    "tone": "danger"
+  },
+  "dark-route-together__2": {
+    "tone": "danger"
+  },
+  "dark-route-together__3": {
+    "tone": "danger"
+  },
+  "dark-route-together__4": {
+    "tone": "danger"
+  },
+  "dark-route-together__5": {
+    "tone": "danger"
+  },
+  "dark-route-together__6": {
+    "tone": "danger"
+  },
+  "dark-route-together__7": {
+    "tone": "danger"
+  },
+  "dark-route-together-choice": {
+    "tone": "danger"
+  },
+  "dark-route-noisy": {
+    "tone": "danger"
+  },
+  "dark-route-noisy__1": {
+    "tone": "danger"
+  },
+  "dark-route-noisy__2": {
+    "tone": "danger"
+  },
+  "dark-route-noisy__3": {
+    "tone": "danger"
+  },
+  "dark-route-noisy__4": {
+    "tone": "danger"
+  },
+  "dark-route-noisy__5": {
+    "tone": "danger"
+  },
+  "dark-route-alone": {
+    "tone": "danger"
+  },
+  "dark-route-alone__1": {
+    "tone": "danger"
+  },
+  "dark-route-alone__2": {
+    "tone": "danger"
+  },
+  "dark-route-alone-choice": {
+    "tone": "danger"
+  },
+  "dark-alone-fail": {
+    "tone": "danger"
+  },
+  "dark-alone-fail__1": {
+    "tone": "danger"
+  },
+  "dark-alone-fail__2": {
+    "tone": "danger"
+  },
+  "dark-alone-fail__3": {
+    "tone": "danger"
+  },
+  "dark-alone-fail__4": {
+    "tone": "danger"
+  },
+  "main-exit-unknown-car": {
+    "tone": "danger"
+  },
+  "main-exit-unknown-car__1": {
+    "tone": "danger"
+  },
+  "main-exit-unknown-car__2": {
+    "tone": "danger"
+  },
+  "main-exit-unknown-car__3": {
+    "tone": "danger"
+  },
+  "main-exit-unknown-car__4": {
+    "tone": "danger"
+  },
+  "main-exit-unknown-car__5": {
+    "tone": "danger"
+  },
+  "dark-exit-unknown-car": {
+    "tone": "danger"
+  },
+  "dark-exit-unknown-car__1": {
+    "tone": "danger"
+  },
+  "dark-exit-unknown-car__2": {
+    "tone": "danger"
+  },
+  "dark-exit-unknown-car__3": {
+    "tone": "danger"
+  },
+  "dark-exit-unknown-car__4": {
+    "tone": "danger"
+  },
+  "infiltration-suspicious-prelude": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-suspicious-prelude__1": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-suspicious-prelude__2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-noisy-prelude": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-noisy-prelude__1": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-noisy-prelude__2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-high-suspicion-prelude": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-high-suspicion-prelude__1": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-hardest-prelude": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-hardest-prelude__1": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "infiltration-hardest-prelude__2": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "escort-breakaway-success": {
+    "tone": "danger",
+    "music": "school-chase"
+  },
+  "escort-breakaway-success__1": {
+    "tone": "danger",
+    "music": "school-chase"
+  }
+}

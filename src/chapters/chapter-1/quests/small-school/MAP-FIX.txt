@@ -1,0 +1,5 @@
+В map.ts условие завершения квеста «Младший у школы» должно проверять:
+
+CHAPTER_1_SMALL_SCHOOL_EXIT_COMPLETE
+
+Не использовать CHAPTER_1_SMALL_SCHOOL_MET_VADIM как completion flag.

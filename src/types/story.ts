@@ -17,6 +17,10 @@ export type Character =
   | "Мама"
   | "Вадим"
   | "Копяр"
+  | "Романыч"
+  | "Ваня Ильичёв"
+  | "Даша"
+  | "Неизвестный"
   | "Незнакомка"
   | "???"
   | "Пацан"
@@ -40,6 +44,8 @@ export type Ability =
   | "agility"
   | "luck";
 export type AbilityScores = Record<Ability, number>;
+export type PersonalityTrait = "courage" | "composure" | "responsibility" | "camaraderie" | "cunning" | "empathy";
+export type PersonalityTraits = Record<PersonalityTrait, number>;
 export type RelationCharacter =
   | "Вадим"
   | "Копяр"
@@ -49,7 +55,9 @@ export type RelationCharacter =
   | "Полина"
   | "Географичка"
   | "Вероника"
-  | "Мама";
+  | "Мама"
+  | "Романыч"
+  | "Даша";
 export type SceneSound =
   | "school-bell"
   | "mishgan-fall"
@@ -68,7 +76,31 @@ export type SceneSound =
   | "black-phone-vibration"
   | "igor-mystery-sting"
   | "bike-chain-rattle"
-  | "alarm-clock";
+  | "alarm-clock"
+  | "camera-shutter"
+  | "station-announcement"
+  | "metal-rattle"
+  | "security-beep"
+  | "metal-grate"
+  | "metal-crash"
+  | "distant-door"
+  | "school-alarm"
+  | "balls-scatter"
+  | "guard-shout-distant"
+  | "metal-gate-close"
+  | "piano-crash"
+  | "school-bell-short"
+  | "door-creak"
+  | "phone-screen-crack"
+  | "fire-door-rattle"
+  | "station-shoulder-bump"
+  | "train-carriage-entry"
+  | "train-departure"
+  | "train-start-moving"
+  | "acoustic-guitar-strum"
+  | "matvey-head-slap"
+  | "train-brakes"
+  | "camp-gate-close";
 export type PhoneMessage = {
   contact: Character | string;
   direction: "incoming" | "outgoing";
@@ -79,7 +111,11 @@ export type SceneEffect = {
   money?: number;
   experience?: number;
   reputation?: number;
+  /** Stable inventory item ids to add to Dmit's backpack. */
+  items?: string[];
   abilities?: Partial<AbilityScores>;
+  traits?: Partial<PersonalityTraits>;
+  suspicion?: number;
   relations?: Partial<Record<RelationCharacter, number>>;
   flags?: string[];
 };
@@ -93,14 +129,19 @@ export type StoryChoice = {
   failNext?: number;
   requiresMoney?: number;
   requires?: Partial<AbilityScores>;
+  /** Personality check with a success chance; unlike requiresTraits, it is not a hard lock. */
+  traitCheck?: Partial<PersonalityTraits>;
   requiresFlags?: string[];
   requiresAnyFlags?: string[];
   requiresPerks?: string[];
+  requiresTraits?: Partial<PersonalityTraits>;
   requiresRelations?: Partial<Record<RelationCharacter, number>>;
   visibleWhen?: {
     allFlags?: string[];
     anyFlags?: string[];
     unlessFlags?: string[];
+    traits?: Partial<PersonalityTraits>;
+    reputation?: number;
   };
   effects?: SceneEffect;
   failureEffects?: SceneEffect;
@@ -177,7 +218,7 @@ export type Scene = {
   cheatGame?: CheatGame;
   roachGame?: RoachGame;
   tone?: "default" | "danger";
-  background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-corridor-morning" | "school-second-floor-night" | "computer-class-night" | "school-classroom-day" | "school-corridor-day" | "school-yard-day" | "dmit-home-hallway-day" | "dmit-bedroom-day" | "dmit-bedroom-evening" | "dmit-bedroom-night" | "dmit-bedroom-morning";
+    background?: "school" | "school-dark-vaz" | "classroom" | "home" | "dmit-room" | "minika" | "school-yard-night" | "school-main-entrance-night" | "school-backyard-night" | "school-corridor-night" | "school-corridor-morning" | "school-second-floor-night" | "computer-class-night" | "school-storage-night" | "school-classroom-day" | "school-corridor-day" | "school-yard-day" | "dmit-home-hallway-day" | "dmit-bedroom-day" | "dmit-bedroom-evening" | "dmit-bedroom-night" | "dmit-bedroom-morning" | "penza-station-square-morning" | "penza-station-platform-morning" | "electric-train-carriage-day" | "road-to-builder-camp-day" | "builder-camp-gates-day";
   cinematic?: "door-reveal";
   sound?: SceneSound;
   music?: "matvey" | "chase" | "school-chase";
@@ -194,6 +235,7 @@ export type Scene = {
     anyFlags?: string[];
     unlessFlags?: string[];
     priority?: number;
+    traits?: Partial<PersonalityTraits>;
   }[];
   fallbackNext?: number;
 };

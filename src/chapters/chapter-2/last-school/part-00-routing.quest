@@ -1,0 +1,41 @@
+# Служебные переходы между независимыми частями главы.
+
+::route morning-alcohol-recap-exit
+* -> morning-phone-recap
+::end
+
+::route morning-phone-recap-exit
+* -> morning-vadim-recap
+::end
+
+::route morning-phone-alert-recap-exit
+* -> morning-phone-recap-exit
+::end
+
+::route morning-vadim-recap-exit
+* -> morning-camp-talk
+::end
+
+::route matvey-history-exit
+* -> matvey-mishgan-reaction
+::end
+
+::route matvey-mishgan-reaction-exit
+* -> matvey-corridor-choice
+::end
+
+::route matvey-silence-friends-reaction-exit
+* -> matvey-post-choice-mishgan
+::end
+
+::route matvey-post-choice-mishgan-exit
+* -> matvey-corridor-convergence
+::end
+
+::route school-black-phone-hook-exit
+* -> school-final-lesson
+::end
+
+::route school-ked-goodbye-hook-exit
+* -> school-gate-exit
+::end

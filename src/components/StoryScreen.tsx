@@ -1,15 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { Award, Backpack, ChartNoAxesCombined, Heart, HeartCrack, Map as MapIcon, Menu, Settings as SettingsIcon, Sparkles } from 'lucide-react'
 import { gameSounds, playLoop, playSound } from '../audio/gameAudio'
 import { characterPresentation } from '../data/characters'
-import { abilityLabels, experienceForLevel, type PlayerState } from '../data/player'
+import { abilityLabels, experienceForLevel, inventoryItemCatalog, traitLabels, type PlayerState } from '../data/player'
 import { writeSavedGame, type StoryChapterId } from '../data/saveGame'
-import type { Quest, QuestPreloadAsset } from '../data/map'
+import { quests as chapterOneQuests, type Quest, type QuestPreloadAsset } from '../data/map'
 import { InventoryPanel } from './InventoryPanel'
 import { MapPanel } from './MapPanel'
 import { CockroachHuntGame } from './CockroachHuntGame'
 import { DoorReveal } from './DoorReveal'
 import { SettingsPanel } from './SettingsPanel'
-import { DebugStageSidebar } from './DebugStageSidebar'
+import { DebugStageSidebar, type DebugQuestScope } from './DebugStageSidebar'
 import classroomBackground from '../assets/class.webp'
 import dmitKitchenBackground from '../assets/dmit_kitchen.webp'
 import dmitRoomBackground from '../assets/dmit_room.webp'
@@ -24,9 +25,14 @@ import schoolCorridorNightBackground from '../assets/small-school/school_inside_
 import schoolCorridorMorningBackground from '../assets/chapter_2/quest-school-1/school-corridor-morning.webp'
 import schoolSecondFloorNightBackground from '../assets/small-school/school_green_light_cabinet.webp'
 import computerClassNightBackground from '../assets/small-school/school_inside_cabinet.webp'
-import type { Ability, Chapter, Character, CheatGameQuestion, QuizQuestion, RelationCharacter, Scene, SceneEffect, SceneSound, StoryChoice } from '../types/story'
+import stationSquareBackground from '../assets/chapter_2/quest-vokzal-1/main_entrance.png'
+import stationPlatformBackground from '../assets/chapter_2/quest-vokzal-1/perron.png'
+import electricTrainCarriageBackground from '../assets/chapter_2/quest-vokzal-1/inside_train.png'
+import campEntranceBackground from '../assets/chapter_2/quest-vokzal-1/camp_entrance.png'
+import type { Ability, Chapter, Character, CheatGameQuestion, PersonalityTrait, QuizQuestion, RelationCharacter, Scene, SceneEffect, SceneSound, StoryChoice } from '../types/story'
 import { GameSidebar } from './GameSidebar'
 import { PerkSelection } from './PerkSelection'
+import { SpecialLevelUp } from './SpecialLevelUp'
 import { PhoneMessenger, type PhoneChoiceOption, type PhoneThreadMessage } from './PhoneMessenger'
 import { Portrait } from './Portrait'
 import { ChapterCompletionOverlay } from './ChapterSelect'
@@ -80,6 +86,7 @@ type RelationNotification = {
   id: number
   text: string
   tone: 'positive' | 'negative' | 'story'
+  kind: 'relation' | 'trait' | 'reputation' | 'story'
 }
 
 const hasPortrait = (character: Character | undefined): character is Exclude<Character, 'Рассказчик'> => (
@@ -114,6 +121,11 @@ const storyBackgroundSources: Partial<Record<NonNullable<Scene['background']>, r
   'school-corridor-day': [schoolCorridorMorningBackground],
   'school-second-floor-night': [schoolSecondFloorNightBackground],
   'computer-class-night': [computerClassNightBackground],
+  'school-storage-night': [schoolCorridorNightBackground],
+  'penza-station-square-morning': [stationSquareBackground],
+  'penza-station-platform-morning': [stationPlatformBackground],
+  'electric-train-carriage-day': [electricTrainCarriageBackground],
+  'builder-camp-gates-day': [campEntranceBackground],
 }
 
 const sceneSoundSources: Record<SceneSound, string> = {
@@ -135,6 +147,30 @@ const sceneSoundSources: Record<SceneSound, string> = {
   'igor-mystery-sting': gameSounds.igorMysterySting,
   'bike-chain-rattle': gameSounds.bikeChainRattle,
   'alarm-clock': gameSounds.schoolBell,
+  'camera-shutter': gameSounds.stationCameraShutter,
+  'station-announcement': gameSounds.schoolBell,
+  'metal-rattle': gameSounds.bikeChainRattle,
+  'security-beep': gameSounds.guardAlert,
+  'metal-grate': gameSounds.schoolEntryCreak,
+  'metal-crash': gameSounds.guardAlert,
+  'distant-door': gameSounds.schoolEntryCreak,
+  'school-alarm': gameSounds.guardAlert,
+  'balls-scatter': gameSounds.guardAlert,
+  'guard-shout-distant': gameSounds.guardShout,
+  'metal-gate-close': gameSounds.schoolEntryCreak,
+  'piano-crash': gameSounds.guardAlert,
+  'school-bell-short': gameSounds.schoolBell,
+  'door-creak': gameSounds.schoolEntryCreak,
+  'phone-screen-crack': gameSounds.guardAlert,
+  'fire-door-rattle': gameSounds.schoolEntryCreak,
+  'station-shoulder-bump': gameSounds.shoulderBump,
+  'train-carriage-entry': gameSounds.trainCarriageEntry,
+  'train-departure': gameSounds.trainDeparture,
+  'train-start-moving': gameSounds.trainDeparture,
+  'acoustic-guitar-strum': gameSounds.uiToggle,
+  'matvey-head-slap': gameSounds.shoulderBump,
+  'train-brakes': gameSounds.trainDeparture,
+  'camp-gate-close': gameSounds.campGateClose,
 }
 
 const sceneMusicSources = {
@@ -165,6 +201,11 @@ const ambientSources: Partial<Record<NonNullable<Scene['background']>, string>> 
   'school-corridor-night': gameSounds.nightAmbient,
   'school-second-floor-night': gameSounds.nightAmbient,
   'computer-class-night': gameSounds.nightAmbient,
+  'school-storage-night': gameSounds.nightAmbient,
+  'penza-station-square-morning': gameSounds.stationSquareAmbient,
+  'penza-station-platform-morning': gameSounds.stationInteriorAmbient,
+  'road-to-builder-camp-day': gameSounds.forestAmbient,
+  'builder-camp-gates-day': gameSounds.campAmbient,
 }
 
 function collectStoryPreloadAssets(chapter: Chapter, startIndex = 0, endIndex = chapter.scenes.length) {
@@ -219,6 +260,8 @@ const relationReactionText = (character: RelationCharacter, delta: number) => {
   const reactions: Record<RelationCharacter, { positive: string; negative: string }> = {
     Вадим: { positive: 'Вадим это оценил.', negative: 'Вадиму это не понравилось.' },
     Копяр: { positive: 'Копяр это оценил.', negative: 'Копяру это не понравилось.' },
+    Романыч: { positive: 'Романыч это одобрил.', negative: 'Романычу это не понравилось.' },
+    Даша: { positive: 'Даша это оценила.', negative: 'Даше это не понравилось.' },
     Мама: { positive: 'Мама это оценила.', negative: 'Маме это не понравилось.' },
     Мишган: { positive: 'Мишган это одобрил.', negative: 'Мишгану это не понравилось.' },
     Кед: { positive: 'Кеду это понравилось.', negative: 'Кеду это не понравилось.' },
@@ -262,6 +305,36 @@ const importantStoryFlags = new Set([
 ])
 
 const isImportantStoryFlag = (flag: string) => importantStoryFlags.has(flag) || flag.startsWith('STORY_')
+
+const legacyTraitChanges: Record<string, Partial<Record<PersonalityTrait, number>>> = {
+  CHAPTER_1_HELPED_MISHGAN: { camaraderie: 1 },
+  CHAPTER_1_LEFT_MISHGAN: { camaraderie: -1 },
+  DMIT_RETURNED_FOR_VADIM: { responsibility: 2, camaraderie: 1 },
+  DMIT_DOUBLE_ABANDONMENT: { responsibility: -2, camaraderie: -2 },
+  CHAPTER_2_DMIT_ADMITTED_VADIM_ABANDONMENT: { responsibility: 1 },
+  CHAPTER_2_DMIT_BLAMED_VADIM_AFTER_ABANDONMENT: { responsibility: -1 },
+  CHAPTER_2_DMIT_LIED_ABOUT_RESOLVING_VADIM: { cunning: 1, responsibility: -1 },
+  CHAPTER_2_DMIT_REFUSED_MATVEY_HUMILIATION: { courage: 1 },
+  CHAPTER_2_DMIT_SUBMITTED_TO_MATVEY_AGAIN: { courage: -1 },
+  CHAPTER_2_DMIT_EXPOSED_MATVEY_CROWD_TACTIC: { courage: 1, cunning: 1 },
+  CHAPTER_2_MATVEY_PUT_IN_PLACE_CALMLY: { courage: 1, composure: 1 },
+  CHAPTER_2_MATVEY_CONFLICT_DEFUSED_WITH_JOKE: { cunning: 1, composure: 1 },
+}
+
+const withLegacyTraitChanges = (effects: SceneEffect): SceneEffect => {
+  const traits = { ...(effects.traits ?? {}) }
+  for (const flag of effects.flags ?? []) for (const [trait, delta] of Object.entries(legacyTraitChanges[flag] ?? {})) {
+    const key = trait as PersonalityTrait
+    traits[key] = (traits[key] ?? 0) + (delta ?? 0)
+  }
+  return Object.keys(traits).length ? { ...effects, traits } : effects
+}
+
+const traitReactionText = (trait: PersonalityTrait, delta: number) => (
+  trait === 'courage'
+    ? delta > 0 ? 'Дмит проявил характер.' : 'Дмит дрогнул.'
+    : delta > 0 ? `Дмит проявил ${traitLabels[trait].toLowerCase()}.` : `Дмит потерял ${traitLabels[trait].toLowerCase()}.`
+)
 
 function preloadAsset(asset: QuestPreloadAsset) {
   if (asset.kind === 'audio') {
@@ -324,6 +397,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const [inventoryOpen, setInventoryOpen] = useState(false)
   const [mapOpen, setMapOpen] = useState(false)
   const [pendingPerkLevel, setPendingPerkLevel] = useState<number | null>(null)
+  const [pendingSpecialLevel, setPendingSpecialLevel] = useState<number | null>(null)
   const [playedCinematics, setPlayedCinematics] = useState<number[]>(initialPlayedCinematics)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [debugModeEnabled, setDebugModeEnabled] = useState(() => import.meta.env.DEV && window.localStorage.getItem('dmit-debug-mode') === 'true')
@@ -347,6 +421,25 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const debugAvailable = import.meta.env.DEV
   const activeDebugMode = debugAvailable && debugModeEnabled
   const scene = chapter.scenes[sceneIndex]
+  const debugQuestScope: DebugQuestScope = (() => {
+    if (chapterId !== 'chapter-1') return { title: chapter.title, startIndex: 0, endIndex: chapter.scenes.length - 1 }
+
+    const ordered = chapterOneQuests
+      .filter((quest) => quest.startSceneIndex !== undefined)
+      .sort((left, right) => (left.startSceneIndex ?? 0) - (right.startSceneIndex ?? 0))
+    const active = ordered
+      .filter((quest) => (quest.startSceneIndex ?? 0) <= sceneIndex)
+      .at(-1)
+    const activeStart = active?.startSceneIndex
+    if (!active || activeStart === undefined) return { title: chapter.title, startIndex: 0, endIndex: chapter.scenes.length - 1 }
+
+    const nextStart = ordered.find((quest) => (quest.startSceneIndex ?? Number.POSITIVE_INFINITY) > activeStart)?.startSceneIndex
+    return {
+      title: active.title,
+      startIndex: activeStart,
+      endIndex: Math.min(active.completedAfterSceneIndex ?? (nextStart === undefined ? chapter.scenes.length - 1 : nextStart - 1), chapter.scenes.length - 1),
+    }
+  })()
   const activeBackground = [...chapter.scenes.slice(0, sceneIndex + 1)].reverse().find((currentScene) => currentScene.background)?.background ?? 'school'
   const previousBackground = useRef(activeBackground)
   const dmitRoomImage = player.flags.includes('CHAPTER_1_ROOM_CLEANED') ? dmitRoomCleanBackground : dmitRoomBackground
@@ -366,17 +459,29 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
                 ? `linear-gradient(180deg, rgba(7, 12, 20, .16), rgba(4, 7, 13, .62)), url(${schoolBackyardNightBackground})`
                 : activeBackground === 'school-corridor-night'
                   ? `linear-gradient(180deg, rgba(6, 10, 17, .08), rgba(4, 6, 12, .52)), url(${schoolCorridorNightBackground})`
+                  : activeBackground === 'school-storage-night'
+                    ? `linear-gradient(180deg, rgba(5, 9, 15, .14), rgba(3, 5, 10, .62)), url(${schoolCorridorNightBackground})`
                   : activeBackground === 'school-corridor-morning' || activeBackground === 'school-corridor-day'
                     ? `linear-gradient(180deg, rgba(43, 35, 42, .06), rgba(30, 23, 33, .44)), url(${schoolCorridorMorningBackground})`
                   : activeBackground === 'school-yard-day'
                     ? `linear-gradient(180deg, rgba(31, 22, 39, .08), rgba(29, 13, 29, .42)), url(${schoolYardDayBackground})`
                   : activeBackground === 'school-second-floor-night'
                     ? `linear-gradient(180deg, rgba(5, 17, 18, .10), rgba(4, 8, 12, .52)), url(${schoolSecondFloorNightBackground})`
-                    : activeBackground === 'computer-class-night'
+                  : activeBackground === 'computer-class-night'
                       ? `linear-gradient(180deg, rgba(8, 12, 17, .14), rgba(3, 5, 9, .64)), url(${computerClassNightBackground})`
-          : activeBackground === 'school-dark-vaz'
-            ? `linear-gradient(180deg, rgba(8, 12, 22, .08), rgba(7, 9, 18, .52)), url(${schoolDarkVazBackground})`
-            : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
+                      : activeBackground === 'penza-station-square-morning'
+                        ? `linear-gradient(180deg, rgba(33, 35, 47, .08), rgba(20, 20, 31, .45)), url(${stationSquareBackground})`
+                        : activeBackground === 'penza-station-platform-morning'
+                          ? `linear-gradient(180deg, rgba(33, 35, 47, .08), rgba(20, 20, 31, .45)), url(${stationPlatformBackground})`
+                          : activeBackground === 'electric-train-carriage-day'
+                            ? `linear-gradient(180deg, rgba(26, 31, 40, .10), rgba(11, 14, 22, .54)), url(${electricTrainCarriageBackground})`
+                            : activeBackground === 'road-to-builder-camp-day'
+                              ? 'linear-gradient(180deg, rgba(32, 52, 35, .12), rgba(10, 25, 15, .60)), radial-gradient(ellipse at 50% 18%, rgba(213, 221, 164, .52), transparent 34%), linear-gradient(145deg, #6f8754 0 24%, #39503a 24% 47%, #b99a61 47% 56%, #304b35 56% 100%)'
+                            : activeBackground === 'builder-camp-gates-day'
+                              ? `linear-gradient(180deg, rgba(27, 38, 22, .08), rgba(13, 24, 16, .54)), url(${campEntranceBackground})`
+                            : activeBackground === 'school-dark-vaz'
+                            ? `linear-gradient(180deg, rgba(8, 12, 22, .08), rgba(7, 9, 18, .52)), url(${schoolDarkVazBackground})`
+                            : `linear-gradient(180deg, rgba(31, 22, 39, .12), rgba(29, 13, 29, .60)), url(${chapter.background})`
   const activeQuizQuestion = scene.quiz?.questions[quizQuestion]
   const typingText = activeQuizQuestion?.question ?? scene.text
   const cinematicActive = Boolean(scene.cinematic && !playedCinematics.includes(sceneIndex))
@@ -583,6 +688,15 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     if (scene.sound === 'beer-open') playSound(gameSounds.beerOpen, .72)
     if (scene.sound === 'skill-success') playSound(gameSounds.skillSuccess, .58)
     if (scene.sound === 'skill-fail') playSound(gameSounds.skillFail, .46)
+    if (scene.sound === 'camera-shutter') playSound(gameSounds.stationCameraShutter, .62)
+    if (scene.sound === 'station-shoulder-bump') playSound(gameSounds.shoulderBump, .7)
+    if (scene.sound === 'train-carriage-entry') playSound(gameSounds.trainCarriageEntry, .72)
+    if (scene.sound === 'train-departure') playSound(gameSounds.trainDeparture, .76)
+    if (scene.sound === 'train-start-moving') playSound(gameSounds.trainDeparture, .76)
+    if (scene.sound === 'acoustic-guitar-strum') playSound(gameSounds.uiToggle, .52)
+    if (scene.sound === 'matvey-head-slap') playSound(gameSounds.shoulderBump, .72)
+    if (scene.sound === 'train-brakes') playSound(gameSounds.trainDeparture, .48)
+    if (scene.sound === 'camp-gate-close') playSound(gameSounds.campGateClose, .72)
   }, [sceneIndex, scene.sound, scene.text, activePhoneMessage?.direction, chapterLoading])
 
   useEffect(() => {
@@ -592,22 +706,12 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       ambientAudio.current = null
       return
     }
+    if (activeBackground === 'electric-train-carriage-day') {
+      ambientAudio.current = null
+      return
+    }
     ambientAudio.current = playLoop(
-      activeBackground === 'classroom'
-        ? gameSounds.classroomAmbient
-        : activeBackground === 'minika'
-          ? gameSounds.minikaAmbient
-          : activeBackground === 'school-corridor-morning' || activeBackground === 'school-corridor-day'
-            ? gameSounds.schoolyardAmbient
-          : activeBackground === 'school-yard-day'
-            ? gameSounds.schoolyardAmbient
-          : activeBackground === 'school'
-            ? gameSounds.schoolyardAmbient
-          : activeBackground === 'school-dark-vaz'
-            ? gameSounds.nightAmbient
-          : activeBackground === 'home' || activeBackground === 'dmit-room'
-            ? gameSounds.dmitRoomAmbient
-          : gameSounds.nightAmbient,
+      ambientSources[activeBackground] ?? gameSounds.nightAmbient,
       activeBackground === 'classroom' || activeBackground === 'school-classroom-day' ? .18 : activeBackground === 'minika' ? .24 : activeBackground === 'school-corridor-morning' || activeBackground === 'school-corridor-day' ? .18 : activeBackground === 'school' || activeBackground === 'school-yard-day' ? .22 : activeBackground === 'school-dark-vaz' ? .22 : activeBackground === 'home' || activeBackground === 'dmit-room' ? .2 : .22,
     )
     return () => {
@@ -647,17 +751,30 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   useEffect(() => {
     const level = experienceForLevel(player.experience)
     setPlayer((current) => {
-      const rewardLevels = Array.from({ length: level }, (_, index) => index + 1).filter((currentLevel) => currentLevel % 3 === 0 && !current.rewardedSpecialLevels.includes(currentLevel))
+      const rewardedLevels = current.rewardedSpecialLevels ?? []
+      const rewardLevels = Array.from({ length: level }, (_, index) => index + 1)
+        .filter((currentLevel) => currentLevel > 1 && !rewardedLevels.includes(currentLevel))
       if (rewardLevels.length === 0) return current
-      return { ...current, specialPoints: current.specialPoints + rewardLevels.length, rewardedSpecialLevels: [...current.rewardedSpecialLevels, ...rewardLevels] }
+      return { ...current, specialPoints: current.specialPoints + rewardLevels.length, rewardedSpecialLevels: [...rewardedLevels, ...rewardLevels] }
     })
   }, [player.experience])
 
   useEffect(() => {
     const level = experienceForLevel(player.experience)
-    const nextPerkLevel = Array.from({ length: level }, (_, index) => index + 1).find((currentLevel) => currentLevel % 2 === 0 && !player.claimedPerkLevels.includes(currentLevel))
+    const claimedSpecialLevels = player.claimedSpecialLevels ?? player.rewardedSpecialLevels ?? []
+    const nextSpecialLevel = Array.from({ length: level }, (_, index) => index + 1)
+      .find((currentLevel) => currentLevel > 1 && !claimedSpecialLevels.includes(currentLevel))
+    if (nextSpecialLevel) {
+      setPendingSpecialLevel(nextSpecialLevel)
+      setPendingPerkLevel(null)
+      return
+    }
+
+    setPendingSpecialLevel(null)
+    const nextPerkLevel = Array.from({ length: level }, (_, index) => index + 1)
+      .find((currentLevel) => currentLevel > 1 && currentLevel % 3 === 0 && !player.claimedPerkLevels.includes(currentLevel))
     if (nextPerkLevel) setPendingPerkLevel(nextPerkLevel)
-  }, [player.experience, player.claimedPerkLevels])
+  }, [player.experience, player.claimedPerkLevels, player.claimedSpecialLevels, player.rewardedSpecialLevels])
 
   useEffect(() => () => {
     relationNotificationTimers.current.forEach((timer) => window.clearTimeout(timer))
@@ -665,11 +782,15 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
 
   const applyEffects = (effects?: SceneEffect, fromChoice = false) => {
     if (!effects) return
+    effects = withLegacyTraitChanges(effects)
     const hasChanges = Boolean(
       effects.experience
       || effects.money
       || effects.reputation
+      || effects.items?.length
       || Object.keys(effects.abilities ?? {}).length
+      || Object.keys(effects.traits ?? {}).length
+      || effects.suspicion
       || Object.keys(effects.relations ?? {}).length
       || effects.flags?.length,
     )
@@ -692,6 +813,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         id: ++relationNotificationId.current,
         text: relationReactionText(character, delta),
         tone: delta > 0 ? 'positive' as const : 'negative' as const,
+        kind: 'relation' as const,
       }))
 
       setRelationNotifications((current) => [...current, ...notifications].slice(-3))
@@ -703,6 +825,31 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       })
     }
 
+    const traitChanges = Object.entries(effects.traits ?? {})
+      .map(([trait, value]) => ({ trait: trait as PersonalityTrait, delta: value ?? 0 }))
+      .filter(({ delta }) => delta !== 0)
+    if (traitChanges.length > 0) {
+      const notifications = traitChanges.map(({ trait, delta }) => ({ id: ++relationNotificationId.current, text: traitReactionText(trait, delta), tone: delta > 0 ? 'positive' as const : 'negative' as const, kind: 'trait' as const }))
+      setRelationNotifications((current) => [...current, ...notifications].slice(-3))
+      notifications.forEach((notification) => {
+        const timer = window.setTimeout(() => setRelationNotifications((current) => current.filter((item) => item.id !== notification.id)), 3400)
+        relationNotificationTimers.current.push(timer)
+      })
+    }
+
+    const reputationDelta = effects.reputation ?? 0
+    if (reputationDelta !== 0) {
+      const notification: RelationNotification = {
+        id: ++relationNotificationId.current,
+        text: reputationDelta > 0 ? `Авторитет вырос: +${reputationDelta}` : `Авторитет снизился: ${reputationDelta}`,
+        tone: reputationDelta > 0 ? 'positive' : 'negative',
+        kind: 'reputation',
+      }
+      setRelationNotifications((current) => [...current, notification].slice(-3))
+      const timer = window.setTimeout(() => setRelationNotifications((current) => current.filter((item) => item.id !== notification.id)), 3400)
+      relationNotificationTimers.current.push(timer)
+    }
+
     const hasNewStoryFlag = fromChoice && (effects.flags ?? []).some((flag) => (
       !player.flags.includes(flag) && isImportantStoryFlag(flag)
     ))
@@ -711,6 +858,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         id: ++relationNotificationId.current,
         text: 'Это решение повлияет на дальнейшую историю.',
         tone: 'story',
+        kind: 'story',
       }
       setRelationNotifications((current) => [...current, notification].slice(-3))
       const timer = window.setTimeout(() => {
@@ -723,13 +871,20 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       const experience = effects.experience ?? 0
       const boostedExperience = current.perks.includes('streetwise') && experience > 0 ? Math.ceil(experience * 1.25) : experience
       const relations = Object.fromEntries(Object.entries(effects.relations ?? {}).map(([character, value]) => [character, (current.relations[character as keyof typeof current.relations] ?? 0) + (value ?? 0)]))
+      const existingItemIds = new Set(current.inventory.map((item) => item.id))
+      const addedItems = (effects.items ?? [])
+        .map((id) => inventoryItemCatalog[id])
+        .filter((item): item is NonNullable<typeof item> => Boolean(item && !existingItemIds.has(item.id)))
       return {
         ...current,
         money: Math.max(0, (current.money ?? 0) + (effects.money ?? 0)),
         experience: current.experience + boostedExperience,
         reputation: current.reputation + (effects.reputation ?? 0),
+        suspicion: Math.max(0, Math.min(10, (current.suspicion ?? 0) + (effects.suspicion ?? 0))),
         abilities: { ...current.abilities, ...Object.fromEntries(Object.entries(effects.abilities ?? {}).map(([ability, value]) => [ability, current.abilities[ability as keyof typeof current.abilities] + (value ?? 0)])) },
+        traits: { ...current.traits, ...Object.fromEntries(Object.entries(effects.traits ?? {}).map(([trait, value]) => [trait, Math.max(-10, Math.min(10, (current.traits?.[trait as PersonalityTrait] ?? 0) + (value ?? 0)))])) },
         relations: { ...current.relations, ...relations },
+        inventory: [...current.inventory, ...addedItems],
         flags: [...new Set([...current.flags, ...(effects.flags ?? [])])],
       }
     })
@@ -741,6 +896,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
       (route.allFlags ?? []).every((flag) => player.flags.includes(flag))
       && (!(route.anyFlags?.length) || route.anyFlags.some((flag) => player.flags.includes(flag)))
       && !(route.unlessFlags ?? []).some((flag) => player.flags.includes(flag))
+      && Object.entries(route.traits ?? {}).every(([trait, minimum]) => (player.traits?.[trait as PersonalityTrait] ?? 0) >= (minimum ?? 0))
     ))
     if (conditionalRoute) return conditionalRoute.next
     const flagRoute = scene.nextByFlag?.find((route) => player.flags.includes(route.flag))
@@ -829,12 +985,19 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
 
   const skillCheckChance = (choice: StoryChoice) => {
     const checks = Object.entries(choice.requires ?? {})
-    if (checks.length === 0) return 100
+    const traitChecks = Object.entries(choice.traitCheck ?? {})
+    if (checks.length === 0 && traitChecks.length === 0) return 100
     const chances = checks.map(([ability, minimum]) => {
       const abilityScore = player.abilities[ability as keyof typeof player.abilities]
       const difference = abilityScore - minimum
       const rawChance = difference >= 0 ? 70 + difference * 10 : 70 + difference * 27.5
       return Math.round(Math.max(5, Math.min(95, rawChance)) / 5) * 5
+    })
+    traitChecks.forEach(([trait, minimum]) => {
+      const traitScore = player.traits?.[trait as PersonalityTrait] ?? 0
+      const difference = traitScore - (minimum ?? 0)
+      const rawChance = difference >= 0 ? 70 + difference * 10 : 70 + difference * 27.5
+      chances.push(Math.round(Math.max(5, Math.min(95, rawChance)) / 5) * 5)
     })
     const injuryPenalty = (scene.music === 'chase' || scene.music === 'school-chase') && choice.requires?.agility && (player.flags.includes('DMIT_DAMAGED') || player.flags.includes('CHAPTER_1_DMIT_DAMAGED')) ? 15 : 0
     return Math.max(5, Math.min(...chances) - injuryPenalty)
@@ -928,13 +1091,17 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
 
   const formatChoiceLabel = (choice: StoryChoice) => {
     const checks = Object.entries(choice.requires ?? {})
+    const traitChecks = Object.entries(choice.requiresTraits ?? {})
+    const chanceTraitChecks = Object.entries(choice.traitCheck ?? {})
     const shortLabel = choice.shortLabel ?? shortenChoiceText(choice.label)
-    if (checks.length === 0) return shortLabel
+    if (checks.length === 0 && traitChecks.length === 0) return shortLabel
     const requirements = checks.map(([ability, minimum]) => {
       const abilityKey = ability as keyof typeof player.abilities
       return `${abilityLabels[abilityKey]} ${player.abilities[abilityKey]}/${minimum}`
-    }).join(', ')
-    return `[${requirements} · шанс ${skillCheckChance(choice)}%] ${shortLabel}`
+    })
+    traitChecks.forEach(([trait, minimum]) => requirements.push(`${traitLabels[trait as PersonalityTrait]} ${player.traits?.[trait as PersonalityTrait] ?? 0}/${minimum}`))
+    chanceTraitChecks.forEach(([trait, minimum]) => requirements.push(`${traitLabels[trait as PersonalityTrait]} ${player.traits?.[trait as PersonalityTrait] ?? 0}/${minimum}`))
+    return `[${requirements.join(', ')}${checks.length || chanceTraitChecks.length ? ` · шанс ${skillCheckChance(choice)}%` : ''}] ${shortLabel}`
   }
 
   const canChoose = (choice: StoryChoice) => (
@@ -942,18 +1109,21 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     && (choice.requiresFlags ?? []).every((flag) => player.flags.includes(flag))
     && (!(choice.requiresAnyFlags?.length) || choice.requiresAnyFlags.some((flag) => player.flags.includes(flag)))
     && (choice.requiresPerks ?? []).every((perk) => player.perks.includes(perk))
+    && Object.entries(choice.requiresTraits ?? {}).every(([trait, minimum]) => (player.traits?.[trait as PersonalityTrait] ?? 0) >= (minimum ?? 0))
     && Object.entries(choice.requiresRelations ?? {}).every(([character, minimum]) => player.relations[character as keyof typeof player.relations] >= minimum)
   )
   const visibleChoices = (scene.choices ?? []).filter((choice) => (
     (choice.visibleWhen?.allFlags ?? []).every((flag) => player.flags.includes(flag))
     && (!(choice.visibleWhen?.anyFlags?.length) || choice.visibleWhen.anyFlags.some((flag) => player.flags.includes(flag)))
     && !(choice.visibleWhen?.unlessFlags ?? []).some((flag) => player.flags.includes(flag))
+    && Object.entries(choice.visibleWhen?.traits ?? {}).every(([trait, minimum]) => (player.traits?.[trait as PersonalityTrait] ?? 0) >= (minimum ?? 0))
+    && (choice.visibleWhen?.reputation === undefined || player.reputation >= choice.visibleWhen.reputation)
   ))
 
   const choose = (choice: StoryChoice) => {
     if (!canChoose(choice)) return
     playSound(gameSounds.uiClick, .58)
-    if (Object.keys(choice.requires ?? {}).length > 0 && Math.random() * 100 >= skillCheckChance(choice)) {
+    if ((Object.keys(choice.requires ?? {}).length > 0 || Object.keys(choice.traitCheck ?? {}).length > 0) && Math.random() * 100 >= skillCheckChance(choice)) {
       playSound(gameSounds.skillFail, .46)
       queueChoiceResolution(choice, {
         next: choice.failNext,
@@ -1077,6 +1247,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     setPendingChoiceFailureNext(null)
     setChoiceTimerLeft(null)
     setPendingPerkLevel(null)
+    setPendingSpecialLevel(null)
     setQuestLoading(null)
     setChapterCompletionOpen(false)
     setCheckpointFading(false)
@@ -1196,6 +1367,22 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
     playSound(gameSounds.uiToggle, .5)
     setPlayer((current) => ({ ...current, perks: [...current.perks, perkId], claimedPerkLevels: [...current.claimedPerkLevels, pendingPerkLevel] }))
     setPendingPerkLevel(null)
+  }
+
+  const chooseSpecialAbility = (ability: Ability) => {
+    if (!pendingSpecialLevel) return
+    playSound(gameSounds.uiToggle, .5)
+    setPlayer((current) => {
+      if (current.specialPoints <= 0 || current.abilities[ability] >= 10) return current
+      const claimedSpecialLevels = current.claimedSpecialLevels ?? current.rewardedSpecialLevels ?? []
+      return {
+        ...current,
+        specialPoints: current.specialPoints - 1,
+        abilities: { ...current.abilities, [ability]: current.abilities[ability] + 1 },
+        claimedSpecialLevels: [...new Set([...claimedSpecialLevels, pendingSpecialLevel])],
+      }
+    })
+    setPendingSpecialLevel(null)
   }
 
   const completeCinematic = () => setPlayedCinematics((current) => [...current, sceneIndex])
@@ -1345,7 +1532,7 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
   const handleMobileStageTap = (event: MouseEvent<HTMLDivElement>) => {
     if (chapterLoading || questLoading) return
     if (!window.matchMedia('(max-width: 680px)').matches) return
-    if (cinematicActive || phoneMode || sidebarOpen || inventoryOpen || mapOpen || settingsOpen || debugStageSidebarOpen || pendingPerkLevel) return
+    if (cinematicActive || phoneMode || sidebarOpen || inventoryOpen || mapOpen || settingsOpen || debugStageSidebarOpen || pendingPerkLevel || pendingSpecialLevel) return
     if (event.target instanceof HTMLElement && event.target.closest([
       'button',
       'a',
@@ -1377,7 +1564,12 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         <div className="relation-notifications" aria-live="polite" aria-atomic="false">
           {relationNotifications.map((notification) => (
             <div className={`relation-notification ${notification.tone}`} key={notification.id}>
-              <span aria-hidden="true">{notification.tone === 'positive' ? '↑' : notification.tone === 'negative' ? '↓' : '✦'}</span>
+              <span aria-hidden="true" className="relation-notification-icon">
+                {notification.kind === 'reputation' || notification.kind === 'story'
+                  ? notification.kind === 'reputation' ? <Award /> : <Sparkles />
+                  : notification.kind === 'trait' ? <Sparkles />
+                    : notification.tone === 'positive' ? <Heart /> : <HeartCrack />}
+              </span>
               {notification.text}
             </div>
           ))}
@@ -1397,14 +1589,21 @@ export function StoryScreen({ chapter, initialPlayer, initialSceneIndex = 0, ini
         onRestartChapter={restartCurrentChapter}
         onClose={() => setSettingsOpen(false)}
       />
-      {activeDebugMode && <DebugStageSidebar chapter={chapter} currentSceneIndex={sceneIndex} open={debugStageSidebarOpen} onClose={() => setDebugStageSidebarOpen(false)} onSelectStage={startDebugStage} />}
+      {activeDebugMode && <DebugStageSidebar chapter={chapter} currentSceneIndex={sceneIndex} questScope={debugQuestScope} open={debugStageSidebarOpen} onClose={() => setDebugStageSidebarOpen(false)} onSelectStage={startDebugStage} />}
+      {pendingSpecialLevel && <SpecialLevelUp level={pendingSpecialLevel} abilities={player.abilities} onSelect={chooseSpecialAbility} />}
       {pendingPerkLevel && <PerkSelection level={pendingPerkLevel} selectedPerks={player.perks} onSelect={choosePerk} />}
       <div className="game-stage" onClick={handleMobileStageTap}>
         <div className={`checkpoint-fade ${checkpointFading || backgroundFading ? 'active' : ''}`} />
         <div className="story-topbar">
-          <button onClick={onExit} aria-label="Вернуться в меню">← Меню</button>
-          <span>{chapter.title} <i /> {chapter.subtitle}</span>
-          <div className="topbar-actions"><button onClick={() => { setSidebarOpen((current) => !current); setInventoryOpen(false); setMapOpen(false); setSettingsOpen(false); setDebugStageSidebarOpen(false) }}>Характеристики</button><button onClick={() => { setInventoryOpen((current) => !current); setSidebarOpen(false); setMapOpen(false); setSettingsOpen(false); setDebugStageSidebarOpen(false) }}>Инвентарь</button>{chapterId === 'chapter-1' && <button onClick={() => { setMapOpen((current) => !current); setSidebarOpen(false); setInventoryOpen(false); setSettingsOpen(false); setDebugStageSidebarOpen(false) }}>Карта</button>}<button onClick={() => { setSettingsOpen((current) => !current); setSidebarOpen(false); setInventoryOpen(false); setMapOpen(false); setDebugStageSidebarOpen(false) }}>Настройки</button><b>{String(sceneIndex + 1).padStart(2, '0')} / {String(chapter.scenes.length).padStart(2, '0')}</b></div>
+          <button className="topbar-menu-button" onClick={onExit} aria-label="Вернуться в меню" title="Меню"><Menu aria-hidden="true" /><span className="topbar-menu-label">Меню</span></button>
+          <span>{chapterId === 'chapter-2' ? 'Глава Вторая. Путёвка' : <>{chapter.title} <i /> {chapter.subtitle}</>}</span>
+          <div className="topbar-actions">
+            <button className="topbar-icon-button" onClick={() => { setSidebarOpen((current) => !current); setInventoryOpen(false); setMapOpen(false); setSettingsOpen(false); setDebugStageSidebarOpen(false) }} aria-label="Характеристики" title="Характеристики"><ChartNoAxesCombined aria-hidden="true" /></button>
+            <button className="topbar-icon-button" onClick={() => { setInventoryOpen((current) => !current); setSidebarOpen(false); setMapOpen(false); setSettingsOpen(false); setDebugStageSidebarOpen(false) }} aria-label="Инвентарь" title="Инвентарь"><Backpack aria-hidden="true" /></button>
+            {chapterId === 'chapter-1' && <button className="topbar-icon-button" onClick={() => { setMapOpen((current) => !current); setSidebarOpen(false); setInventoryOpen(false); setSettingsOpen(false); setDebugStageSidebarOpen(false) }} aria-label="Карта" title="Карта"><MapIcon aria-hidden="true" /></button>}
+            <button className="topbar-icon-button" onClick={() => { setSettingsOpen((current) => !current); setSidebarOpen(false); setInventoryOpen(false); setMapOpen(false); setDebugStageSidebarOpen(false) }} aria-label="Настройки" title="Настройки"><SettingsIcon aria-hidden="true" /></button>
+            <b>{String(sceneIndex + 1).padStart(2, '0')} / {String(chapter.scenes.length).padStart(2, '0')}</b>
+          </div>
         </div>
         <div className={`school-background background-${activeBackground}`} style={{ backgroundImage }} />
         {!scene.autoRoute && !cinematicActive && !phoneMode && !narratorLine && <section className="portraits desktop-portraits" aria-label="Персонажи сцены">

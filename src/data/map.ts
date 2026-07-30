@@ -87,7 +87,6 @@ export const quests: Quest[] = [
     locationId: 'school-entrance',
     startSceneIndex: 56,
     availableAfterSceneIndex: 55,
-    completedAfterSceneIndex: 183,
     completedByFlags: ['CHAPTER_1_HELPED_MISHGAN', 'CHAPTER_1_LEFT_MISHGAN'],
     debugSetup: [
       {

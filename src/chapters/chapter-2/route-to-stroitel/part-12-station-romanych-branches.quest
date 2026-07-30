@@ -1,0 +1,205 @@
+# ГЛАВА 2 — «ПУТЁВКА»
+# PART 12 — РАСШИРЕНИЯ ЗНАКОМСТВА С РОМАНЫЧЕМ
+#
+# Подключать после:
+# part-12-station-romanych-main.quest
+#
+# Используются:
+# - перк «Свой человек»;
+# - Авторитет;
+# - Хитрость;
+# - Самообладание;
+# - Эмпатия;
+
+
+# =========================================================
+# ПЕРК «СВОЙ ЧЕЛОВЕК»
+# =========================================================
+
+::extend-choice station-romanych-first-impression-choice
+@when PERK_OWN_GUY
+@position 2
+
+- Назваться его заместителем по потерянным людям.
+  -> station-romanych-own-guy
+
+::end
+
+
+::dialogue station-romanych-own-guy
+@cast Дмит | Романыч | Мишган | Данз | Копяр
+
+Дмит: Дмит. Заместитель по потерянным людям.
+
+Романыч: Опыт есть?
+
+Дмит: Пока ни одного не нашёл.
+
+Романыч: Подходишь. У меня примерно такие же результаты.
+
+Мишган: Уф-уф. Сильный штаб собрался.
+
+Романыч: Вот. Этот правила понял быстрее всех.
+
+Рассказчик: Романыч засмеялся и крепче пожал Дмиту руку.
+
+@effect-next relation Романыч 2
+@effect-next flag ROMANYCH_IMMEDIATELY_LIKED_DMIT
+@effect-next flag CHAPTER_2_USED_OWN_GUY_WITH_ROMANYCH
+@next station-romanych-first-impression-convergence
+::end
+
+
+# =========================================================
+# АВТОРИТЕТ: ПРЕДСТАВИТЬ ВСЮ КОМПАНИЮ
+# =========================================================
+
+::extend-choice station-romanych-first-impression-choice
+@when-reputation Авторитет 3
+@position 3
+
+- Представить Романычу всю компанию самому.
+  -> station-romanych-authority-introduction
+
+::end
+
+
+::dialogue station-romanych-authority-introduction
+@cast Дмит | Романыч | Мишган | Данз | Копяр
+
+Дмит: Я Дмит. Это Мишган, Данз и Копяр.
+
+Мишган: Уф.
+
+Данз: Он теперь наш пресс-секретарь.
+
+Копяр: ...Привет.
+
+Романыч: Удобно. Обычно приходится вытаскивать имена по одному.
+
+Дмит: Эти сами не всегда помнят.
+
+Романыч: Тогда назначаю тебя ответственным за перевод с их языка.
+
+@effect-next relation Романыч 1
+@effect-next reputation Авторитет 1
+@effect-next flag ROMANYCH_SEES_DMIT_AS_GROUP_SPOKESMAN
+@next station-romanych-first-impression-convergence
+::end
+
+
+# =========================================================
+# ХИТРОСТЬ: УТОЧНИТЬ, ГДЕ БЫЛО ПРЕДУПРЕЖДЕНИЕ
+# =========================================================
+
+::extend-choice station-romanych-warning-choice
+@when-trait Хитрость 3
+@position 1
+
+- Между делом уточнить, было ли предупреждение написано в списке.
+  -> station-romanych-cunning-question
+
+::end
+
+
+::dialogue station-romanych-cunning-question
+@cast Дмит | Романыч
+
+Дмит: Там прямо в списке пометка стоит?
+
+Романыч: Нет.
+
+Дмит: Значит, тебе сказали лично.
+
+Романыч: Ага. Когда папку отдавали.
+
+Дмит: Понял.
+
+Романыч: А чего ты так аккуратно спрашиваешь?
+
+Дмит: Интересно, насколько я официально особенный.
+
+Романыч: Пока неофициально.
+
+Рассказчик: Дмит получил ответ, не объясняя, зачем он ему нужен.
+
+@effect-next trait Хитрость 1
+@effect-next flag CHAPTER_2_LEARNED_WARNING_WAS_NOT_IN_WRITTEN_LIST
+@effect-next flag CHAPTER_2_LEARNED_ROMANYCH_WAS_WARNED_PERSONALLY
+@next station-romanych-warning-convergence
+::end
+
+
+# =========================================================
+# САМООБЛАДАНИЕ: НЕ ПОКАЗАТЬ ТРЕВОГУ
+# =========================================================
+
+::extend-choice station-romanych-warning-choice
+@when-trait Самообладание 3
+@position 3
+
+- Спокойно попросить вспомнить разговор без лишних вопросов.
+  -> station-romanych-self-control-question
+
+::end
+
+
+::dialogue station-romanych-self-control-question
+@cast Дмит | Романыч
+
+Дмит: Вспомни спокойно. Кто отдавал список и какими словами это сказал?
+
+Рассказчик: Дмит говорил ровно, не показывая, насколько его задело предупреждение.
+
+Романыч: Девушка из администрации.
+
+Романыч: Сказала проверить, что ты приехал, и довести тебя до лагеря вместе со всеми.
+
+Дмит: Имя моё она сама назвала?
+
+Романыч: Да.
+
+Дмит: Ясно.
+
+Романыч: Что-то не так?
+
+Дмит: Пока нет.
+
+@effect-next trait Самообладание 1
+@effect-next flag CHAPTER_2_QUESTIONED_ROMANYCH_WITHOUT_SHOWING_ALARM
+@effect-next flag CHAPTER_2_LEARNED_ROMANYCH_WARNING_CAME_THROUGH_ADMIN
+@next station-romanych-warning-convergence
+::end
+
+
+# =========================================================
+# ЭМПАТИЯ: ПОНЯТЬ, ЧТО РОМАНЫЧ НЕ ЛЖЁТ
+# =========================================================
+
+::extend-choice station-romanych-warning-choice
+@when-trait Эмпатия 3
+@position 4
+
+- Присмотреться, скрывает ли Романыч что-нибудь.
+  -> station-romanych-empathy-read
+
+::end
+
+
+::dialogue station-romanych-empathy-read
+@cast Дмит | Романыч
+
+Рассказчик: Дмит не стал задавать новый вопрос и несколько секунд наблюдал за Романычем.
+
+Рассказчик: Тот беззаботно листал список и явно не понимал, почему простое предупреждение так заинтересовало Дмита.
+
+Рассказчик: Он мог чего-то не знать, но намеренно ничего не скрывал.
+
+Дмит: Ладно. Забей.
+
+Романыч: Уже забил.
+
+@effect-next trait Эмпатия 1
+@effect-next flag CHAPTER_2_DMIT_BELIEVES_ROMANYCH_IS_NOT_LYING
+@next station-romanych-warning-convergence
+::end

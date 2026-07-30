@@ -1,6 +1,7 @@
 import dmitImage from "../assets/dmit/main.webp";
 import tatyanaImage from "../assets/dmit/tatyana.webp";
 import igorImage from "../assets/dmit/igor.webp";
+import shadowedIgorImage from "../assets/dmit/igor_tween_darked.png";
 import mishganImage from "../assets/savelich/main.webp";
 import mishganSadImage from "../assets/savelich/грустный.webp";
 import mishganAngryImage from "../assets/savelich/злой.webp";
@@ -20,6 +21,8 @@ import matveyGuyTwoImage from "../assets/mat/pacan2.webp";
 import darlonaImage from "../assets/darlona.webp";
 import vadimImage from "../assets/vaz/main.webp";
 import kopyarImage from "../assets/cap/main.webp";
+import romanychImage from "../assets/romanych/main.png";
+import vanyaImage from "../assets/vanya/main.png";
 import teacherImage from "../assets/chapter_2/quest-school-1/teacher.webp";
 import type { Character, Emotion } from "../types/story";
 
@@ -90,6 +93,10 @@ export const characterPresentation: Record<
   Мама: { initial: "М", className: "tatyana", images: { default: tatyanaImage } },
   Вадим: { initial: "В", className: "vadim", images: { default: vadimImage } },
   Копяр: { initial: "К", className: "kopyar", images: { default: kopyarImage } },
+  Романыч: { initial: "Р", className: "romanych", images: { default: romanychImage } },
+  "Ваня Ильичёв": { initial: "В", className: "vanya", images: { default: vanyaImage } },
+  Даша: { initial: "Д", className: "dasha", images: { default: darlonaImage } },
+  Неизвестный: { initial: "?", className: "stranger", images: { default: shadowedIgorImage } },
   Незнакомка: { initial: "?", className: "stranger", images: { default: darlonaImage } },
   "???": { initial: "?", className: "stranger", images: { default: darlonaImage } },
   Пацан: {

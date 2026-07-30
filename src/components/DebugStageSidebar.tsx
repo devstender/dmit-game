@@ -2,9 +2,16 @@ import { useMemo, useState } from 'react'
 import type { Chapter } from '../types/story'
 import { DebugQuestGraph } from './DebugQuestGraph'
 
+export type DebugQuestScope = {
+  title: string
+  startIndex: number
+  endIndex: number
+}
+
 type DebugStageSidebarProps = {
   chapter: Chapter
   currentSceneIndex: number
+  questScope: DebugQuestScope
   open: boolean
   onClose: () => void
   onSelectStage: (sceneIndex: number) => void
@@ -12,22 +19,22 @@ type DebugStageSidebarProps = {
 
 const excerpt = (text: string, length = 82) => text.length > length ? `${text.slice(0, length).trimEnd()}…` : text
 
-export function DebugStageSidebar({ chapter, currentSceneIndex, open, onClose, onSelectStage }: DebugStageSidebarProps) {
+export function DebugStageSidebar({ chapter, currentSceneIndex, questScope, open, onClose, onSelectStage }: DebugStageSidebarProps) {
   const [query, setQuery] = useState('')
   const [view, setView] = useState<'graph' | 'list'>('graph')
   const [graphFullscreen, setGraphFullscreen] = useState(false)
   const stages = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('ru-RU')
-    return chapter.scenes.map((scene, index) => ({ scene, index })).filter(({ scene, index }) => {
+    return chapter.scenes.slice(questScope.startIndex, questScope.endIndex + 1).map((scene, offset) => ({ scene, index: questScope.startIndex + offset })).filter(({ scene, index }) => {
       if (!normalizedQuery) return true
       return `${index + 1} ${scene.speaker} ${scene.text}`.toLocaleLowerCase('ru-RU').includes(normalizedQuery)
     })
-  }, [chapter.scenes, query])
+  }, [chapter.scenes, query, questScope.endIndex, questScope.startIndex])
 
   return (
     <aside className={`debug-stage-sidebar ${open ? 'open' : ''} ${graphFullscreen ? 'graph-fullscreen' : ''}`} aria-label="Отладка квеста">
       <div className="debug-stage-heading">
-        <div><span>DEV · {chapter.title}</span><h2>Этапы квеста</h2></div>
+        <div><span>DEV · {chapter.title}</span><h2>{questScope.title}</h2></div>
         <button className="panel-close" onClick={() => { setGraphFullscreen(false); onClose() }} aria-label="Закрыть отладку">×</button>
       </div>
       <div className="debug-stage-tabs" role="tablist" aria-label="Вид отладки">
@@ -40,6 +47,8 @@ export function DebugStageSidebar({ chapter, currentSceneIndex, open, onClose, o
           <DebugQuestGraph
             chapter={chapter}
             currentSceneIndex={currentSceneIndex}
+            startIndex={questScope.startIndex}
+            endIndex={questScope.endIndex}
             onSelectStage={onSelectStage}
             fullscreen={graphFullscreen}
             onToggleFullscreen={() => setGraphFullscreen((current) => !current)}

@@ -75,6 +75,7 @@
 Рассказчик: В лагере алкоголь мог помочь договориться со старшими ребятами или вожатыми.
 
 @effect-next flag CHAPTER_2_PACKED_ALCOHOL
+@effect-next item alcohol-bottle
 @effect-next flag CAMP_HAS_HIDDEN_ALCOHOL
 Рассказчик: Главное — чтобы его не нашли раньше времени.
 
@@ -98,6 +99,7 @@
 Рассказчик: Он завернул мультитул в носок и спрятал во внутренний карман сумки.
 
 @effect-next flag CHAPTER_2_PACKED_MULTITOOL
+@effect-next item multitool
 @effect-next flag CAMP_HAS_MULTITOOL
 Рассказчик: Им можно было что-нибудь починить, открыть или, в крайнем случае, сломать более аккуратно.
 
@@ -121,6 +123,7 @@
 Рассказчик: Дмит проверил заряд и спрятал фотоаппарат между полотенцами.
 
 @effect-next flag CHAPTER_2_PACKED_CAMERA
+@effect-next item camera
 @effect-next flag CAMP_HAS_CAMERA
 Рассказчик: Обычный телефон был удобнее, но отдельный фотоаппарат не привлекал внимания и не был связан с чёрным устройством.
 

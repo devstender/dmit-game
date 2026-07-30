@@ -1,0 +1,78 @@
+{
+  "source": {
+    "total_nodes_in_scenes_plus_imported_exit": 1806,
+    "originally_reachable_from_start_1": 1628,
+    "originally_unreachable": 178,
+    "unreachable_breakdown": {
+      "short_chase": 68,
+      "legacy_computer": 95,
+      "legacy_phone": 14,
+      "stage_end_home": 1
+    },
+    "legacy_dead_nodes_excluded_from_active_quest": 109
+  },
+  "emitted": {
+    "quest_files": 9,
+    "base_nodes": 2086,
+    "reachable_base_nodes": 2086,
+    "duplicate_base_ids": 0,
+    "unknown_extension_targets": 0,
+    "unknown_transition_targets": 0,
+    "unreachable_base_nodes": 0,
+    "unbalanced_files": 0
+  },
+  "fidelity": {
+    "unchanged_source_dialogue_lines_checked": 1927,
+    "unchanged_source_dialogue_lines_found_exactly": 1927,
+    "exact_match": true,
+    "intentionally_modified_source_nodes": [
+      "next-step-phone-vadim-0",
+      "next-step-phone-vadim-2",
+      "next-step-phone-vadim-4",
+      "next-step-phone-vadim-6"
+    ],
+    "new_dialogue_nodes": [
+      "easy-route-time-up",
+      "escort-breakaway-fail",
+      "escort-breakaway-success",
+      "escort-reach-room",
+      "escort-route-start",
+      "escort-talk-fail",
+      "escort-talk-success",
+      "infiltration-easy-prelude",
+      "infiltration-hardest-prelude",
+      "infiltration-high-suspicion-prelude",
+      "infiltration-noisy-prelude",
+      "infiltration-normal-prelude",
+      "infiltration-quiet-floor",
+      "infiltration-suspicious-prelude",
+      "infiltration-timer-prelude",
+      "next-step-phone-after-read-leave",
+      "next-step-phone-after-read-take",
+      "normal-route-guard-noticed",
+      "timer-route-guard-returned"
+    ]
+  },
+  "feature_checks": {
+    "girl warning flag is set": true,
+    "girl warning flag is read": true,
+    "escort mode is read": true,
+    "easy mode is read": true,
+    "normal mode is read": true,
+    "suspicious mode is read": true,
+    "timer mode is read": true,
+    "noisy mode is read": true,
+    "high suspicion mode is read": true,
+    "hardest mode is read": true,
+    "real completion flag exists": true,
+    "forbidden Vadim phone flag absent": true,
+    "wrong left-school flag absent": true
+  },
+  "details": {
+    "duplicates": {},
+    "unknown_extensions": [],
+    "unknown_edges": [],
+    "unreachable_emitted": [],
+    "unbalanced": {}
+  }
+}

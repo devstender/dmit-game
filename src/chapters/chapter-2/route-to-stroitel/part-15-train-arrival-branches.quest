@@ -1,0 +1,266 @@
+# ГЛАВА 2 — «ПУТЁВКА»
+# PART 15 — УСЛОВНЫЕ ВЕТКИ ПОСЛЕ КОНФЛИКТА И ДОРОГИ
+#
+# Учитываются:
+# - исход конфликта с Матвеем;
+# - алкоголь в сумке;
+# - мультитул;
+# - фотоаппарат;
+# - связь лагеря «Строитель» с чёрным телефоном.
+
+
+# =========================================================
+# ОБСУЖДЕНИЕ КОНФЛИКТА
+# =========================================================
+
+::extend train-post-conflict-hook
+@when CHAPTER_2_DMIT_KEPT_CONTROL_WITH_MATVEY
+@priority 500
+@start train-post-conflict-calm
+::end
+
+
+::extend train-post-conflict-hook
+@when CHAPTER_2_MATVEY_HUMILIATED_ON_TRAIN
+@priority 400
+@start train-post-conflict-strong
+::end
+
+
+::extend train-post-conflict-hook
+@when CHAPTER_2_MATVEY_HIT_DMIT_ON_TRAIN
+@priority 300
+@start train-post-conflict-hit
+::end
+
+
+::extend train-post-conflict-hook
+@when CHAPTER_2_DMIT_JOKED_OFF_MATVEY
+@priority 200
+@start train-post-conflict-joke
+::end
+
+
+::extend train-post-conflict-hook
+@when-any CHAPTER_2_DMIT_IGNORED_MATVEY CHAPTER_2_DMIT_HID_BEHIND_MISHGAN CHAPTER_2_DMIT_FAILED_TO_JOKE_OFF_MATVEY
+@priority 100
+@start train-post-conflict-weak
+::end
+
+
+::dialogue train-post-conflict-calm
+@cast Дмит | Мишган | Ваня Ильичёв
+
+Ваня Ильичёв: Нормально удержался. Не вскочил, руками не полез.
+
+Мишган: М-Вань, но мог же. Уф!
+
+Ваня Ильичёв: М-Мифь, вот именно поэтому нормально, что не полез.
+
+Дмит: Я просто не хотел перед всем вагоном цирк устраивать.
+
+@next train-post-conflict-convergence
+::end
+
+
+::dialogue train-post-conflict-strong
+@cast Дмит | Мишган | Ваня Ильичёв
+
+Ваня Ильичёв: Нормально ответил. Главное, первым руками не полез.
+
+Мишган: М-Вань, но видел, как он его прижал словами? Уф-уф!
+
+Дмит: Сам пришёл доёбываться.
+
+Ваня Ильичёв: Теперь весь отряд это запомнит.
+
+@next train-post-conflict-convergence
+::end
+
+
+::dialogue train-post-conflict-hit
+@cast Дмит | Мишган | Ваня Ильичёв
+
+Мишган: Подзатыльник не считается ударом, М.
+
+Дмит: Спасибо, бля.
+
+Ваня Ильичёв: Считается, М-Мифь.
+
+Мишган: М-Вань, я его поддерживаю.
+
+Ваня Ильичёв: Тогда продолжай без фактов.
+
+Дмит: Вот это реально поможет.
+
+@next train-post-conflict-convergence
+::end
+
+
+::dialogue train-post-conflict-joke
+@cast Дмит | Данз | Мишган | Ваня Ильичёв
+
+Данз: Геройский билет был нормально.
+
+Дмит: Сам удивился.
+
+Мишган: М-м-м-м. Я бы всё равно ебнул.
+
+Ваня Ильичёв: М-Мифь, мы уже поняли.
+
+@next train-post-conflict-convergence
+::end
+
+
+::dialogue train-post-conflict-weak
+@cast Дмит | Мишган | Ваня Ильичёв
+
+Мишган: М-Мифь всегда рядом, если что.
+
+Дмит: Я понял.
+
+Ваня Ильичёв: М-Мифь, иногда человеку надо самому ответить.
+
+Мишган: М-Вань, я могу ответить за двоих.
+
+Дмит: В этом и проблема.
+
+@next train-post-conflict-convergence
+::end
+
+
+# =========================================================
+# АЛКОГОЛЬ В СУМКЕ
+# =========================================================
+
+::extend train-packed-item-hook
+@when-any CHAPTER_2_PACKED_ALCOHOL CAMP_HAS_HIDDEN_ALCOHOL
+@priority 300
+@start train-packed-alcohol
+::end
+
+
+::dialogue train-packed-alcohol
+@cast Дмит | Романыч
+
+Рассказчик: Романыч остановился рядом с сумкой Дмита.
+
+Романыч: У тебя там ничего не разбилось?
+
+Дмит: Нет.
+
+Романыч: Чего так быстро ответил?
+
+Дмит: Потому что ничего не разбилось.
+
+Рассказчик: Романыч наклонился поправить соседнюю сумку. Дмит почувствовал, как внутри его рюкзака тихо стукнуло стекло.
+
+Романыч: В лагере всё равно будем разбирать вещи. Запрещённое лучше самому не таскать.
+
+Дмит: Ага.
+
+Рассказчик: Романыч пошёл дальше. Дмит только после этого выдохнул.
+
+@effect-next flag CHAPTER_2_DMIT_WORRIED_ABOUT_HIDDEN_ALCOHOL_ON_TRAIN
+@effect-next trait Самообладание 1
+@next train-kopyar-closes-book
+::end
+
+
+# =========================================================
+# МУЛЬТИТУЛ В ДОРОГЕ
+# =========================================================
+
+::extend road-packed-item-hook
+@when-any CHAPTER_2_PACKED_MULTITOOL CAMP_HAS_MULTITOOL
+@priority 200
+@start road-multitool-use
+::end
+
+
+::dialogue road-multitool-use
+@cast Дмит | Копяр | Романыч
+
+Рассказчик: На полпути у сумки Копяра начала расходиться металлическая скоба на ручке.
+
+Копяр: Она сейчас оторвётся.
+
+Дмит: Стой.
+
+Рассказчик: Дмит достал мультитул, поджал скобу плоскогубцами и затянул разболтавшийся винт.
+
+Романыч: Полезная штука. Только в лагере без спроса никому не давай.
+
+Дмит: Я и не собирался.
+
+Копяр: Спасибо.
+
+@effect-next flag CHAPTER_2_USED_MULTITOOL_ON_ROAD_TO_CAMP
+@effect-next trait Ответственность 1
+@effect-next relation Копяр 1
+@next builder-camp-gates-start
+::end
+
+
+# =========================================================
+# ФОТОАППАРАТ
+# =========================================================
+
+::extend road-packed-item-hook
+@when-any CHAPTER_2_PACKED_CAMERA CAMP_HAS_CAMERA
+@priority 100
+@start road-camera-use
+::end
+
+
+::dialogue road-camera-use
+@cast Дмит | Мишган | Данз | Копяр | Романыч
+
+Рассказчик: Когда впереди между деревьями показался забор лагеря, Дмит достал фотоаппарат.
+
+Данз: Сфоткай меня так, будто я первым дошёл.
+
+Мишган: Ты половину дороги ныл.
+
+Данз: На фотографии звука нет.
+
+Романыч: Только колонну не задерживайте.
+
+@sound-next camera-shutter
+Рассказчик: Дмит сфотографировал дорогу, ребят и выцветшую надпись над воротами.
+
+Копяр: Нормально получилось?
+
+Дмит: Потом посмотрим.
+
+@effect-next flag CHAPTER_2_PHOTOGRAPHED_BUILDER_CAMP_ARRIVAL
+@effect-next trait Внимательность 1
+@next builder-camp-gates-start
+::end
+
+
+# =========================================================
+# «СТРОИТЕЛЬ» И ЧЁРНЫЙ ТЕЛЕФОН
+# =========================================================
+
+::extend builder-camp-connection-hook
+@when BUILDER_CAMP_CONNECTION_NOTICED
+@priority 100
+@start builder-camp-connection-memory
+::end
+
+
+::dialogue builder-camp-connection-memory
+@cast Дмит
+
+Рассказчик: Название на воротах Дмит уже видел в сообщениях чёрного телефона.
+
+Рассказчик: Там слово «Строитель» выглядело как часть чужой договорённости. Здесь — как название обычного детского лагеря.
+
+Дмит: Совпадение, бля...
+
+Рассказчик: Дмит сам не поверил в то, что сказал.
+
+@effect-next flag CHAPTER_2_DMIT_RECOGNIZED_BUILDER_NAME_AT_GATES
+@next builder-camp-road-quest-finish
+::end

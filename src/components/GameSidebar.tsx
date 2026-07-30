@@ -1,5 +1,5 @@
-import { abilityLabels, experienceForLevel, relationLabels, type PlayerState } from '../data/player'
-import type { Ability, RelationCharacter } from '../types/story'
+import { abilityLabels, experienceForLevel, relationLabels, traitLabels, traitLevelLabel, type PlayerState } from '../data/player'
+import type { Ability, PersonalityTrait, RelationCharacter } from '../types/story'
 
 type GameSidebarProps = { player: PlayerState }
 
@@ -36,6 +36,14 @@ export function GameSidebar({ player, open, onClose, onUpgradeAbility, visibleRe
             <div><b>{score}</b>{player.specialPoints > 0 && score < 10 && <button className="ability-upgrade" onClick={() => onUpgradeAbility(ability as Ability)} aria-label={`Улучшить ${abilityLabels[ability as Ability]}`}>+</button>}</div>
           </div>
         ))}
+      </section>
+      <section className="sidebar-section traits-section">
+        <h2>Черты личности</h2>
+        {Object.entries(player.traits).map(([trait, score]) => <div className="relation-row" key={trait}><span>{traitLabels[trait as PersonalityTrait]}</span><b className={score > 1 ? 'positive' : score < -1 ? 'negative' : ''}>{traitLevelLabel(score)}</b></div>)}
+      </section>
+      <section className="sidebar-section authority-section">
+        <h2>Авторитет</h2>
+        <div className="relation-row"><span>В районе</span><b className={player.reputation > 0 ? 'positive' : player.reputation < 0 ? 'negative' : ''}>{player.reputation > 0 ? `+${player.reputation}` : player.reputation}</b></div>
       </section>
       <section className="sidebar-section relations-section">
         <h2>Отношения</h2>
